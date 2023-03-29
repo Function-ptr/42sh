@@ -1,0 +1,75 @@
+name: Mirroring
+
+on: [push, delete, pull_request]
+
+env:
+  EXECUTABLES: 'mysh'
+
+jobs:
+  check_coding_style:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run coding style checker
+      id: check_style
+      run: |
+        check.sh $(pwd) $(pwd)
+        output=$(cat coding-style-reports.log)
+        echo "$output"
+        out=$(echo "$output" | tr ' ' '&')
+        for line in $out; do
+          corrline=$(echo "$line" | tr '&' ' ')
+          file=$(echo "$corrline" | cut -d: -f1 | sed 's/\.\///g')
+          numline=$(echo "$corrline" | cut -d: -f2)
+          echo "::error file=$file,line=$numline,title=$(echo "$corrline" | cut -d: -f3) coding style error::$corrline"
+        done
+        if [[ "$output" =~ "MAJOR" ]] || [[ "$output" =~ "MINOR" ]] || [[ "$output" =~ "INFO" ]]; then
+            exit 1
+        fi
+
+  check_program_compilation:
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker
+    needs: check_coding_style
+    steps:
+    - uses: actions/checkout@v2
+    - name: Compile program
+      run: make
+      timeout-minutes: 2
+    - name: Clean build
+      run: make clean
+    - name: Check executables
+      run: |
+        execs=$(echo $EXECUTABLES | tr "," "\n")
+        error=false
+        for exe in $execs; do
+          exe=./$exe
+          if [[ -f $exe ]] && [[ -x "$exe" ]]; then
+            continue
+          else
+            error=true
+            echo "File $exe not found or not executable"
+            echo "::error title=File $exe not found or not executable::$exe"
+          fi
+        done
+        if $error; then
+          echo "Exiting with error"
+          exit 1
+        fi
+
+  mirror_repository:
+    runs-on: ubuntu-latest
+    needs: check_program_compilation
+    steps:                                              # <-- must use actions/checkout before mirroring!
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            git@github.com:EpitechPromo2027/B-MUL-200-NCE-2-1-42sh-louis.dupraz.git
+          ssh_private_key:                              # <-- use 'secrets' to pass credential information.
+            ${{ secrets.REPO_MIRROR_SSH_KEY }}
