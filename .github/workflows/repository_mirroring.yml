@@ -1,6 +1,6 @@
 name: Mirroring
 
-on: [push, delete, pull_request]
+on: [pull_request]
 
 env:
   EXECUTABLES: 'mysh'
