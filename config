@@ -1,0 +1,9 @@
+CC;gcc
+PROJECT_DIR;.
+SOURCES_DIR;. built-in execute parse errors environment
+HEADERS_DIR;include/
+CFLAGS;-Wall
+DEBUGFLAGS;-Wall
+LIBS_DIR;lib/all
+LIB_POS;.
+EXEC;mysh
