@@ -46,7 +46,6 @@ command_t **cut_input_to_commands(char *input)
     for (int i = 0; input[i] != 0; i++, pos++)
         nb_cmds = (input[i] == '|' || input[i] == ';') ? nb_cmds + 1 : nb_cmds;
     command_t **cmds = malloc(sizeof(command_t*) * (nb_cmds + 1));
-    command_t *previous = NULL;
     for (int i = 0; i <= nb_cmds; i++)
         cmds[i] = NULL;
     int status = separate_commands(nb_cmds, input, cmds);

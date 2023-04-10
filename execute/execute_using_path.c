@@ -40,7 +40,7 @@ int execute_from_path(command_t *command, pathdir_t **path_dirs, envvar_t **env)
     if (cmd[0] == '\n')
         return (0);
     pathdir_t *dir = *path_dirs;
-    int lenbin = my_strlen(binary), ran_bin = -1;
+    int lenbin = my_strlen(binary);
     int exec_status = is_command_in_path(dir, command, env, binary);
     if (exec_status == -1) {
         write(2, binary, lenbin);

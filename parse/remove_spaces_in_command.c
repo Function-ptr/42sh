@@ -50,14 +50,15 @@ char *word_array_to_command(char **word_array, int *pos)
         *pos += len + 1;
         free(word_array[i]);
     }
+    return (newcommand);
 }
 
 char *remove_spaces_in_command(char *comm, char sep, bool pipe_in, int *status)
 {
     for (; *comm == ' ' || *comm == '\t'; comm++);
     char **word_array = my_str_to_word_array(comm, " \t");
-    int word_array_len = array_len(word_array);
-    int nbchars = word_array_len - 1, pos = 0;
+
+    int pos = 0;
     if (is_there_no_command(word_array, status, sep, pipe_in))
         return NULL;
     char *newcommand = word_array_to_command(word_array, &pos);

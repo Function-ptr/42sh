@@ -7,9 +7,7 @@
 
 SOURCES = . built-in execute parse errors environment
 
-SRCS = 	general_functions.c	\
-	main.c	\
-	parse_commands.c	\
+SRCS = 	main.c	\
 	shell.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
@@ -44,9 +42,7 @@ SRCS = 	general_functions.c	\
 	environment/linked_lists_management.c	\
 	environment/path.c	\
 
-OBJS = 	obj/general_functions.o	\
-	obj/main.o	\
-	obj/parse_commands.o	\
+OBJS = 	obj/main.o	\
 	obj/shell.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
@@ -134,7 +130,7 @@ NAME  = mysh
 
 CC  = gcc
 
-LIB = -L. 	-lall	\
+LIB = -L.	-lall	\
 
 HEADER = 	-I./include/	\
 

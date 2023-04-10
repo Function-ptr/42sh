@@ -54,7 +54,7 @@ bool has_ambigous_redirection_in(command_t *command, char *comm)
         ambigous_redirection(true);
         return (true);
     }
-    return (false)
+    return (false);
 }
 
 bool has_ambigous_redirection_out(command_t *command, char *comm)

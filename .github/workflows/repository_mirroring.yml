@@ -1,6 +1,6 @@
 name: Mirroring
 
-on: [pull_request]
+on: [pull_request, push]
 
 env:
   EXECUTABLES: 'mysh'
@@ -70,6 +70,6 @@ jobs:
       - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-            git@github.com:EpitechPromo2027/B-MUL-200-NCE-2-1-42sh-louis.dupraz.git
+            git@github.com:EpitechPromo2027/B-PSU-200-NCE-2-1-42sh-louis.dupraz.git
           ssh_private_key:                              # <-- use 'secrets' to pass credential information.
             ${{ secrets.REPO_MIRROR_SSH_KEY }}
