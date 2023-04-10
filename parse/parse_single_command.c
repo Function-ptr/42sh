@@ -48,8 +48,8 @@ bool has_ambigous_redirection_in(command_t *command, char *comm)
         ambigous_redirection(true);
         return (true);
     }
-    if (redirection_in_word != NULL && \
-    redirection_in_word != redirection_in + 1 && \
+    if (redirection_in_word != NULL &&
+    redirection_in_word != redirection_in + 1 &&
     redirection_in_word != redirection_in) {
         ambigous_redirection(true);
         return (true);
@@ -65,8 +65,8 @@ bool has_ambigous_redirection_out(command_t *command, char *comm)
         ambigous_redirection(false);
         return (true);
     }
-    if (redirection_out_append != NULL && \
-    redirection_out_append != redirection_out + 1 && \
+    if (redirection_out_append != NULL &&
+    redirection_out_append != redirection_out + 1 &&
     redirection_out_append != redirection_out) {
         ambigous_redirection(false);
         return (true);
