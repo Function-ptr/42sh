@@ -31,12 +31,13 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         unset_env(env->env, input); found = true;
     } if (my_strcmp(binname, "exit") == 0) {
         status = exit_with_status(cmd); found = true;
+    } if (my_strcmp(binname, "echo") == 0) {
+        status = echo(cmd); found = true;
     } if (!found) {
         write(2, binname, my_strlen(binname));
         write(2, ": Command not found.\n", 21);
     }
-    free(b);
-    return (status);
+    free(b); return (status);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
