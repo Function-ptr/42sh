@@ -37,8 +37,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         write(2, binname, my_strlen(binname));
         write(2, ": Command not found.\n", 21);
     }
-    free(b);
-    return (status);
+    free(b); return (status);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
