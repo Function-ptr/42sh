@@ -12,6 +12,7 @@ SRCS = 	main.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
 	built-in/command_is_a_builtin.c	\
+	built-in/echo.c	\
 	built-in/exit.c	\
 	built-in/setenv.c	\
 	built-in/show_environment.c	\
@@ -47,6 +48,7 @@ OBJS = 	obj/main.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
 	obj/built-in-command_is_a_builtin.o	\
+	obj/built-in-echo.o	\
 	obj/built-in-exit.o	\
 	obj/built-in-setenv.o	\
 	obj/built-in-show_environment.o	\
@@ -82,7 +84,7 @@ OBJ_DIR = obj
 OBJ = $(SRCS:%.c=obj/%.o)
 
 OPTI = -O3 -Ofast \
--fopt-info-vec-all -ftree-vectorize \
+-ftree-vectorize \
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \
 -march=native -mtune=native -fopenmp -mavx2 \
 -lm -ffast-math -mfpmath=sse \
@@ -123,8 +125,6 @@ OPTI = -O3 -Ofast \
 
 # -flto: Enables link-time optimization, which allows the compiler to optimize
 # 	across object files.
-
-CSFML = -lcsfml-graphics -lcsfml-system -lcsfml-window -lcsfml-audio
 
 NAME  = mysh
 
