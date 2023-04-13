@@ -26,8 +26,11 @@ int is_command_in_path(pathdir_t *dir, command_t *cmd, envvar_t **env,
         filepath[dirlen] = '/';
         my_strcpy(&(filepath[dirlen + 1]), binary);
         int isok = access(dir->dir, F_OK & R_OK);
-        if (!isok && !access(filepath, F_OK & X_OK))
-            return (run_binary_file(filepath, cmd, env));
+        if (!isok && !access(filepath, F_OK & X_OK)) {
+            int status = run_binary_file(filepath, cmd, env);
+            free(filepath);
+            return (status);
+        }
         free(filepath);
     }
     return (-1);
