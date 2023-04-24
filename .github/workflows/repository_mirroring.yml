@@ -3,7 +3,7 @@ name: Mirroring
 on: [pull_request, push]
 
 env:
-  EXECUTABLES: 'mysh'
+  EXECUTABLES: '42sh'
 
 jobs:
   check_coding_style:
