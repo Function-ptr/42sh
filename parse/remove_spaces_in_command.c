@@ -28,9 +28,6 @@ bool is_there_no_command(char **word_array, int *status, char sep, bool pipe_in)
     int word_array_len = array_len(word_array);
     if (word_array_len == 0) {
         free(word_array);
-        *status = 0;
-        if (sep == '|' || pipe_in)
-            null_command();
         return (true);
     }
     return (false);
@@ -57,10 +54,15 @@ char *remove_spaces_in_command(char *comm, char sep, bool pipe_in, int *status)
 {
     for (; *comm == ' ' || *comm == '\t'; comm++);
     char **word_array = my_str_to_word_array(comm, " \t");
-
     int pos = 0;
-    if (is_there_no_command(word_array, status, sep, pipe_in))
-        return NULL;
+    if (is_there_no_command(word_array, status, sep, pipe_in)) {
+        if (sep == '|' || pipe_in) {
+            *status = 0;
+            null_command();
+            return NULL;
+        }
+        return (calloc(1, sizeof(char)));
+    }
     char *newcommand = word_array_to_command(word_array, &pos);
     free(word_array);
     newcommand[pos - 1] = 0;

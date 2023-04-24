@@ -126,7 +126,7 @@ OPTI = -O3 -Ofast \
 # -flto: Enables link-time optimization, which allows the compiler to optimize
 # 	across object files.
 
-NAME  = mysh
+NAME  = 42sh
 
 CC  = gcc
 

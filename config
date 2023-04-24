@@ -6,4 +6,4 @@ CFLAGS;-Wall
 DEBUGFLAGS;-Wall
 LIBS_DIR;lib/all
 LIB_POS;.
-EXEC;mysh
+EXEC;42sh

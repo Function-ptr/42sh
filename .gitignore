@@ -2,4 +2,6 @@
 .vscode
 coding-style-reports.log
 mysh
+42sh
+liball.a
 *.o

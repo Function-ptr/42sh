@@ -29,7 +29,7 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
         int *statuses[2] = {&i, &status};
         char sep = tmp[pos];
         commands[i] = parse_single_command(comm, previous, sep, statuses);
-        status *= (commands[i] == NULL) ? (0) : (1);
+        //status *= (commands[i] == NULL) ? (0) : (1);
         pos += 1;
         previous = commands[i];
         for (int j = i + 1; j <= nb_cmds; j++)

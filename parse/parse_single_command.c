@@ -83,6 +83,7 @@ command_t *parse_single_command(char *comm, command_t *prev, char next_sep,
         free(command);
         return NULL;
     }
+    command->next_separator = next_sep;
     if (has_ambigous_redirection_in(command, comm) ||
         has_ambigous_redirection_out(command, comm)) {
         free(command);

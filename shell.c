@@ -31,7 +31,8 @@ int shell(envdata_t *env)
         size_t input_len = 1;
         char *input = NULL;
         if (getline(&input, &input_len, stdin) == -1) {
-            free(input); return (status);
+            free(input);
+            return (status);
         }
         status = run_user_input(input, env, &exiting);
         free(input);

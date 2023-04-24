@@ -25,6 +25,10 @@ int run_user_input(char *input, envdata_t *env, int *exiting)
     for (; commands[nb_commands] != NULL; nb_commands++);
     for (int i = 0; commands[i] != NULL; i++) {
         status = 0;
+        if (!commands[i]->command || commands[i]->command[0] == 0) {
+            free_command(commands[i]);
+            continue;
+        }
         if (load_redirections_for_command(commands[i]) == -1)
             return (-1);
         status = detect_command_type_and_run(commands[i], exiting, env);
