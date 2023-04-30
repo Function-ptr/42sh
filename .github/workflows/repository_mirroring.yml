@@ -11,7 +11,7 @@ jobs:
     container:
       image: ghcr.io/epitech/coding-style-checker:latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Run coding style checker
       id: check_style
       run: |
@@ -35,7 +35,7 @@ jobs:
       image: epitechcontent/epitest-docker
     needs: check_coding_style
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Compile program
       run: make
       timeout-minutes: 2
