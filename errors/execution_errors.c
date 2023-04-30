@@ -27,6 +27,14 @@ void execution_error(char *command)
         write(2, ". Wrong Architecture", 20);
     write(2, ".\n", 2);
 }
+
+void free_remaining_piped_commands(command_t **commands, int nb_commands,
+    int *i)
+{
+    for (; *i < nb_commands - 1 && commands[*i]->pipe_out; *i += 1)
+        free_command(commands[*i]);
+    free_command(commands[*i]);
+}
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⢟⣽⠿⠯⠛⡸⢹⠀⢹⠒⣊⡡⠜⠓⠢⣄⠀⠀⠀⠀

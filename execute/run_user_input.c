@@ -33,13 +33,20 @@ int run_command(command_t *command, int *exiting, envdata_t *env)
 int run_user_input(char *input, envdata_t *env, int *exiting)
 {
     command_t **commands = cut_input_to_commands(input);
-    int status = 0, nb_commands = 0;
+    int status = 0, nb_commands = 0, i = 0;
     if (commands == NULL)
         return status;
     for (; commands[nb_commands] != NULL; nb_commands++);
-    status = pipe_rotation(commands, env, exiting, nb_commands);
-    if (status == -1)
-        return (-1);
+    int *data[3] = {&i, &nb_commands, exiting};
+    for (; i < nb_commands; i++) {
+        status = 0;
+        if (!commands[i]->pipe_out)
+            status = run_command(commands[i], exiting, env);
+        else
+            status = loop_over_pipes(commands, env, data);
+        if (status == -1)
+            return (-1);
+    }
     free(commands);
     return (status);
 }

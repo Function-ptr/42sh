@@ -16,6 +16,22 @@
 */
 #include "minishell.h"
 
+void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
+{
+    if (my_strcmp(binname, "echo") == 0) {
+        *status = echo(cmd);
+        *found = true;
+    }
+    if (!*found) {
+        write(2, binname, my_strlen(binname));
+        write(2, ": Command not found.\n", 21);
+    }
+    if (cmd->out_fd != STDOUT_FILENO)
+        close(cmd->out_fd);
+    if (cmd->in_fd != STDIN_FILENO)
+        close(cmd->in_fd);
+}
+
 int builtin_funcs(command_t *cmd, envdata_t *env)
 {
     char *input = cmd->command, *b = my_strdup(input);
@@ -32,16 +48,8 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         unset_env(env->env, input); found = true;
     } if (my_strcmp(binname, "exit") == 0) {
         status = exit_with_status(cmd); found = true;
-    } if (my_strcmp(binname, "echo") == 0) {
-        status = echo(cmd); found = true;
-    } if (!found) {
-        write(2, binname, my_strlen(binname));
-        write(2, ": Command not found.\n", 21);
     }
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
+    builtin_funcs_bis(binname, cmd, &found, &status);
     free(b);
     return (status);
 }
