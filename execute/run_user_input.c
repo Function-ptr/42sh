@@ -16,6 +16,20 @@
 */
 #include "minishell.h"
 
+int run_command(command_t *command, int *exiting, envdata_t *env)
+{
+    int status = 0;
+    if (!command->command || command->command[0] == 0) {
+        free_command(command);
+        return (status);
+    }
+    if (load_redirections_for_command(command) == -1)
+        return (-1);
+    status = detect_command_type_and_run(command, exiting, env);
+    free_command(command);
+    return (status);
+}
+
 int run_user_input(char *input, envdata_t *env, int *exiting)
 {
     command_t **commands = cut_input_to_commands(input);
@@ -23,17 +37,9 @@ int run_user_input(char *input, envdata_t *env, int *exiting)
     if (commands == NULL)
         return status;
     for (; commands[nb_commands] != NULL; nb_commands++);
-    for (int i = 0; commands[i] != NULL; i++) {
-        status = 0;
-        if (!commands[i]->command || commands[i]->command[0] == 0) {
-            free_command(commands[i]);
-            continue;
-        }
-        if (load_redirections_for_command(commands[i]) == -1)
-            return (-1);
-        status = detect_command_type_and_run(commands[i], exiting, env);
-        free_command(commands[i]);
-    }
+    status = pipe_rotation(commands, env, exiting, nb_commands);
+    if (status == -1)
+        return (-1);
     free(commands);
     return (status);
 }

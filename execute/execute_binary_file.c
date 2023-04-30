@@ -16,36 +16,41 @@
 */
 #include "minishell.h"
 
-void monitor_program(int *status, pid_t child_pid, char *filepath)
+int monitor_program(pid_t child_pid, char *filepath)
 {
-    if (waitpid(child_pid, status, WUNTRACED) == -1)
+    int status;
+    if (waitpid(child_pid, &status, WUNTRACED) == -1)
         execution_error(filepath);
     else
-        check_exit_status(*status);
+        check_exit_status(status);
+    return (status);
 }
 
-int run_binary_file(char *filepath, command_t *command, envvar_t **env)
+pid_t fork_and_run(char *filepath, command_t *command, envvar_t **env)
 {
     char **envtab = get_environment(env);
-    int status;
     char **argv = my_str_to_word_array(command->command, " \t");
     pid_t child_pid = fork();
     if (child_pid == 0) {
         if (command->in_fd != STDIN_FILENO)
             dup2(command->in_fd, STDIN_FILENO);
         if (command->out_fd != STDOUT_FILENO)
-            dup2(command->out_fd,STDOUT_FILENO);
+            dup2(command->out_fd, STDOUT_FILENO);
         if (execve(filepath, argv, envtab) == -1) {
             execution_error(filepath);
             exit(1);
         }
-    } else
-        monitor_program(&status, child_pid, filepath);
+    }
     for (int i = 0; argv[i] != NULL; i++)
         free(argv[i]);
     free(envtab);
+    if (command->out_fd != STDOUT_FILENO)
+        close(command->out_fd);
+    if (command->in_fd != STDIN_FILENO)
+        close(command->in_fd);
     free(argv);
-    return (status);
+    free(filepath);
+    return (child_pid);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

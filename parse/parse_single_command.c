@@ -18,25 +18,15 @@
 
 bool init_command(command_t *command, command_t *prev, char next_sep)
 {
-    int pipe_file_descriptors[2];
     command->in_fd = STDIN_FILENO;
     command->out_fd = STDOUT_FILENO;
     command->pipe_in_fd = -1;
     command->pipe_out = false;
     command->pipe_in = false;
-    if (prev != NULL && prev->pipe_out) {
+    if (prev != NULL && prev->pipe_out)
         command->pipe_in = true;
-        command->in_fd = prev->pipe_in_fd;
-    }
-    if (next_sep == '|') {
-        if (pipe(pipe_file_descriptors) == -1) {
-            perror("pipe");
-            return false;
-        }
-        command->out_fd = pipe_file_descriptors[1];
-        command->pipe_in_fd = pipe_file_descriptors[0];
-        command->pipe_out = 1;
-    }
+    if (next_sep == '|')
+        command->pipe_out = true;
     return true;
 }
 

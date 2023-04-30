@@ -18,11 +18,12 @@
 
 void free_command(command_t *command)
 {
-    if (command == NULL) return;
-    if (command->out_fd != 1) close(command->out_fd);
-    if (command->in_fd != 0) close(command->in_fd);
-    if (command->awaited_word != NULL) free(command->awaited_word);
-    if (command->command != NULL) free(command->command);
+    if (command == NULL)
+        return;
+    if (command->awaited_word != NULL)
+        free(command->awaited_word);
+    if (command->command != NULL)
+        free(command->command);
     free(command);
 }
 

@@ -94,12 +94,22 @@ bool is_a_builtin(char *binary);
 
 int run_specified_path(command_t *cmd, envvar_t **env);
 int check_exit_status(int status);
-int run_binary_file(char *filepath, command_t *command, envvar_t **env);
-int execute_from_path(command_t *command, pathdir_t **path_dirs,
-    envvar_t **env);
 int detect_command_type_and_run(command_t *command, int *exiting,
     envdata_t *env);
 int run_user_input(char *input, envdata_t *env, int *exiting);
+int run_command(command_t *command, int *exiting, envdata_t *env);
+
+
+///////////////////
+/// Rework exec ///
+///////////////////
+
+pid_t fork_and_run(char *filepath, command_t *command, envvar_t **env);
+char *get_command_in_path(char *command, pathdir_t **path_dirs);
+int monitor_program(pid_t child_pid, char *filepath);
+char *get_binary_filename(char *command, pathdir_t **pathdirs);
+int pipe_rotation(command_t **commands, envdata_t *env, int *exiting,
+    int nb_commands);
 
 ///////////////////
 /// Environment ///

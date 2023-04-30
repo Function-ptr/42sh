@@ -15,8 +15,8 @@
                              |___/               |______|
 */
 #include "minishell.h"
-int is_command_in_path(pathdir_t *dir, command_t *cmd, envvar_t **env,
-    char *binary)
+
+char *is_command_in_path(pathdir_t *dir, char *binary)
 {
     int len_binary = my_strlen(binary);
     for (; dir != NULL; dir = dir->next) {
@@ -26,31 +26,28 @@ int is_command_in_path(pathdir_t *dir, command_t *cmd, envvar_t **env,
         filepath[dirlen] = '/';
         my_strcpy(&(filepath[dirlen + 1]), binary);
         int isok = access(dir->dir, F_OK & R_OK);
-        if (!isok && !access(filepath, F_OK & X_OK)) {
-            int status = run_binary_file(filepath, cmd, env);
-            free(filepath);
-            return (status);
-        }
+        if (!isok && !access(filepath, F_OK & X_OK))
+            return (filepath);
         free(filepath);
     }
-    return (-1);
+    return (NULL);
 }
 
-int execute_from_path(command_t *command, pathdir_t **path_dirs, envvar_t **env)
+char *get_command_in_path(char *command, pathdir_t **path_dirs)
 {
-    char *cmd = my_strdup(command->command);
+    char *cmd = my_strdup(command);
     char *binary = get_binary_name(cmd);
     if (cmd[0] == '\n')
         return (0);
     pathdir_t *dir = *path_dirs;
     int lenbin = my_strlen(binary);
-    int exec_status = is_command_in_path(dir, command, env, binary);
-    if (exec_status == -1) {
+    char *result = is_command_in_path(dir, binary);
+    if (result == NULL) {
         write(2, binary, lenbin);
         write(2, ": Command not found.\n", 21);
     }
     free(cmd);
-    return ((exec_status != -1) ? exec_status : 1);
+    return (result);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
