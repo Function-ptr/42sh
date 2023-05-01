@@ -16,7 +16,7 @@
 */
 
 #ifndef INC_42SH_ENVIRONMENT_H
-    #define INC_42SH_ENVIRONMENT_H*
+    #define INC_42SH_ENVIRONMENT_H
 
     #include "types.h"
     #include <stdlib.h>
