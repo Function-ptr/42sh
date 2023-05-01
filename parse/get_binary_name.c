@@ -16,6 +16,24 @@
 */
 #include "minishell.h"
 
+char *get_binary_filename(char *command, pathdir_t **pathdirs)
+{
+    char *cmd = strdup(command);
+    if (strchr(cmd, '/') != NULL) {
+        if (!access(cmd, F_OK))
+            return (cmd);
+        else {
+            write(2, cmd, strlen(cmd));
+            write(2, ": Command not found.\n", 21);
+            free(cmd);
+            return (NULL);
+        }
+    }
+    char *res = get_command_in_path(cmd, pathdirs);
+    free(cmd);
+    return res;
+}
+
 char *get_binary_name(char *str)
 {
     if (str[0] == '\n')
