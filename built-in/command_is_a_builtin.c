@@ -14,7 +14,8 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built-in.h"
 
 bool is_a_builtin(char *binary)
 {

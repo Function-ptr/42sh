@@ -5,7 +5,7 @@
 ** echo
 */
 
-#include "minishell.h"
+#include "built-in.h"
 
 int echo(command_t *command)
 {

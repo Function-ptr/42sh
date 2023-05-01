@@ -14,7 +14,8 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built-in.h"
 
 void show_environment(envvar_t **env, command_t *command)
 {

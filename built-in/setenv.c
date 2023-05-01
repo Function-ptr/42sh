@@ -14,13 +14,14 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built-in.h"
 
 bool is_empty(command_t *command, envvar_t **env)
 {
     char *cmd = command->command;
     int command_len = strlen(cmd);
-    if (!is_argv_long_enough(cmd, 2, "setenv")) {
+    if (!is_argv_long_enough(cmd, 2)) {
         memset(cmd, 0, command_len);
         strcpy(cmd, "env");
         show_environment(env, command);

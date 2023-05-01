@@ -14,7 +14,8 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built-in.h"
 
 void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 {
