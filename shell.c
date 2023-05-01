@@ -5,7 +5,7 @@
 ** shell for minishell1
 */
 
-#include "minishell.h"
+#include "shell.h"
 
 int write_prompt(envdata_t *env)
 {

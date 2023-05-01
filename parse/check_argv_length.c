@@ -16,7 +16,7 @@
 */
 #include "parsing.h"
 
-int is_argv_long_enough(char *command, int cap, char *func)
+int is_argv_long_enough(char *command, int cap)
 {
     char **argv = my_str_to_word_array(command, " \t");
     int walen = 0;
