@@ -5,9 +5,10 @@
 ## Makefile
 ##
 
-SOURCES = . built-in execute parse errors environment
+SOURCES = . built-in execute parse errors environment history
 
-SRCS = 	main.c	\
+SRCS = 	hangman.c	\
+	main.c	\
 	shell.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
@@ -42,8 +43,11 @@ SRCS = 	main.c	\
 	environment/initialize_fallback_environment.c	\
 	environment/linked_lists_management.c	\
 	environment/path.c	\
+	history/get_file_nb_lines.c	\
+	history/history.c	\
 
-OBJS = 	obj/main.o	\
+OBJS = 	obj/hangman.o	\
+	obj/main.o	\
 	obj/shell.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
@@ -78,6 +82,8 @@ OBJS = 	obj/main.o	\
 	obj/environment-initialize_fallback_environment.o	\
 	obj/environment-linked_lists_management.o	\
 	obj/environment-path.o	\
+	obj/history-get_file_nb_lines.o	\
+	obj/history-history.o	\
 
 OBJ_DIR = obj
 

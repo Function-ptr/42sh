@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** environment.c
+** get_nb_lines.c
 ** File description:
-** environment manipulation
+** get number of lines in a file
 */
 /*
  __  __        _                            ___            ___
@@ -16,33 +16,20 @@
 */
 #include "minishell.h"
 
-char **get_environment(envvar_t **env)
+size_t get_file_nb_lines(char *filename)
 {
-    envvar_t *tmp = *env;
-    int len_environment = 0;
-    for (; tmp != NULL; tmp = tmp->next, len_environment++);
-    char **envtab = malloc(sizeof(char*) * (len_environment + 1));
-    tmp = *env;
-    for (int i = 0; i < len_environment && tmp != NULL; i++, tmp = tmp->next)
-        envtab[i] = tmp->var;
-    envtab[len_environment] = NULL;
-    return (envtab);
-}
-
-void duplicate_environment(char **env, envvar_t **list)
-{
-    for (int i = 0; env[i] != NULL; i++)
-        add_environment_variable(list, env[i]);
-}
-
-void clear_environment(envdata_t *envdata)
-{
-    clear_path_directories(envdata->path_dirs);
-    clear_environment_variables(envdata->env);
-    free(envdata->cwd);
-    free(envdata->prevcwd);
-    free_history(envdata->history);
-    free(envdata);
+    size_t len = strlen(filename);
+    char *cmd = calloc(len + 7, sizeof(char)), check[2];
+    strcpy(cmd, "wc -l ");
+    strcpy(cmd + 6, filename);
+    FILE *fp = popen(cmd, "r");
+    free(cmd);
+    size_t lines = 0;
+    if (fp != NULL) {
+        fscanf(fp, "%lu", &lines);
+        pclose(fp);
+    }
+    return lines;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

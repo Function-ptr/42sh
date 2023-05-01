@@ -34,6 +34,13 @@
         struct path_dir *next;
     } pathdir_t;
 
+    typedef struct {
+        char *filename;
+        int history_fd;
+        size_t len_file;
+        size_t current_pos; // 0 > LONG_MAX (positive offset)
+    } history_t;
+
     typedef struct env_data {
         char is_fallback;
         envvar_t **env;
@@ -45,7 +52,7 @@
         size_t userlen;
         char *hostname;
         size_t hostlen;
-        int history_fd;
+        history_t *history;
     } envdata_t;
 
     typedef struct command {
@@ -161,5 +168,15 @@ void get_word_wait_input(command_t *cmd);
 int load_redirections_for_command(command_t *command);
 void free_commands(command_t **commands);
 void free_command(command_t *command);
+
+///////////////
+/// History ///
+///////////////
+
+size_t get_file_nb_lines(char *filename);
+void init_history(envdata_t *environment);
+void free_history(history_t *history);
+void add_line_to_history(history_t *history, char *line);
+char *history_get_line_from_offset(history_t *history, size_t offset);
 
 #endif //MINISHELL1_MINISHELL_H
