@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 void free_command(command_t *command)
 {

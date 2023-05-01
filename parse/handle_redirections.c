@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 void detect_redirections(command_t *command, char *comm, char next_sep,
     int *status)

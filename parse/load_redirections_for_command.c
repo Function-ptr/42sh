@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 void read_input(command_t *command, int *file_descriptors)
 {

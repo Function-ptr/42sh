@@ -6,9 +6,7 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
-int my_strlen(char const *str);
-char *my_strdup(char const *str);
+#include <string.h>
 
 int is_sep(char c, char *sep)
 {
@@ -64,7 +62,7 @@ int get_word_len(char const *str, int index, char *sep)
 
 char **my_str_to_word_array(char const *str, char *sep)
 {
-    int len = my_strlen(str);
+    int len = strlen(str);
     int nbword = nb_words(str, len, sep);
     int *windexes = get_word_indexes(str, len, nbword, sep);
     char **arr = malloc((nbword + 1) * sizeof(char *));
@@ -77,7 +75,7 @@ char **my_str_to_word_array(char const *str, char *sep)
             word[j] = str[windexes[i] + j];
         }
         word[j] = '\0';
-        arr[i] = my_strdup(word);
+        arr[i] = strdup(word);
         free(word);
     }
     arr[nbword] = NULL;

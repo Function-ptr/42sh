@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 int separate_commands(int nb_cmds, char *input, command_t **commands)
 {

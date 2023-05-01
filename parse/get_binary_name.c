@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 char *get_binary_filename(char *command, pathdir_t **pathdirs)
 {
