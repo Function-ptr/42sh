@@ -19,11 +19,11 @@
 int exit_with_status(command_t *command)
 {
     if (command->pipe_out) return (-1);
-    if (!my_strcmp(command->command, "exit")) {
-        write(1, "exit\n", 5);
+    if (!strcmp(command->command, "exit")) {
+        printf("exit\n");
         return (0);
     } if (!my_str_isnum(&command->command[5])) {
-        write(2, "exit: Expression Syntax.\n", 25);
+        fprintf(stderr, "exit: Expression Syntax.\n");
         return (-1);
     } else {
         int status = my_get_only_nbr(&command->command[5]);

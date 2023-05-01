@@ -36,7 +36,7 @@ bool does_variable_exist(envvar_t *var, envvar_t *tmp, char *variable_name)
 void unset_env(envvar_t **env, char *inp)
 {
     if (!is_argv_long_enough(inp, 2, "unsetenv")) {
-        write(2, "unsetenv: Too few arguments.\n", 29);
+        fprintf(stderr, "unsetenv: Too few arguments.\n");
         return;
     }
     char *variable_name = get_variable_name(&inp[9]);

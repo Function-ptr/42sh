@@ -62,9 +62,9 @@ void set_env(envvar_t **env, command_t *command)
         return;
     char *cmd = command->command;
     char *variable_name = get_variable_name(&cmd[7]);
-    int variable_name_len = my_strlen(variable_name);
+    int variable_name_len = strlen(variable_name);
     char *value = &cmd[8 + variable_name_len];
-    int cmdlen = my_strlen(cmd);
+    int cmdlen = strlen(cmd);
     if (8 + variable_name_len > cmdlen)
         value = "\0";
     if (name_does_not_start_with_letter(variable_name[0]))

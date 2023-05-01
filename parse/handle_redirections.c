@@ -19,10 +19,10 @@
 void detect_redirections(command_t *command, char *comm, char next_sep,
     int *status)
 {
-    char *redirection_out = my_strchr(comm, '>');
-    char *redirection_out_append = my_strrchr(comm, '>');
-    char *redirection_in = my_strchr(comm, '<');
-    char *redirection_in_word = my_strrchr(comm, '<');
+    char *redirection_out = strchr(comm, '>');
+    char *redirection_out_append = strrchr(comm, '>');
+    char *redirection_in = strchr(comm, '<');
+    char *redirection_in_word = strrchr(comm, '<');
     command->redirect_in = (redirection_in != NULL) ? true : false;
     command->redirect_in_word_wait = (redirection_in != NULL
     && redirection_in_word == redirection_in + 1) ? true : false;
@@ -47,14 +47,14 @@ char *get_redirection_filename(char *str, int *size)
     }
     for (; str[len] != ' ' && str[len] != '\t' && str[len] != '\n' && \
 str[len]; len++, *size += 1);
-    char *next = my_strndup(str, len);
+    char *next = strndup(str, len);
     return next;
 }
 
 int open_output_file_descriptor(command_t *command, char *comm)
 {
-    char *redirection_out = my_strchr(comm, '>');
-    char *redirection_out_append = my_strrchr(comm, '>');
+    char *redirection_out = strchr(comm, '>');
+    char *redirection_out_append = strrchr(comm, '>');
     int size = 0;
     char *file = get_redirection_filename(redirection_out_append + 1, &size);
     if (file == NULL)
@@ -63,7 +63,7 @@ int open_output_file_descriptor(command_t *command, char *comm)
     command->out_fd = open(file, O_WRONLY | O_CREAT | open_flag,
     S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     free(file);
-    my_memset(redirection_out,
+    memset(redirection_out,
     size + ((command->redirect_out_append) ? 2 : 1), ' ');
     return 0;
 }
@@ -71,8 +71,8 @@ int open_output_file_descriptor(command_t *command, char *comm)
 int open_input_file_descriptor(command_t *command, char *comm)
 {
     int size = 0;
-    char *redirection_in = my_strchr(comm, '<');
-    char *redirection_in_word = my_strrchr(comm, '<');
+    char *redirection_in = strchr(comm, '<');
+    char *redirection_in_word = strrchr(comm, '<');
     char *file = get_redirection_filename(redirection_in_word + 1, &size);
     if (file == NULL)
         return 1;
@@ -83,7 +83,7 @@ int open_input_file_descriptor(command_t *command, char *comm)
         command->in_fd = open(file, O_RDONLY);
         free(file);
     }
-    my_memset(redirection_in,
+    memset(redirection_in,
     size + (((command->redirect_in_word_wait) ? 2 : 1)), ' ');
     return 0;
 }

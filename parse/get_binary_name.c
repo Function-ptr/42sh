@@ -23,8 +23,7 @@ char *get_binary_filename(char *command, pathdir_t **pathdirs)
         if (!access(cmd, F_OK))
             return (cmd);
         else {
-            write(2, cmd, strlen(cmd));
-            write(2, ": Command not found.\n", 21);
+            fprintf(stderr, "%s: Command not found.\n", cmd);
             free(cmd);
             return (NULL);
         }

@@ -10,17 +10,9 @@
 int write_prompt(envdata_t *env)
 {
     if (!env->is_fallback) {
-        write(1, "<", 1);
-        if (get_environment_variable(env->env, "USER") != NULL)
-            write(1, env->user, env->userlen);
-        write(1, "@", 1);
-        if (get_environment_variable(env->env, "HOSTNAME") != NULL)
-            write(1, env->hostname, env->hostlen);
-        write(1, " ", 1);
-        write(1, env->cwd, 250);
-        write(1, " >$ ", 4);
+        printf("<%s@%s %s >$ ", env->user, env->hostname, env->cwd);
     } else
-        write(1, "> ", 2);
+        printf("> ");
     return (1);
 }
 

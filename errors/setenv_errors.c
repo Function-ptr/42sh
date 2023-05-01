@@ -14,20 +14,20 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include <unistd.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 void name_not_alphanumeric(void)
 {
-    write(2, "setenv: Variable name must contain ", 35);
-    write(2, "alphanumeric characters.\n", 25);
+    fprintf(stderr, "setenv: Variable name must contain ");
+    fprintf(stderr, "alphanumeric characters.\n");
 }
 
 bool name_does_not_start_with_letter(char c)
 {
     if (c == '\0' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
         return (false);
-    write(2, "setenv: Variable name must begin with a letter.\n", 48);
+    fprintf(stderr, "setenv: Variable name must begin with a letter.\n");
     return true;
 }
 /*

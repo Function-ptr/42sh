@@ -32,8 +32,8 @@ bool init_command(command_t *command, command_t *prev, char next_sep)
 
 bool has_ambigous_redirection_in(command_t *command, char *comm)
 {
-    char *redirection_in = my_strchr(comm, '<');
-    char *redirection_in_word = my_strrchr(comm, '<');
+    char *redirection_in = strchr(comm, '<');
+    char *redirection_in_word = strrchr(comm, '<');
     if (command->pipe_in && redirection_in != NULL) {
         ambigous_redirection(true);
         return (true);
@@ -49,8 +49,8 @@ bool has_ambigous_redirection_in(command_t *command, char *comm)
 
 bool has_ambigous_redirection_out(command_t *command, char *comm)
 {
-    char *redirection_out = my_strchr(comm, '>');
-    char *redirection_out_append = my_strrchr(comm, '>');
+    char *redirection_out = strchr(comm, '>');
+    char *redirection_out_append = strrchr(comm, '>');
     if (command->pipe_out && redirection_out != NULL) {
         ambigous_redirection(false);
         return (true);

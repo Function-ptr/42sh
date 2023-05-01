@@ -18,7 +18,7 @@
 
 int compare_variable_name(char *var, char *name)
 {
-    int namelen = my_strlen(name), varlen = 0;
+    int namelen = strlen(name), varlen = 0;
     for (; var[varlen] != 0 && var[varlen] != '='; varlen++);
     if (namelen != varlen)
         return (-1);
@@ -31,25 +31,25 @@ int compare_variable_name(char *var, char *name)
 
 void set_value(envvar_t *var, char *varname, char *value)
 {
-    int varnlen = my_strlen(varname);
-    int vallen = my_strlen(value);
+    int varnlen = strlen(varname);
+    int vallen = strlen(value);
     var->var = malloc(sizeof(char) * (varnlen + vallen + 2));
-    my_strcpy(var->var, varname);
+    strcpy(var->var, varname);
     var->var[varnlen] = '=';
-    my_strcpy(&(var->var[varnlen + 1]), value);
+    strcpy(&(var->var[varnlen + 1]), value);
     var->var[varnlen + vallen + 1] = 0;
 }
 
 void set_environment_variable(envvar_t **env, char *var, char *newvar)
 {
     envvar_t *tmp = *env;
-    int lensum = my_strlen(newvar) + my_strlen(var);
-    char *new = my_calloc(lensum + 2, sizeof(char), 0);
-    my_strcpy(new, var);
-    new[my_strlen(var)] = '=';
-    my_strcat(new, newvar);
+    int lensum = strlen(newvar) + strlen(var);
+    char *new = calloc(lensum + 2, sizeof(char));
+    strcpy(new, var);
+    new[strlen(var)] = '=';
+    strcat(new, newvar);
     for (; tmp != NULL; tmp = tmp->next) {
-        if (my_strcmp(var, tmp->var) == 0) {
+        if (strcmp(var, tmp->var) == 0) {
             free(tmp->var);
             tmp->var = new;
             return;

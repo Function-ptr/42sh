@@ -26,8 +26,8 @@ pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
     }
     if (load_redirections_for_command(command) == -1)
         return (-1);
-    char *bname = my_strdup(command->command);
-    if (!my_strcmp(get_binary_name(bname), "exit"))
+    char *bname = strdup(command->command);
+    if (!strcmp(get_binary_name(bname), "exit"))
         *exiting = 1;
     if (is_a_builtin(get_binary_name(bname))) {
         *builtin_status = builtin_funcs(command, env);

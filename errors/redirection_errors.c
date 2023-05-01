@@ -14,27 +14,24 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include <unistd.h>
-#include <stdbool.h>
+#include "minishell.h"
 
 void ambigous_redirection(bool input)
 {
-    write(2, "Ambiguous", 9);
     if (input)
-        write(2, " input ", 7);
+        fprintf(stderr, "Ambiguous input redirect.\n");
     else
-        write(2, " output ", 8);
-    write(2, "redirect.\n", 10);
+        fprintf(stderr, "Ambiguous output redirect.\n");
 }
 
 void missing_name_for_redirection(void)
 {
-    write(2, "Missing name for redirect.\n", 27);
+    fprintf(stderr, "Missing name for redirect.\n");
 }
 
 void null_command(void)
 {
-    write(2, "Invalid null command.\n", 22);
+    fprintf(stderr, "Invalid null command.\n");
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
