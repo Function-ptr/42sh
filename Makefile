@@ -7,8 +7,7 @@
 
 SOURCES = . built-in execute parse errors environment history
 
-SRCS = 	hangman.c	\
-	main.c	\
+SRCS = 	main.c	\
 	shell.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
@@ -46,8 +45,7 @@ SRCS = 	hangman.c	\
 	history/get_file_nb_lines.c	\
 	history/history.c	\
 
-OBJS = 	obj/hangman.o	\
-	obj/main.o	\
+OBJS = 	obj/main.o	\
 	obj/shell.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
