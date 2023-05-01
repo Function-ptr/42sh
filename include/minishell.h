@@ -22,53 +22,6 @@
         #include "my.h"
         #include "printf.h"
         #include <errno.h>
-        #include <stdbool.h>
-
-    typedef struct envvar {
-        char *var;
-        struct envvar *next;
-    } envvar_t;
-
-    typedef struct path_dir {
-        char *dir;
-        struct path_dir *next;
-    } pathdir_t;
-
-    typedef struct {
-        char *filename;
-        int history_fd;
-        size_t len_file;
-        size_t current_pos; // 0 > LONG_MAX (positive offset)
-    } history_t;
-
-    typedef struct env_data {
-        char is_fallback;
-        envvar_t **env;
-        char *path;
-        pathdir_t **path_dirs;
-        char *cwd;
-        char *prevcwd;
-        char *user;
-        size_t userlen;
-        char *hostname;
-        size_t hostlen;
-        history_t *history;
-    } envdata_t;
-
-    typedef struct command {
-        bool pipe_in;       // is input piped (incompatible with redirect_in)
-        bool pipe_out;      // is output piped (incompatible with redirect_out)
-        bool redirect_in;   // is input redirected ( < )
-        bool redirect_in_word_wait; // is input redirected with a word_wait (<<)
-        char *awaited_word; // The word marking the end of input with <<
-        bool redirect_out;  // is output redirected ( > )
-        bool redirect_out_append; // is output redirected with append ( >> )
-        char *command;      // command string
-        char next_separator; // next separator ->  "| ; \0"
-        int in_fd;          // input file descriptor (default 0)
-        int out_fd;         // output file descriptor (default 1)
-        int pipe_in_fd;     // file descriptor for input pipe
-    } command_t;
 
 
 ///////////////
@@ -151,23 +104,6 @@ void free_remaining_piped_commands(command_t **commands, int nb_commands,
 
 void clear_path_directories(pathdir_t **list);
 void add_path_directory(pathdir_t **pathdirs, char *dir, int len);
-
-///////////////
-/// Parsing ///
-///////////////
-
-command_t **cut_input_to_commands(char *input);
-command_t *parse_single_command(char *comm, command_t *prev, char next_sep,
-    int **data);
-void detect_redirections(command_t *command, char *comm, char next_sep,
-    int *status);
-int get_redirections_file_descriptors(command_t *command, char *comm);
-char *remove_spaces_in_command(char *comm, char sep, bool pipe_in, int *status);
-bool parse_and_load_redirections(command_t *command);
-void get_word_wait_input(command_t *cmd);
-int load_redirections_for_command(command_t *command);
-void free_commands(command_t **commands);
-void free_command(command_t *command);
 
 ///////////////
 /// History ///
