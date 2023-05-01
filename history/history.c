@@ -33,11 +33,9 @@ void add_line_to_history(history_t *history, char *line)
 
 char *history_get_line_from_offset(history_t *history, size_t offset)
 {
-    if (offset > history->len_file)
-        return (NULL);
+    if (offset > history->len_file) return (NULL);
     FILE *f = fdopen(history->history_fd, "r");
-    if (!f)
-        return NULL;
+    if (!f) return NULL;
     for (int i = 0; i < history->len_file - offset - 1; i++) {
         char *l = NULL;
         size_t s = 0;
@@ -48,8 +46,10 @@ char *history_get_line_from_offset(history_t *history, size_t offset)
     size_t s = 0;
     if (getline(&line, &s, f) == -1) {
         free(line);
+        fclose(f);
         return (NULL);
     }
+    fclose(f);
     line[strlen(line) - 1] = 0;
     history->current_pos = history->len_file - offset;
     return (line);
