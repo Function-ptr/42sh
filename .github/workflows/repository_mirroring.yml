@@ -6,31 +6,12 @@ env:
   EXECUTABLES: '42sh'
 
 jobs:
-  setup_dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/dependencies
-          key: ${{ runner.os }}-dependencies-${{ hashFiles('**/dependencies.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-dependencies-
-
   check_coding_style:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/epitech/coding-style-checker:latest
-    needs: setup_dependencies
     steps:
     - uses: actions/checkout@v3
-    - name: Restore dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/dependencies
-        key: ${{ runner.os }}-dependencies-${{ hashFiles('**/dependencies.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-dependencies-
     - name: Run coding style checker
       id: check_style
       run: |
@@ -51,17 +32,9 @@ jobs:
   check_program_compilation:
     runs-on: ubuntu-latest
     container:
-      image: epitechcontent/epitest-docker
-    needs: [setup_dependencies, check_coding_style]
+      image: quentinfil/epitouk_light_weight:latest
     steps:
     - uses: actions/checkout@v3
-    - name: Restore dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/dependencies
-        key: ${{ runner.os }}-dependencies-${{ hashFiles('**/dependencies.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-dependencies-
     - name: Compile program
       run: make
       timeout-minutes: 2
@@ -88,8 +61,8 @@ jobs:
 
   mirror_repository:
     runs-on: ubuntu-latest
-    needs: check_program_compilation
-    steps:
+    needs: [check_program_compilation, check_coding_style]
+    steps:                                              # <-- must use actions/checkout before mirroring!
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
