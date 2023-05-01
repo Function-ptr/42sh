@@ -21,9 +21,9 @@ char *get_path_variable(envvar_t **env)
     int varlen = 4;
     envvar_t *tmp = *env;
     for (; tmp != NULL; tmp = tmp->next)
-        if (my_strncmp(tmp->var, "PATH", varlen) == 0)
+        if (strncmp(tmp->var, "PATH", varlen) == 0)
             return (tmp->var);
-    return (my_strdup("PATH=/usr/bin"));
+    return (strdup("PATH=/usr/bin"));
 }
 
 char *get_environment_variable(envvar_t **env, char *var)

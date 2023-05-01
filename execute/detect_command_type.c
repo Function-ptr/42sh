@@ -21,7 +21,7 @@ int detect_command_type_and_run(command_t *command, int *exiting,
 {
     int status = 0;
     char *bname = strdup(command->command);
-    if (!my_strcmp(get_binary_name(bname), "exit"))
+    if (!strcmp(get_binary_name(bname), "exit"))
         *exiting = 1;
     if (is_a_builtin(get_binary_name(bname))) {
         status = builtin_funcs(command, env);

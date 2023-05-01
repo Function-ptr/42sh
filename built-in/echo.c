@@ -22,7 +22,7 @@ int echo(command_t *command)
         while (command->command[i] == ' ' && command->command[i + 1] == ' '
         && (nquotes % 2 == 0))
             i++;
-        dprintf(command->out_fd, &command->command[i]);
+        dprintf(command->out_fd, "%c", command->command[i]);
         i++;
     }
     dprintf(command->out_fd, "\n");
