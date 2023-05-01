@@ -24,12 +24,12 @@ size_t get_file_nb_lines(char *filename)
     strcpy(cmd + 6, filename);
     FILE *fp = popen(cmd, "r");
     free(cmd);
-    size_t lines = 0;
+    unsigned long lines = 0;
     if (fp != NULL) {
         fscanf(fp, "%lu", &lines);
         pclose(fp);
     }
-    return lines;
+    return (size_t)lines;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
