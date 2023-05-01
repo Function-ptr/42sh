@@ -19,7 +19,7 @@
 size_t get_file_nb_lines(char *filename)
 {
     size_t len = strlen(filename);
-    char *cmd = calloc(len + 7, sizeof(char)), check[2];
+    char *cmd = calloc(len + 7, sizeof(char));
     strcpy(cmd, "wc -l ");
     strcpy(cmd + 6, filename);
     FILE *fp = popen(cmd, "r");
