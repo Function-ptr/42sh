@@ -33,7 +33,7 @@ void add_line_to_history(history_t *history, char *line)
 
 char *history_get_line_from_offset(history_t *history, size_t offset)
 {
-    if (offset > history->len_file) return (NULL);
+    if (offset > history->len_file || offset == 0) return (NULL);
     FILE *f = fdopen(history->history_fd, "r");
     if (!f) return NULL;
     for (int i = 0; i < history->len_file - offset - 1; i++) {
