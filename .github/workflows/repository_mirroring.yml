@@ -93,7 +93,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: pix
       - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
