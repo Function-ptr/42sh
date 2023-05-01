@@ -31,7 +31,7 @@ int my_putstr_prec(va_list valist, int prec, char *ptr)
 {
     char *str = va_arg(valist, char *);
     int i;
-    for (i = 0; str[i] != '\0' && i < prec; i++) {
+    for (i = 0; i < prec && str[i] != '\0'; i++) {
         my_putchar(str[i]);
     }
     return (i);
