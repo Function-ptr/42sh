@@ -65,19 +65,7 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data);
 
 
 
-//////////////
-/// Errors ///
-//////////////
 
-void name_not_alphanumeric(void);
-bool name_does_not_start_with_letter(char c);
-void ambigous_redirection(bool input);
-void missing_name_for_redirection(void);
-void null_command(void);
-void exit_with_error(envdata_t *env);
-void execution_error(char *command);
-void free_remaining_piped_commands(command_t **commands, int nb_commands,
-    int *i);
 
 
 

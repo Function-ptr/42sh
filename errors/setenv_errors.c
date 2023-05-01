@@ -14,8 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include <stdbool.h>
-#include <stdio.h>
+#include "errors.h"
 
 void name_not_alphanumeric(void)
 {

@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "errors.h"
 
 void ambigous_redirection(bool input)
 {

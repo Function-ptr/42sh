@@ -92,7 +92,7 @@ OPTI = -O3 -Ofast \
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \
 -march=native -mtune=native -fopenmp -mavx2 \
 -lm -ffast-math -mfpmath=sse \
--flto
+-fno-builtin
 
 # 	Optimization flags:
 
