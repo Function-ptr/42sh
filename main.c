@@ -18,6 +18,7 @@ int main(int ac, char **av, char **env)
         environment = initialize_fallback_environment();
     if (environment == NULL)
         return (84);
+    init_history(environment);
     int status = shell(environment);
     clear_environment(environment);
     return (status);

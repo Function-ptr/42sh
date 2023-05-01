@@ -13,9 +13,9 @@ int my_strcmp(char const *s1, char const *s2)
         return (42);
     const unsigned char *p1 = (const unsigned char *)s1;
     const unsigned char *p2 = (const unsigned char *)s2;
-    unsigned char c1, c2;
     while (*p1) {
-        c1 = (unsigned char)*p1; c2 = (unsigned char)*p2;
+        unsigned char c1 = (unsigned char)*p1;
+        unsigned char c2 = (unsigned char)*p2;
         if (!c2)
             return c1;
         if (c2 != c1)

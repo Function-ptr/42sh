@@ -34,7 +34,7 @@ pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
         free(bname);
         return (-2);
     }
-    char *path = get_binary_filename(command->command, env->path_dirs);
+    char *path = get_binary_filename(get_binary_name(bname), env->path_dirs);
     pid_t program_pid = fork_and_run(path, command, env->env);
     free(bname);
     return (program_pid);
@@ -43,7 +43,9 @@ pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
 void wait_and_free_command(command_t *command, pathdir_t **pathdirs,
     int *status, pid_t pid)
 {
-    char *filename = get_binary_filename(command->command, pathdirs);
+    char *bname = strdup(command->command);
+    char *filename = get_binary_filename(get_binary_name(bname), pathdirs);
+    free(bname);
     int stat = monitor_program(pid, filename);
     if (status != NULL)
         *status = stat;

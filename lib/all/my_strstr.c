@@ -18,13 +18,11 @@ int is_needle(char *str, char const *to_find)
 
 char *my_strstr(char *str, char const *to_find)
 {
-    int test;
     int i = 0;
-
-    if (to_find == "")
+    if (!*to_find)
         return (str);
-    for (i; str[i] != '\0'; i++) {
-        test = is_needle(&str[i], to_find);
+    for (; str[i] != '\0'; i++) {
+        int test = is_needle(&str[i], to_find);
         if (test)
             return (&str[i]);
     }

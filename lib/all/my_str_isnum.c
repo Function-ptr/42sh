@@ -7,7 +7,7 @@
 
 int my_str_isnum(char *str)
 {
-    if (str == "")
+    if (!*str)
         return (1);
     for (int i = 0; str[i] != '\0'; i++) {
         if (str[i] < 48 || str[i] > 57)

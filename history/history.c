@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** environment.c
+** history.c
 ** File description:
-** environment manipulation
+** handle history
 */
 /*
  __  __        _                            ___            ___
@@ -16,33 +16,57 @@
 */
 #include "minishell.h"
 
-char **get_environment(envvar_t **env)
+void free_history(history_t *history)
 {
-    envvar_t *tmp = *env;
-    int len_environment = 0;
-    for (; tmp != NULL; tmp = tmp->next, len_environment++);
-    char **envtab = malloc(sizeof(char*) * (len_environment + 1));
-    tmp = *env;
-    for (int i = 0; i < len_environment && tmp != NULL; i++, tmp = tmp->next)
-        envtab[i] = tmp->var;
-    envtab[len_environment] = NULL;
-    return (envtab);
+    free(history->filename);
+    free(history);
 }
 
-void duplicate_environment(char **env, envvar_t **list)
+void add_line_to_history(history_t *history, char *line)
 {
-    for (int i = 0; env[i] != NULL; i++)
-        add_environment_variable(list, env[i]);
+    size_t len = strlen(line);
+    if (strlen(line) == 1)
+        return;
+    write(history->history_fd, line, len);
+    history->len_file += 1;
 }
 
-void clear_environment(envdata_t *envdata)
+char *history_get_line_from_offset(history_t *history, size_t offset)
 {
-    clear_path_directories(envdata->path_dirs);
-    clear_environment_variables(envdata->env);
-    free(envdata->cwd);
-    free(envdata->prevcwd);
-    free_history(envdata->history);
-    free(envdata);
+    if (offset > history->len_file || offset == 0) return (NULL);
+    FILE *f = fdopen(history->history_fd, "r");
+    if (!f) return NULL;
+    for (int i = 0; i < history->len_file - offset - 1; i++) {
+        char *l = NULL;
+        size_t s = 0;
+        getline(&l, &s, f);
+        free(l);
+    }
+    char *line = NULL;
+    size_t s = 0;
+    if (getline(&line, &s, f) == -1) {
+        free(line);
+        fclose(f);
+        return (NULL);
+    }
+    fclose(f);
+    line[strlen(line) - 1] = 0;
+    history->current_pos = history->len_file - offset;
+    return (line);
+}
+
+void init_history(envdata_t *environment)
+{
+    history_t *history = malloc(sizeof(history_t));
+    char *home = get_environment_variable(environment->env, "HOME");
+    history->filename = calloc(strlen(home) + 10, sizeof(char));
+    strcpy(history->filename, home + 5);
+    strcat(history->filename, "/.42sh_history");
+    history->history_fd = open(history->filename, O_CREAT | O_APPEND |
+        O_WRONLY, S_IRUSR | S_IWUSR);
+    history->current_pos = 0;
+    history->len_file = get_file_nb_lines(history->filename);
+    environment->history = history;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

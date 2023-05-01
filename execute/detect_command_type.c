@@ -20,7 +20,7 @@ int detect_command_type_and_run(command_t *command, int *exiting,
     envdata_t *env)
 {
     int status = 0;
-    char *bname = my_strdup(command->command);
+    char *bname = strdup(command->command);
     if (!my_strcmp(get_binary_name(bname), "exit"))
         *exiting = 1;
     if (is_a_builtin(get_binary_name(bname))) {
@@ -28,7 +28,7 @@ int detect_command_type_and_run(command_t *command, int *exiting,
         free(bname);
         return (status);
     }
-    char *path = get_binary_filename(command->command, env->path_dirs);
+    char *path = get_binary_filename(get_binary_name(bname), env->path_dirs);
     if (path != NULL) {
         pid_t program_pid = fork_and_run(path, command, env->env);
         status = monitor_program(program_pid, path);

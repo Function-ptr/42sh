@@ -1,6 +1,6 @@
 CC;gcc
 PROJECT_DIR;.
-SOURCES_DIR;. built-in execute parse errors environment
+SOURCES_DIR;. built-in execute parse errors environment history
 HEADERS_DIR;include/
 CFLAGS;-Wall
 DEBUGFLAGS;-Wall
