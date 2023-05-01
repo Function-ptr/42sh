@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "execute.h"
 
 int run_command(command_t *command, int *exiting, envdata_t *env)
 {

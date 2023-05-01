@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "execute.h"
 
 int detect_command_type_and_run(command_t *command, int *exiting,
     envdata_t *env)

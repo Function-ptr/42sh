@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "execute.h"
 
 void check_if_signaled(int status)
 {

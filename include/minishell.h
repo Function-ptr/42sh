@@ -30,7 +30,6 @@
 
 int shell(envdata_t *env);
 int is_argv_long_enough(char *command, int cap, char *func);
-char *get_binary_name(char *str);
 int is_path(char *str);
 int array_len(char **arr);
 
@@ -47,21 +46,6 @@ int exit_with_status(command_t *command);
 int echo(command_t *command);
 bool is_a_builtin(char *binary);
 
-////////////////////////
-/// Execute binaries ///
-////////////////////////
-
-int check_exit_status(int status);
-int detect_command_type_and_run(command_t *command, int *exiting,
-    envdata_t *env);
-int run_user_input(char *input, envdata_t *env, int *exiting);
-int run_command(command_t *command, int *exiting, envdata_t *env);
-
-pid_t fork_and_run(char *filepath, command_t *command, envvar_t **env);
-char *get_command_in_path(char *command, pathdir_t **path_dirs);
-int monitor_program(pid_t child_pid, char *filepath);
-char *get_binary_filename(char *command, pathdir_t **pathdirs);
-int loop_over_pipes(command_t **commands, envdata_t *env, int **data);
 
 
 

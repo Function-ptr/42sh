@@ -14,13 +14,13 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "execute.h"
 
 char *is_command_in_path(pathdir_t *dir, char *binary)
 {
-    int len_binary = strlen(binary);
+    int len_binary = (int)strlen(binary);
     for (; dir != NULL; dir = dir->next) {
-        int dirlen = strlen(dir->dir);
+        int dirlen = (int)strlen(dir->dir);
         char *filepath = malloc(sizeof(char) * (len_binary + dirlen + 4));
         strcpy(filepath, dir->dir);
         filepath[dirlen] = '/';
@@ -40,7 +40,6 @@ char *get_command_in_path(char *command, pathdir_t **path_dirs)
     if (cmd[0] == '\n')
         return (0);
     pathdir_t *dir = *path_dirs;
-    int lenbin = strlen(binary);
     char *result = is_command_in_path(dir, binary);
     if (result == NULL)
         fprintf(stderr, "%s: Command not found.\n", binary);

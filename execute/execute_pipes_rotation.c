@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "execute.h"
 
 pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
     int *builtin_status)
