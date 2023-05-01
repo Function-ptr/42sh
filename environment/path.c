@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "environment.h"
 
 void add_path_directory(pathdir_t **pathdirs, char *dir, int len)
 {

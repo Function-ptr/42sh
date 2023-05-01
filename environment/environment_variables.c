@@ -14,11 +14,11 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "environment.h"
 
 int compare_variable_name(char *var, char *name)
 {
-    int namelen = strlen(name), varlen = 0;
+    int namelen = (int)strlen(name), varlen = 0;
     for (; var[varlen] != 0 && var[varlen] != '='; varlen++);
     if (namelen != varlen)
         return (-1);
@@ -31,8 +31,8 @@ int compare_variable_name(char *var, char *name)
 
 void set_value(envvar_t *var, char *varname, char *value)
 {
-    int varnlen = strlen(varname);
-    int vallen = strlen(value);
+    int varnlen = (int)strlen(varname);
+    int vallen = (int)strlen(value);
     var->var = malloc(sizeof(char) * (varnlen + vallen + 2));
     strcpy(var->var, varname);
     var->var[varnlen] = '=';
@@ -43,7 +43,7 @@ void set_value(envvar_t *var, char *varname, char *value)
 void set_environment_variable(envvar_t **env, char *var, char *newvar)
 {
     envvar_t *tmp = *env;
-    int lensum = strlen(newvar) + strlen(var);
+    int lensum = (int)(strlen(newvar) + strlen(var));
     char *new = calloc(lensum + 2, sizeof(char));
     strcpy(new, var);
     new[strlen(var)] = '=';

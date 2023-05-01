@@ -63,26 +63,7 @@ int monitor_program(pid_t child_pid, char *filepath);
 char *get_binary_filename(char *command, pathdir_t **pathdirs);
 int loop_over_pipes(command_t **commands, envdata_t *env, int **data);
 
-///////////////////
-/// Environment ///
-///////////////////
 
-int compare_variable_name(char *var, char *name);
-char **get_environment(envvar_t **env);
-void set_value(envvar_t *var, char *varname, char *value);
-char *get_environment_variable(envvar_t **env, char *var);
-void set_environment_variable(envvar_t **env, char *var, char *newvar);
-char *get_variable_name(char *args);
-void reverse_environment_variables(envvar_t **begin);
-void clear_environment_variables(envvar_t **list);
-void add_environment_variable(envvar_t **env, char *var);
-void clear_environment(envdata_t *envdata);
-void duplicate_environment(char **env, envvar_t **list);
-void reverse_path_directories(pathdir_t **begin);
-pathdir_t **get_path_directories(char *path);
-char *get_path_variable(envvar_t **env);
-envdata_t *initialize_envdata(char **env);
-envdata_t *initialize_fallback_environment(void);
 
 //////////////
 /// Errors ///
@@ -98,12 +79,7 @@ void execution_error(char *command);
 void free_remaining_piped_commands(command_t **commands, int nb_commands,
     int *i);
 
-////////////
-/// PATH ///
-////////////
 
-void clear_path_directories(pathdir_t **list);
-void add_path_directory(pathdir_t **pathdirs, char *dir, int len);
 
 ///////////////
 /// History ///
