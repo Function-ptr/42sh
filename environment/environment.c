@@ -41,6 +41,7 @@ void clear_environment(envdata_t *envdata)
     clear_environment_variables(envdata->env);
     free(envdata->cwd);
     free(envdata->prevcwd);
+    close(envdata->history_fd);
     free(envdata);
 }
 /*

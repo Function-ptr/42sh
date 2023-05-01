@@ -45,6 +45,7 @@
         size_t userlen;
         char *hostname;
         size_t hostlen;
+        int history_fd;
     } envdata_t;
 
     typedef struct command {
@@ -61,8 +62,6 @@
         int out_fd;         // output file descriptor (default 1)
         int pipe_in_fd;     // file descriptor for input pipe
     } command_t;
-
-
 
 
 ///////////////

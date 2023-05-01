@@ -34,6 +34,8 @@ int shell(envdata_t *env)
             free(input);
             return (status);
         }
+        if (strlen(input) != 1)
+            write(env->history_fd, input, strlen(input));
         status = run_user_input(input, env, &exiting);
         free(input);
         if (exiting)
