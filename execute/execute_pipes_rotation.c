@@ -48,7 +48,6 @@ void wait_and_free_command(command_t *command, pathdir_t **pathdirs,
     if (status != NULL)
         *status = stat;
     free(filename);
-    free_command(command);
 }
 
 void open_pipe(command_t *command)
@@ -72,8 +71,9 @@ void process_command(int **data, command_t **commands, envdata_t *env,
     *status = 0;
     *exit_now = 0;
     second = start_piped_command(commands[*i + 1], exit_now, env, status);
-    if (second != -1 && *first != -2)
+    if (*first != -2)
         wait_and_free_command(commands[*i], env->path_dirs, NULL, *first);
+    free_command(commands[*i]);
     *first = second;
 }
 
@@ -97,6 +97,7 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
     }
     if (status != -2 && first != -2)
         wait_and_free_command(commands[*i], env->path_dirs, &status, first);
+    free_command(commands[*i]);
     *exiting = exit_now;
     return status;
 }

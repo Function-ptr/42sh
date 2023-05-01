@@ -29,8 +29,10 @@ int detect_command_type_and_run(command_t *command, int *exiting,
         return (status);
     }
     char *path = get_binary_filename(command->command, env->path_dirs);
-    pid_t program_pid = fork_and_run(path, command, env->env);
-    status = monitor_program(program_pid, path);
+    if (path != NULL) {
+        pid_t program_pid = fork_and_run(path, command, env->env);
+        status = monitor_program(program_pid, path);
+    }
     free(bname);
     return (status);
 }

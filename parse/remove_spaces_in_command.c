@@ -39,7 +39,7 @@ char *word_array_to_command(char **word_array, int *pos)
     int nbchars = word_array_len - 1;
     for (int i = 0; i < word_array_len; i++)
         nbchars += my_strlen(word_array[i]);
-    char *newcommand = malloc(sizeof(char) * (nbchars + 1));
+    char *newcommand = calloc(nbchars + 2, sizeof(char));
     for (int i = 0; i < word_array_len; i++) {
         int len = my_strlen(word_array[i]);
         my_memcpy(&newcommand[*pos], word_array[i], len);
