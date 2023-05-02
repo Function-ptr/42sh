@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "errors.h"
 
 void exit_with_error(envdata_t *env)
 {

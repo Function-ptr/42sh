@@ -14,17 +14,17 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "execute.h"
 
 char *is_command_in_path(pathdir_t *dir, char *binary)
 {
-    int len_binary = my_strlen(binary);
+    int len_binary = (int)strlen(binary);
     for (; dir != NULL; dir = dir->next) {
-        int dirlen = my_strlen(dir->dir);
+        int dirlen = (int)strlen(dir->dir);
         char *filepath = malloc(sizeof(char) * (len_binary + dirlen + 4));
-        my_strcpy(filepath, dir->dir);
+        strcpy(filepath, dir->dir);
         filepath[dirlen] = '/';
-        my_strcpy(&(filepath[dirlen + 1]), binary);
+        strcpy(&(filepath[dirlen + 1]), binary);
         int isok = access(dir->dir, F_OK & R_OK);
         if (!isok && !access(filepath, F_OK & X_OK))
             return (filepath);
@@ -35,17 +35,14 @@ char *is_command_in_path(pathdir_t *dir, char *binary)
 
 char *get_command_in_path(char *command, pathdir_t **path_dirs)
 {
-    char *cmd = my_strdup(command);
+    char *cmd = strdup(command);
     char *binary = get_binary_name(cmd);
     if (cmd[0] == '\n')
         return (0);
     pathdir_t *dir = *path_dirs;
-    int lenbin = my_strlen(binary);
     char *result = is_command_in_path(dir, binary);
-    if (result == NULL) {
-        write(2, binary, lenbin);
-        write(2, ": Command not found.\n", 21);
-    }
+    if (result == NULL)
+        fprintf(stderr, "%s: Command not found.\n", binary);
     free(cmd);
     return (result);
 }

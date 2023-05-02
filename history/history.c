@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "history.h"
 
 void free_history(history_t *history)
 {
@@ -24,10 +24,9 @@ void free_history(history_t *history)
 
 void add_line_to_history(history_t *history, char *line)
 {
-    size_t len = strlen(line);
     if (strlen(line) == 1)
         return;
-    write(history->history_fd, line, len);
+    dprintf(history->history_fd, "%s", line);
     history->len_file += 1;
 }
 

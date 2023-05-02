@@ -14,25 +14,25 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 void read_input(command_t *command, int *file_descriptors)
 {
-    while (isatty(0) && write(1, "? ", 2)) {
+    while (isatty(0) && printf("? ")) {
         size_t inplen = 1;
         char *input = NULL;
         if (getline(&input, &inplen, stdin) == -1) {
             free(input);
             return;
         }
-        int len = my_strlen(input);
-        char *tmp = my_strndup(input, len - 1);
-        if (!my_strcmp(command->awaited_word, tmp)) {
+        int len = strlen(input);
+        char *tmp = strndup(input, len - 1);
+        if (!strcmp(command->awaited_word, tmp)) {
             free(input);
             free(tmp);
             break;
         }
-        write(file_descriptors[1], input, len);
+        dprintf(file_descriptors[1], "%s", input);
         free(input);
         free(tmp);
     }

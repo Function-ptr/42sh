@@ -5,13 +5,13 @@
 ** echo
 */
 
-#include "minishell.h"
+#include "built_in.h"
 
 int echo(command_t *command)
 {
     int nquotes = 0, i = 5;
     if (strlen(command->command) <= 5) {
-        write(command->out_fd, "\n", 1);
+        dprintf(command->out_fd, "\n");
         return 0;
     }
     while (command->command[i]) {
@@ -22,9 +22,9 @@ int echo(command_t *command)
         while (command->command[i] == ' ' && command->command[i + 1] == ' '
         && (nquotes % 2 == 0))
             i++;
-        write(command->out_fd, &command->command[i], 1);
+        dprintf(command->out_fd, "%c", command->command[i]);
         i++;
     }
-    write(command->out_fd, "\n", 1);
+    dprintf(command->out_fd, "\n");
     return 0;
 }

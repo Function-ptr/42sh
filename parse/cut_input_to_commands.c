@@ -14,18 +14,18 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 int separate_commands(int nb_cmds, char *input, command_t **commands)
 {
-    char *tmp = my_strdup(input);
+    char *tmp = strdup(input);
     int status = 1;
     command_t *previous = NULL;
     for (int i = 0, pos = 0, tp = 0; tp < nb_cmds; i++, tp++) {
         char *comm = strtok((!i) ? input : NULL, ";|");
         if (comm == NULL)
             break;
-        pos += my_strlen(comm);
+        pos += strlen(comm);
         int *statuses[2] = {&i, &status};
         char sep = tmp[pos];
         commands[i] = parse_single_command(comm, previous, sep, statuses);
@@ -41,7 +41,7 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
 
 command_t **cut_input_to_commands(char *input)
 {
-    int nb_cmds = 1, pos = 0, len = my_strlen(input);
+    int nb_cmds = 1, pos = 0, len = strlen(input);
     input[len - 1] = 0;
     for (int i = 0; input[i] != 0; i++, pos++)
         nb_cmds = (input[i] == '|' || input[i] == ';') ? nb_cmds + 1 : nb_cmds;

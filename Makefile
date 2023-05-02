@@ -137,6 +137,12 @@ CC  = gcc
 LIB = -L.	-lall	\
 
 HEADER = 	-I./include/	\
+	-I./parse/include	\
+	-I./history/include	\
+	-I./execute/include	\
+	-I./built-in/include	\
+	-I./errors/include	\
+	-I./environment/include	\
 
 CFLAGS += -Wall \
 	$(LIB) $(HEADER)

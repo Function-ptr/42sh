@@ -14,18 +14,15 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "errors.h"
 
 void execution_error(char *command)
 {
     int errnum = errno;
-    char *str = strerror(errno);
-    write(2, command, my_strlen(command));
-    write(2, ": ", 2);
-    write(2, str, my_strlen(str));
+    fprintf(stderr, "%s: %s", command, strerror(errno));
     if (errnum == ENOEXEC)
-        write(2, ". Wrong Architecture", 20);
-    write(2, ".\n", 2);
+        fprintf(stderr, ". Wrong Architecture");
+    fprintf(stderr, ".\n");
 }
 
 void free_remaining_piped_commands(command_t **commands, int nb_commands,

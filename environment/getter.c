@@ -14,16 +14,16 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "environment.h"
 
 char *get_path_variable(envvar_t **env)
 {
     int varlen = 4;
     envvar_t *tmp = *env;
     for (; tmp != NULL; tmp = tmp->next)
-        if (my_strncmp(tmp->var, "PATH", varlen) == 0)
+        if (strncmp(tmp->var, "PATH", varlen) == 0)
             return (tmp->var);
-    return (my_strdup("PATH=/usr/bin"));
+    return (strdup("PATH=/usr/bin"));
 }
 
 char *get_environment_variable(envvar_t **env, char *var)
@@ -32,7 +32,7 @@ char *get_environment_variable(envvar_t **env, char *var)
     envvar_t *tmp = *env;
     for (; var[variable_len] != 0; variable_len++);
     for (; tmp != NULL; tmp = tmp->next)
-        if (my_strncmp(tmp->var, var, variable_len) == 0)
+        if (strncmp(tmp->var, var, variable_len) == 0)
             return (tmp->var);
     return (NULL);
 }
@@ -42,7 +42,9 @@ char *get_variable_name(char *args)
     int vlen = 0;
     for (; args[vlen] != 0 && args[vlen] != 32 && args[vlen] != 10; vlen++);
     char *varname = malloc(sizeof(char) * (vlen + 1) + 1);
-    my_strncpy(varname, args, vlen);
+    if (varname == NULL || vlen == 0 || args == NULL)
+        return (NULL);
+    strncpy(varname, args, vlen);
     varname[vlen] = 0;
     return (varname);
 }

@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "environment.h"
 
 void add_environment_variable(envvar_t **env, char *var)
 {
@@ -23,7 +23,7 @@ void add_environment_variable(envvar_t **env, char *var)
         clear_environment_variables(env);
         exit(84);
     }
-    envvar->var = my_strdup(var);
+    envvar->var = strdup(var);
     if (envvar->var == NULL) {
         free(envvar);
         clear_environment_variables(env);

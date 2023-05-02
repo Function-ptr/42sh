@@ -14,21 +14,29 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built_in.h"
 
 int exit_with_status(command_t *command)
 {
-    if (command->pipe_out) return (-1);
-    if (!my_strcmp(command->command, "exit")) {
-        write(1, "exit\n", 5);
-        return (0);
-    } if (!my_str_isnum(&command->command[5])) {
-        write(2, "exit: Expression Syntax.\n", 25);
-        return (-1);
-    } else {
-        int status = my_get_only_nbr(&command->command[5]);
-        return (status);
+    if (command->pipe_out)
+        return -1;
+
+    if (!strcmp(command->command, "exit")) {
+        printf("exit\n");
+        return 0;
     }
+
+    char *expression = &command->command[5];
+    char *endptr;
+    long int status = strtol(expression, &endptr, 10);
+
+    if (*endptr != '\0' || endptr == expression) {
+        fprintf(stderr, "exit: Expression Syntax.\n");
+        return -1;
+    }
+
+    return (int)status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
