@@ -6,6 +6,7 @@
 */
 
 #include "shell.h"
+#include "history.h"
 
 int main(int ac, char **av, char **env)
 {
@@ -20,6 +21,7 @@ int main(int ac, char **av, char **env)
         return (84);
     init_history(environment);
     int status = shell(environment);
+    dump_session_to_file(environment->history);
     clear_environment(environment);
     return (status);
 }

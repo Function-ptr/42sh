@@ -19,7 +19,7 @@
 
 bool is_a_builtin(char *binary)
 {
-    if (!strncmp(binary, "cd", 2) ||
+    if (!strncmp(binary, "cd", 2) || !strncmp(binary, "history", 7) ||
     !strncmp(binary, "setenv", 6) || !strncmp(binary, "unsetenv", 8) ||
     !strncmp(binary, "env", 3) || !strncmp(binary, "exit", 4) ||
     !strncmp(binary, "echo", 4))

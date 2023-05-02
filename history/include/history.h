@@ -24,6 +24,7 @@
     #include <stdio.h>
     #include <fcntl.h>
     #include <time.h>
+    #include <unistd.h>
 
     ///////////////
     /// History ///
@@ -34,12 +35,15 @@
     void free_history(history_t *history);
     void add_line_to_history(history_t *history, char *line);
     char *history_get_line_from_offset(history_t *history, size_t offset);
+    void show_history(history_t *history);
+    void dump_session_to_file(history_t *history);
 
     /////////////
     /// Utils ///
     /////////////
 
     char *get_environment_variable(envvar_t **env, char *var);
+    size_t get_long_len(long val);
 
 
 #endif //INC_42SH_HISTORY_H

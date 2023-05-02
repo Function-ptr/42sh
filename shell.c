@@ -6,6 +6,7 @@
 */
 
 #include "shell.h"
+#include "history.h"
 
 int write_prompt(envdata_t *env)
 {
