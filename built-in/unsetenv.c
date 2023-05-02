@@ -17,14 +17,15 @@
 
 #include "built_in.h"
 
-bool does_variable_exist(envvar_t *var, char *variable_name)
+bool does_variable_exist(envvar_t **var, envvar_t **tmp, char *variable_name)
 {
     bool found = false;
-    for (; var != NULL; var = var->next) {
-        if (compare_variable_name(var->var, variable_name) == 0) {
+    for (; *var != NULL; *var = (*var)->next) {
+        if (compare_variable_name((*var)->var, variable_name) == 0) {
             found = true;
             break;
         }
+        *tmp = *var;
     }
     if (!found) {
         free(variable_name);
@@ -41,7 +42,7 @@ void unset_env(envvar_t **env, char *inp)
     }
     char *variable_name = get_variable_name(&inp[9]);
     envvar_t *var = *env, *tmp = *env;
-    if (does_variable_exist(var, variable_name) == false)
+    if (does_variable_exist(&var, &tmp, variable_name) == false)
         return;
     if (tmp == var && var->next == NULL) {
         *env = NULL;
