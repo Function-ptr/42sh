@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "environment.h"
 
 void create_path(envdata_t *envdata)
 {
@@ -45,12 +45,12 @@ envdata_t *initialize_envdata(char **env)
     *(envdata->env) = NULL;
     duplicate_environment(env, envdata->env);
     create_path(envdata);
-    envdata->cwd = my_calloc(300, sizeof(char), 0);
+    envdata->cwd = calloc(300, sizeof(char));
     create_prompt_variables(envdata);
     if (getcwd(envdata->cwd, 300) == NULL)
-        my_strcpy(envdata->cwd, "/home");
-    envdata->prevcwd = my_calloc(300, sizeof(char), 0);
-    my_strcpy(envdata->prevcwd, envdata->cwd);
+        strcpy(envdata->cwd, "/home");
+    envdata->prevcwd = calloc(300, sizeof(char));
+    strcpy(envdata->prevcwd, envdata->cwd);
     reverse_environment_variables(envdata->env);
     envdata->is_fallback = 0;
     return (envdata);

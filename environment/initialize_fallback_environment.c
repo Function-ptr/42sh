@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "environment.h"
 
 envdata_t *initialize_fallback_environment(void)
 {
@@ -24,11 +24,11 @@ envdata_t *initialize_fallback_environment(void)
     *(envdata->env) = NULL;
     envdata->path = NULL;
     envdata->path_dirs = get_path_directories("/bin:/usr/bin");
-    envdata->cwd = my_calloc(300, sizeof(char), 0);
+    envdata->cwd = calloc(300, sizeof(char));
     if (getcwd(envdata->cwd, 300) == NULL)
         exit_with_error(envdata);
-    envdata->prevcwd = my_calloc(300, sizeof(char), 0);
-    my_strcpy(envdata->prevcwd, envdata->cwd);
+    envdata->prevcwd = calloc(300, sizeof(char));
+    strcpy(envdata->prevcwd, envdata->cwd);
     envdata->hostname = NULL;
     envdata->user = NULL;
     envdata->hostlen = 0;

@@ -14,48 +14,55 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "parsing.h"
 
 int separate_commands(int nb_cmds, char *input, command_t **commands)
 {
-    char *tmp = my_strdup(input);
+    char *tmp = strdup(input);
     int status = 1;
     command_t *previous = NULL;
+
     for (int i = 0, pos = 0, tp = 0; tp < nb_cmds; i++, tp++) {
         char *comm = smart_strtok(input, is_command_delimiter);
         if (comm == NULL)
             break;
-        pos += my_strlen(comm);
+        pos += strlen(comm);
         int *statuses[2] = {&i, &status};
         char sep = tmp[pos];
         commands[i] = parse_single_command(comm, previous, sep, statuses);
-        status *= (commands[i] == NULL) ? (0) : (1);
+        status *= commands[i] ? 1 : 0;
         pos += 1;
         previous = commands[i];
         for (int j = i + 1; j <= nb_cmds; j++)
             commands[j] = NULL;
     }
     free(tmp);
-    return (status);
+    return status;
 }
 
 command_t **cut_input_to_commands(char *input)
 {
-    int nb_cmds = 1, pos = 0, len = my_strlen(input);
+    int nb_cmds = 1;
+    int len = (int)strlen(input);
     input[len - 1] = 0;
-    for (int i = 0; input[i] != 0; i++, pos++)
-        nb_cmds = ((input[i] == '|' && !(i > 0 && input[i - 1] == '\\')) ||
-            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\'))) ?
-            nb_cmds + 1 : nb_cmds;
+    for (int i = 0; input[i] != 0; i++)
+        nb_cmds += ((input[i] == '|' && !(i > 0 && input[i - 1] == '\\')) ||
+            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\')));
     command_t **cmds = malloc(sizeof(command_t*) * (nb_cmds + 1));
+
     for (int i = 0; i <= nb_cmds; i++)
         cmds[i] = NULL;
+
     int status = separate_commands(nb_cmds, input, cmds);
+
     if (!status) {
         free_commands(cmds);
-        return (NULL);
-    } return (cmds);
+        return NULL;
+    }
+
+    return cmds;
 }
+
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⢟⣽⠿⠯⠛⡸⢹⠀⢹⠒⣊⡡⠜⠓⠢⣄⠀⠀⠀⠀

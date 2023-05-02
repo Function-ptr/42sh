@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "environment.h"
 
 void add_path_directory(pathdir_t **pathdirs, char *dir, int len)
 {
@@ -23,7 +23,7 @@ void add_path_directory(pathdir_t **pathdirs, char *dir, int len)
         clear_path_directories(pathdirs);
         exit(84);
     }
-    pathdir->dir = my_strndup(dir, len);
+    pathdir->dir = strndup(dir, len);
     if (pathdir->dir == NULL) {
         free(pathdir);
         clear_path_directories(pathdirs);

@@ -7,7 +7,7 @@
 ** pointer `is_delimiter` returns true
 */
 
-#include "minishell.h"
+#include "parsing.h"
 
 bool is_delimiter(const char *string, int i)
 {

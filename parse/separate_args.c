@@ -5,7 +5,7 @@
 ** separate arguments
 */
 
-#include "minishell.h"
+#include "parsing.h"
 
 int nb_args(char const *str, int len)
 {

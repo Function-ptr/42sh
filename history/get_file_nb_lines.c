@@ -14,7 +14,7 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "history.h"
 
 size_t get_file_nb_lines(char *filename)
 {

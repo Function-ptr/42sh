@@ -14,15 +14,16 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built_in.h"
 
 bool is_empty(command_t *command, envvar_t **env)
 {
     char *cmd = command->command;
-    int command_len = my_strlen(cmd);
-    if (!is_argv_long_enough(cmd, 2, "setenv")) {
-        my_memset(cmd, command_len, 0);
-        my_strcpy(cmd, "env");
+    int command_len = strlen(cmd);
+    if (!is_argv_long_enough(cmd, 2)) {
+        memset(cmd, 0, command_len);
+        strcpy(cmd, "env");
         show_environment(env, command);
         return true;
     }
@@ -58,22 +59,22 @@ void add_new_variable(envvar_t *var, envvar_t **env, char *variable_name,
 
 void set_env(envvar_t **env, command_t *command)
 {
-    if (is_empty(command, env))
-        return;
+    if (is_empty(command, env)) return;
+    const int setenv_command_len = 7;
     char *cmd = command->command;
-    char *variable_name = get_variable_name(&cmd[7]);
-    int variable_name_len = my_strlen(variable_name);
-    char *value = &cmd[8 + variable_name_len];
-    int cmdlen = my_strlen(cmd);
-    if (8 + variable_name_len > cmdlen)
+    char *variable_name = get_variable_name(&cmd[setenv_command_len]);
+    int var_name_len = (int)strlen(variable_name);
+    int cmdlen = (int)strlen(cmd);
+    const int value_index_offset = 1;
+    char *value = &cmd[setenv_command_len + var_name_len + value_index_offset];
+    if (setenv_command_len + var_name_len + value_index_offset > cmdlen)
         value = "\0";
     if (name_does_not_start_with_letter(variable_name[0]))
         return;
     if (!my_str_isalphanum(variable_name)) {
         name_not_alphanumeric();
         return;
-    }
-    envvar_t *var = *env;
+    } envvar_t *var = *env;
     if (does_already_exist(var, variable_name, value))
         return;
     else

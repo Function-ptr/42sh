@@ -5,7 +5,7 @@
 ** escape characters that need to be escaped
 */
 
-#include "minishell.h"
+#include "parsing.h"
 
 char *strdup_without_backslash(const char *src)
 {

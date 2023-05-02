@@ -14,30 +14,28 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+#include "execute.h"
 
 void check_if_signaled(int status)
 {
     if (WIFSIGNALED(status)) {
-        char *sig = strsignal(WTERMSIG(status));
         if (WTERMSIG(status) == SIGFPE)
-            write(2, "Floating exception", 18);
+            fprintf(stderr, "Floating exception");
         else
-            write(2, sig, my_strlen(sig));
+            fprintf(stderr, "%s", strsignal(WTERMSIG(status)));
         if (WCOREDUMP(status))
-            write(2, " (core dumped)", 14);
-        write(2, "\n", 1);
+            fprintf(stderr, " (core dumped)");
+        fprintf(stderr, "\n");
     }
 }
 
 void check_if_stopped(int status)
 {
     if (WIFSTOPPED(status)) {
-        char *sig = strsignal(WSTOPSIG(status));
-        write(2, sig, my_strlen(sig));
+        fprintf(stderr, "%s", strsignal(WSTOPSIG(status)));
         if (WCOREDUMP(status))
-            write(2, " (core dumped)", 14);
-        write(2, "\n", 1);
+            fprintf(stderr, " (core dumped)");
+        fprintf(stderr, "\n");
     }
 }
 

@@ -14,16 +14,24 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built_in.h"
 
 bool is_a_builtin(char *binary)
 {
-    if (!my_strncmp(binary, "cd", 2) ||
-    !my_strncmp(binary, "setenv", 6) || !my_strncmp(binary, "unsetenv", 8) ||
-    !my_strncmp(binary, "env", 3) || !my_strncmp(binary, "exit", 4) ||
-    !my_strncmp(binary, "echo", 4))
-        return (true);
-    return (false);
+    const char *builtins[] = {
+        "cd", "setenv", "unsetenv", "env", "exit", "echo"
+    };
+
+    size_t num_builtins = sizeof(builtins) / sizeof(builtins[0]);
+
+    for (size_t i = 0; i < num_builtins; i++) {
+        if (strcmp(binary, builtins[i]) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

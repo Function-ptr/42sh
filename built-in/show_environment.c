@@ -14,19 +14,18 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
+
+#include "built_in.h"
 
 void show_environment(envvar_t **env, command_t *command)
 {
-    if (my_strcmp(command->command, "env") != 0) {
-        write(2, "env: invalid arguments, 0 required\n", 35);
+    if (strcmp(command->command, "env") != 0) {
+        fprintf(stderr, "env: invalid arguments, 0 required\n");
         return;
     }
     envvar_t *var = *env;
-    for (; var != NULL; var = var->next) {
-        write(command->out_fd, var->var, my_strlen(var->var));
-        write(command->out_fd, "\n", 1);
-    }
+    for (; var != NULL; var = var->next)
+        dprintf(command->out_fd, "%s\n", var->var);
 }
 
 /*

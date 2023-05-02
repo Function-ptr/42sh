@@ -14,17 +14,18 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "minishell.h"
 
-bool does_variable_exist(envvar_t *var, envvar_t *tmp, char *variable_name)
+#include "built_in.h"
+
+bool does_variable_exist(envvar_t **var, envvar_t **tmp, char *variable_name)
 {
     bool found = false;
-    for (; var != NULL; var = var->next) {
-        if (compare_variable_name(var->var, variable_name) == 0) {
+    for (; *var != NULL; *var = (*var)->next) {
+        if (compare_variable_name((*var)->var, variable_name) == 0) {
             found = true;
             break;
         }
-        tmp = var;
+        *tmp = *var;
     }
     if (!found) {
         free(variable_name);
@@ -35,15 +36,15 @@ bool does_variable_exist(envvar_t *var, envvar_t *tmp, char *variable_name)
 
 void unset_env(envvar_t **env, char *inp)
 {
-    if (!is_argv_long_enough(inp, 2, "unsetenv")) {
-        write(2, "unsetenv: Too few arguments.\n", 29);
+    if (!is_argv_long_enough(inp, 2)) {
+        fprintf(stderr, "unsetenv: Too few arguments.\n");
         return;
     }
     char *variable_name = get_variable_name(&inp[9]);
     envvar_t *var = *env, *tmp = *env;
-    if (does_variable_exist(var, tmp, variable_name) == false)
+    if (does_variable_exist(&var, &tmp, variable_name) == false)
         return;
-    if (tmp == var && var->next == NULL) {
+    if (var->next == NULL) {
         *env = NULL;
     } else
         tmp->next = var->next;
