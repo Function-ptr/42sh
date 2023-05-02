@@ -33,8 +33,15 @@
     } pathdir_t;
 
     typedef struct {
+        char *line;
+        long time;
+    } history_entry_t;
+
+    typedef struct {
         char *filename;
         int history_fd;
+        history_entry_t *session_history;
+        size_t len_session_history;
         size_t len_file;
         size_t current_pos; // 0 > LONG_MAX (positive offset)
     } history_t;
