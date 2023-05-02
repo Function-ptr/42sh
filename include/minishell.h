@@ -23,6 +23,7 @@
         #include "printf.h"
         #include <errno.h>
         #include <stdbool.h>
+        #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
     typedef struct envvar {
         char *var;
