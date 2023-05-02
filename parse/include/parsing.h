@@ -45,6 +45,13 @@
     char *get_binary_name(char *str);
     char *get_binary_filename(char *command, pathdir_t **pathdirs);
     int is_argv_long_enough(char *command, int cap);
+    char *strdup_without_backslash(const char*);
+    bool is_delimiter(const char *, int);
+    bool is_command_delimiter(const char *, int);
+    char *smart_strtok(char *, bool (*)(const char *, int));
+    char **separate_args(char const*);
+    char *my_strchr_escape(char *, char);
+    char *my_strrchr_escape(char *, char);
 
     /////////////
     /// Utils ///

@@ -19,10 +19,10 @@
 void detect_redirections(command_t *command, char *comm, char next_sep,
     int *status)
 {
-    char *redirection_out = strchr(comm, '>');
-    char *redirection_out_append = strrchr(comm, '>');
-    char *redirection_in = strchr(comm, '<');
-    char *redirection_in_word = strrchr(comm, '<');
+    char *redirection_out = my_strchr_escape(comm, '>');
+    char *redirection_out_append = my_strchr_escape(comm, '>');
+    char *redirection_in = my_strchr_escape(comm, '<');
+    char *redirection_in_word = my_strchr_escape(comm, '<');
 
     command->redirect_in = (redirection_in != NULL);
     command->redirect_in_word_wait = (redirection_in &&
