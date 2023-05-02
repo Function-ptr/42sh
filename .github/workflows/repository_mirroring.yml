@@ -59,6 +59,45 @@ jobs:
           exit 1
         fi
 
+  run_tests_quick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+          sudo apt-get install -y tcsh
+          sudo apt-get install -y which
+      - name: Compile program
+        run: make
+        timeout-minutes: 2
+      - name: Clean build
+        run: make clean
+      - name: Run tester and check output
+        run: |
+          cd ./tests
+          ./improved_tester.sh
+          
+          # Run Valgrind for each test
+          parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
+          for test in "$parent_folder"/*/;
+          do
+            test_id=$(basename "$test")
+            setup_cmd=$(grep -A1 "^SETUP=" tests | sed -n '2p')
+            test_cmds=$(grep -A1 "^TESTS=" tests | sed -n '2p')
+            eval "$setup_cmd"
+            echo "$test_cmds" | while read cmd;
+            do
+              if [ ! -z "$cmd" ]; then
+                echo "$cmd" | valgrind --leak-check=full --show-leak-kinds=all --log-file="$test/valgrind.log" ./42sh
+              fi
+            done
+          done
+          
+          ./print_tests.sh
+        timeout-minutes: 5
+
   run_tests:
     runs-on: ubuntu-latest
     container:
@@ -88,7 +127,7 @@ jobs:
             echo "$test_cmds" | while read cmd;
             do
               if [ ! -z "$cmd" ]; then
-                valgrind --leak-check=full --show-leak-kinds=all --log-file="$test/valgrind.log" ./42sh -c "$cmd"
+                echo "$cmd" | valgrind --leak-check=full --show-leak-kinds=all --log-file="$test/valgrind.log" ./42sh
               fi
             done
           done
@@ -98,7 +137,7 @@ jobs:
 
   mirror_repository:
     runs-on: ubuntu-latest
-    needs: [check_program_compilation, check_coding_style, run_tests]
+    needs: [check_program_compilation, check_coding_style, run_tests, run_tests_quick]
     steps:                                              # <-- must use actions/checkout before mirroring!
       - uses: actions/checkout@v3
         with:
