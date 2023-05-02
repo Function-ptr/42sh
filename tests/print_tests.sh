@@ -8,6 +8,8 @@ NC='\033[0m' # No Color
 # Specify the parent folder containing the subfolders
 parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
 
+error_occurred=false
+
 # Loop through each test ID in the parent folder
 for test in "$parent_folder"/*/; do
   test_id=$(basename "$test")
@@ -23,6 +25,7 @@ for test in "$parent_folder"/*/; do
   else
     echo -e "${RED}Expected output: tcsh.out not found${NC}"
     echo "::error file=Test $test_id,title=Failed Test $test_id::$test_id is failed. Expected output: Not found, Actual output: Not found"
+    error_occurred=true
     continue
   fi
   printf "\n"
@@ -35,12 +38,26 @@ for test in "$parent_folder"/*/; do
   else
     echo -e "${RED}Actual output: mysh.out not found${NC}"
     echo "::error file=Test $test_id,title=Failed Test $test_id::$test_id is failed. Expected output: $tcsh_output, Actual output: Not found"
+    error_occurred=true
     continue
   fi
   echo "------------------------"
 
   # Compare expected and actual output
   if [ "$tcsh_output" != "$mysh_output" ]; then
-    echo "::error file=Test $test_id,title=Failed Test $test_id::$test_id is failed. Expected output: $tcsh_output, Actual output: $mysh_output"
+    # Load test details
+    test_details=$(grep -A4 "^\[$test_id\]" tests | sed -n '2,5p')
+    test_name=$(echo "$test_details" | sed -n '1p' | cut -d= -f2)
+    test_setup=$(echo "$test_details" | sed -n '2p' | cut -d= -f2)
+    test_clean=$(echo "$test_details" | sed -n '3p' | cut -d= -f2)
+    test_commands=$(echo "$test_details" | sed -n '4p' | cut -d= -f2)
+
+    # Report error with test details
+    echo "::error file=Test $test_id,title=Failed Test $test_id::$test_id is failed. Test Name: $test_name, Setup: $test_setup, Clean: $test_clean, Test Commands: $test_commands. Expected output: $tcsh_output, Actual output: $mysh_output"
+    error_occurred=true
   fi
 done
+
+if $error_occurred; then
+  exit 1
+fi
