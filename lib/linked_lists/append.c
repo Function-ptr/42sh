@@ -5,7 +5,7 @@
 ** header
 */
 
-#include "linked_lists.h"
+#include "include/linked_lists.h"
 
 void append(node_t **head, char *data_a, char *data_b)
 {

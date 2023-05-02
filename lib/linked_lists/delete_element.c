@@ -5,7 +5,7 @@
 ** header
 */
 
-#include "linked_lists.h"
+#include "include/linked_lists.h"
 
 void delete_element(node_t **head, char *str)
 {

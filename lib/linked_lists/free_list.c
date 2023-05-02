@@ -5,7 +5,7 @@
 ** header
 */
 
-#include "linked_lists.h"
+#include "include/linked_lists.h"
 
 void free_list(node_t **head)
 {

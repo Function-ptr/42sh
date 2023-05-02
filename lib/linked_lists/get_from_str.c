@@ -8,7 +8,7 @@
 // la fonction prendra en paramètre une liste chainée et une string,
 // et renverra le str remplacé de la liste chainée correspondante
 
-#include "linked_lists.h"
+#include "include/linked_lists.h"
 
 char *get_from_str(node_t *head, char *str)
 {

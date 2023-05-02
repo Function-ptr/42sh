@@ -158,6 +158,7 @@ $(addprefix $(OBJ_DIR)/, $(basename $(subst /,-,$<)).o)
 
 $(NAME): $(OBJ)
 	@make -s -C ./lib/all
+	@make -s -C ./lib/linked_lists
 	@$(CC) -o $(NAME) $(OBJS) $(CFLAGS)
 	@echo -e "[1;32mProject built successfully[0m"
 
