@@ -47,7 +47,9 @@ SRCS = 	main.c	\
 	environment/linked_lists_management.c	\
 	environment/path.c	\
 	history/get_file_nb_lines.c	\
+	history/get_from_history.c	\
 	history/history.c	\
+	history/show_history.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
@@ -89,7 +91,9 @@ OBJS = 	obj/main.o	\
 	obj/environment-linked_lists_management.o	\
 	obj/environment-path.o	\
 	obj/history-get_file_nb_lines.o	\
+	obj/history-get_from_history.o	\
 	obj/history-history.o	\
+	obj/history-show_history.o	\
 
 OBJ_DIR = obj
 

@@ -16,6 +16,13 @@
 */
 #include "history.h"
 
+size_t get_long_len(long val)
+{
+    size_t len = 0;
+    for (; val > 0; len++, val /= 10);
+    return len;
+}
+
 size_t get_file_nb_lines(char *filename)
 {
     size_t len = strlen(filename);
