@@ -19,6 +19,7 @@
     #define INC_42SH_TYPES_H
 
     #include <stdbool.h>
+    #include "linked_lists.h"
 
     typedef unsigned long size_t;
 
@@ -51,6 +52,7 @@
         char *hostname;
         size_t hostlen;
         history_t *history;
+        node_t *aliases;
     } envdata_t;
 
     typedef struct command {
