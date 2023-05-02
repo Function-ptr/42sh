@@ -60,7 +60,6 @@ jobs:
         fi
 
   run_tests:
-    needs:
     runs-on: ubuntu-latest
     container:
       image: quentinfil/epitouk_light_weight:latest
