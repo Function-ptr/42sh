@@ -16,7 +16,7 @@
 */
 #include "parsing.h"
 
-bool init_command(command_t *command, command_t *prev, char next_sep)
+void init_command(command_t *command, command_t *prev, char next_sep)
 {
     command->in_fd = STDIN_FILENO;
     command->out_fd = STDOUT_FILENO;
@@ -27,7 +27,6 @@ bool init_command(command_t *command, command_t *prev, char next_sep)
         command->pipe_in = true;
     if (next_sep == '|')
         command->pipe_out = true;
-    return true;
 }
 
 bool has_ambigous_redirection_in(command_t *command, char *comm)
@@ -69,6 +68,7 @@ command_t *parse_single_command(char *comm, command_t *prev, char next_sep,
 {
     command_t *command = malloc(sizeof(command_t));
     int *i = statuses[0], *status = statuses[1];
+    init_command(command, prev, next_sep);
     command->next_separator = next_sep;
     if (has_ambigous_redirection_in(command, comm) ||
         has_ambigous_redirection_out(command, comm)) {
