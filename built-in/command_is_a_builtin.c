@@ -15,7 +15,7 @@
                              |___/               |______|
 */
 
-#include "built-in.h"
+#include "built_in.h"
 
 bool is_a_builtin(char *binary)
 {

@@ -15,7 +15,7 @@
                              |___/               |______|
 */
 
-#include "built-in.h"
+#include "built_in.h"
 
 bool does_variable_exist(envvar_t *var, char *variable_name)
 {

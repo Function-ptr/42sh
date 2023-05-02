@@ -15,7 +15,7 @@
                              |___/               |______|
 */
 
-#include "built-in.h"
+#include "built_in.h"
 
 int exit_with_status(command_t *command)
 {

@@ -35,7 +35,8 @@
     void detect_redirections(command_t *command, char *comm, char next_sep,
         int *status);
     int get_redirections_file_descriptors(command_t *command, char *comm);
-    char *remove_spaces_in_command(char *comm, char sep, bool pipe_in, int *status);
+    char *remove_spaces_in_command(char *comm, char sep, bool pipe_in,
+        int *status);
     bool parse_and_load_redirections(command_t *command);
     void get_word_wait_input(command_t *cmd);
     int load_redirections_for_command(command_t *command);
@@ -95,4 +96,3 @@
 ─────────────█─▄█▄─█─█▀▀█──▀█▀
 ─────────────██▀─▀██─█──█───█
 */
-

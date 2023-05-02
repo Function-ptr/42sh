@@ -15,7 +15,7 @@
                              |___/               |______|
 */
 
-#include "built-in.h"
+#include "built_in.h"
 
 void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 {

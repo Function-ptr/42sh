@@ -5,7 +5,7 @@
 ** echo
 */
 
-#include "built-in.h"
+#include "built_in.h"
 
 int echo(command_t *command)
 {

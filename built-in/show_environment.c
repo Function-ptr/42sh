@@ -15,7 +15,7 @@
                              |___/               |______|
 */
 
-#include "built-in.h"
+#include "built_in.h"
 
 void show_environment(envvar_t **env, command_t *command)
 {

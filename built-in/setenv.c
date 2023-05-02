@@ -15,7 +15,7 @@
                              |___/               |______|
 */
 
-#include "built-in.h"
+#include "built_in.h"
 
 bool is_empty(command_t *command, envvar_t **env)
 {
