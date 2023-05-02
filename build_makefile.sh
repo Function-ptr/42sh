@@ -26,7 +26,7 @@ opti="-O3 -Ofast \\
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \\
 -march=native -mtune=native -fopenmp -mavx2 \\
 -lm -ffast-math -mfpmath=sse \\
--fno-builtin"
+-flto"
 
 function header()
 {
