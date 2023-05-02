@@ -9,6 +9,7 @@
 
 void append(node_t **head, char *data_a, char *data_b)
 {
+    if (get_from_str(*head, data_a) != NULL) return;
     node_t *new_node = malloc(sizeof(node_t));
     node_t *last = *head;
 

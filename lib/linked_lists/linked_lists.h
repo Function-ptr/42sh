@@ -20,4 +20,7 @@ typedef struct node {
     struct node *next;
 } node_t;
 
+void append(node_t **head, char *data_a, char *data_b);
+char *get_from_str(node_t *head, char *str);
+
 #endif /* !header */
