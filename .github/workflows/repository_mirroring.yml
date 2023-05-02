@@ -59,9 +59,27 @@ jobs:
           exit 1
         fi
 
+  run_tests:
+    needs:
+    runs-on: ubuntu-latest
+    container:
+      image: quentinfil/epitouk_light_weight:latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Compile program
+        run: make
+        timeout-minutes: 2
+      - name: Clean build
+        run: make clean
+      - name: Run tester
+        run: ./tests/improved_tester.sh
+        timeout-minutes: 2
+      - name: check tester output
+        run: ./tests/print_tests.sh
+
   mirror_repository:
     runs-on: ubuntu-latest
-    needs: [check_program_compilation, check_coding_style]
+    needs: [check_program_compilation, check_coding_style, run_tests]
     steps:                                              # <-- must use actions/checkout before mirroring!
       - uses: actions/checkout@v3
         with:
