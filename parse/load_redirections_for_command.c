@@ -64,7 +64,6 @@ bool parse_and_load_redirections(command_t *command)
     return (command->command == NULL || status);
 }
 
-
 int load_redirections_for_command(command_t *command)
 {
     if (parse_and_load_redirections(command)) {
