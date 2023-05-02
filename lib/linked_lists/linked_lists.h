@@ -5,6 +5,9 @@
 ** header
 */
 
+#include <stdlib.h>
+#include <string.h>
+
 #ifndef header
     #define header
 
