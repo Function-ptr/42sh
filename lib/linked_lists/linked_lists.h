@@ -22,5 +22,6 @@ typedef struct node {
 
 void append(node_t **head, char *data_a, char *data_b);
 char *get_from_str(node_t *head, char *str);
+void free_list(node_t **head);
 
 #endif /* !header */
