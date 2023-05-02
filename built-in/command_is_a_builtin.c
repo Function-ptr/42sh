@@ -19,12 +19,19 @@
 
 bool is_a_builtin(char *binary)
 {
-    if (!strncmp(binary, "cd", 2) ||
-    !strncmp(binary, "setenv", 6) || !strncmp(binary, "unsetenv", 8) ||
-    !strncmp(binary, "env", 3) || !strncmp(binary, "exit", 4) ||
-    !strncmp(binary, "echo", 4))
-        return (true);
-    return (false);
+    const char *builtins[] = {
+        "cd", "setenv", "unsetenv", "env", "exit", "echo"
+    };
+
+    size_t num_builtins = sizeof(builtins) / sizeof(builtins[0]);
+
+    for (size_t i = 0; i < num_builtins; i++) {
+        if (strcmp(binary, builtins[i]) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
