@@ -43,7 +43,7 @@ void unset_env(envvar_t **env, char *inp)
     envvar_t *var = *env, *tmp = *env;
     if (does_variable_exist(var, variable_name) == false)
         return;
-    if (tmp == var && var->next == NULL) {
+    if (var->next == NULL) {
         *env = NULL;
     } else
         tmp->next = var->next;
