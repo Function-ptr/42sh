@@ -72,6 +72,8 @@ jobs:
         run: make clean
       - name: Change directory
         run: cd ./tests
+      - name: Run ls
+        run: ls
       - name: Run tester
         run: ./improved_tester.sh
         timeout-minutes: 2
