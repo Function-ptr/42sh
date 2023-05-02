@@ -77,8 +77,9 @@ jobs:
         run: |
           cd ./tests
           ./improved_tester.sh
-          
-          # Run Valgrind for each test
+          ./print_tests.sh
+
+          # Run Valgrind for each test after tests have been executed and printed
           parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
           for test in "$parent_folder"/*/;
           do
@@ -93,8 +94,8 @@ jobs:
               fi
             done
           done
-          
-          ./print_tests.sh
+
+          ./print_valgrind.sh
         timeout-minutes: 5
 
   run_tests:
@@ -112,10 +113,11 @@ jobs:
         run: make clean
       - name: Run tester and check output
         run: |
-          cd ./tests
+           cd ./tests
           ./improved_tester.sh
-          
-          # Run Valgrind for each test
+          ./print_tests.sh
+
+          # Run Valgrind for each test after tests have been executed and printed
           parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
           for test in "$parent_folder"/*/;
           do
@@ -130,8 +132,8 @@ jobs:
               fi
             done
           done
-          
-          ./print_tests.sh
+
+          ./print_valgrind.sh
         timeout-minutes: 5
 
   mirror_repository:

@@ -17,24 +17,6 @@ for test in "$parent_folder"/*/; do
   # Print the name of the subfolder
   echo -e "${YELLOW}Test ID: $test_id${NC}\n"
 
-  # Check Valgrind output
-  if [ -f "$test/valgrind.log" ]; then
-    valgrind_errors=$(grep "ERROR SUMMARY" "$test/valgrind.log" | awk '{print $4}')
-    valgrind_leaks=$(grep "definitely lost" "$test/valgrind.log" | awk '{print $4}')
-    if [ "$valgrind_errors" != "0" ] || [ "$valgrind_leaks" != "0" ]; then
-      echo -e "${RED}Valgrind errors: $valgrind_errors, Memory leaks: $valgrind_leaks${NC}"
-      echo "::error file=Test $test_id,title=Failed Test $test_id::$test_id is failed due to Valgrind errors or memory leaks. Errors: $valgrind_errors, Leaks: $valgrind_leaks"
-      error_occurred=true
-      continue
-    else
-      echo -e "${GREEN}Valgrind check passed${NC}"
-    fi
-  else
-    echo -e "${RED}Valgrind output not found${NC}"
-    error_occurred=true
-    continue
-  fi
-
   # Check if tcsh.out exists in the subfolder
   if [ -f "$test/tcsh.out" ]; then
     echo -e "${GREEN}Expected output:${NC}"
