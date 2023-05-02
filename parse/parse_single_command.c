@@ -27,7 +27,6 @@ void init_command(command_t *command, command_t *prev, char next_sep)
         command->pipe_in = true;
     if (next_sep == '|')
         command->pipe_out = true;
-    return true;
 }
 
 bool has_ambigous_redirection_in(command_t *command, char *comm)
