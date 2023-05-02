@@ -44,8 +44,8 @@ command_t **cut_input_to_commands(char *input)
     int nb_cmds = 1, pos = 0, len = my_strlen(input);
     input[len - 1] = 0;
     for (int i = 0; input[i] != 0; i++, pos++)
-        nb_cmds = ((input[i] == '|' && !(i > 0 && input[i-1] == '\\')) ||
-            (input[i] == ';' && !(i > 0 && input[i-1] == '\\'))) ?
+        nb_cmds = ((input[i] == '|' && !(i > 0 && input[i - 1] == '\\')) ||
+            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\'))) ?
             nb_cmds + 1 : nb_cmds;
     command_t **cmds = malloc(sizeof(command_t*) * (nb_cmds + 1));
     for (int i = 0; i <= nb_cmds; i++)

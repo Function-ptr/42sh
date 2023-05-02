@@ -9,38 +9,17 @@
 
 char *strdup_without_backslash(const char *src)
 {
-    char *res = calloc(strlen(src) + 1, 1);
     int len = strlen(src);
-    int nb_escape = 0;
-    for (int i = 0; i + nb_escape < len; i++) {
-        if (src[i] == '\\') {
-            nb_escape += 1;
-            res[i] = src[i + nb_escape];
+    char *res = calloc(len + 1, 1);
+    bool backslash = false;
+    int j = 0;
+    for (int i = 0; i < len; i++) {
+        if (src[i] == '\\' && !backslash) {
+            backslash = true;
             continue;
         }
-        res[i] = src[i + nb_escape];
+        res[j++] = src[i];
+        backslash = false;
     }
     return res;
-}
-
-char get_escape_char(char c)
-{
-    escape_char_t escape_chars[11] = {
-        {'a', '\a'},
-        {'b', '\b'},
-        {'c', '\0'},
-        {'e', '\e'},
-        {'f', '\f'},
-        {'n', '\n'},
-        {'r', '\r'},
-        {'t', '\t'},
-        {'v', '\v'},
-        {'\\', '\\'},
-        {'0', -1}
-    };
-    for (int i = 0; i < 11; i++) {
-        if (escape_chars[i].original == c)
-            return (escape_chars[i].escaped);
-    }
-    return (c);
 }
