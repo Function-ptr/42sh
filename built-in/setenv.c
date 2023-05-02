@@ -30,15 +30,15 @@ bool is_empty(command_t *command, envvar_t **env)
     return false;
 }
 
-bool does_already_exist(envvar_t *var, char *variable_name, char *value)
+bool does_already_exist(envvar_t **var, char *variable_name, char *value)
 {
-    for (; var != NULL; var = var->next) {
-        if (compare_variable_name(var->var, variable_name) == 0) {
-            free(var->var);
-            set_value(var, variable_name, value);
+    for (; *var != NULL; *var = (*var)->next) {
+        if (compare_variable_name((*var)->var, variable_name) == 0) {
+            free((*var)->var);
+            set_value(*var, variable_name, value);
             free(variable_name);
             return true;
-        } if (var->next == NULL)
+        } if ((*var)->next == NULL)
             break;
     }
     return false;
@@ -75,7 +75,7 @@ void set_env(envvar_t **env, command_t *command)
         return;
     }
     envvar_t *var = *env;
-    if (does_already_exist(var, variable_name, value))
+    if (does_already_exist(&var, variable_name, value))
         return;
     else
         add_new_variable(var, env, variable_name, value);
