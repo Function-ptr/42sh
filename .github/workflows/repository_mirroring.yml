@@ -70,15 +70,12 @@ jobs:
         timeout-minutes: 2
       - name: Clean build
         run: make clean
-      - name: Change directory
-        run: cd ./tests
-      - name: Run ls
-        run: ls
-      - name: Run tester
-        run: ./improved_tester.sh
-        timeout-minutes: 2
-      - name: check tester output
-        run: ./print_tests.sh
+      - name: Run tester and check output
+        run: |
+          cd ./tests
+          ./improved_tester.sh
+          ./print_tests.sh
+        timeout-minutes: 3
 
   mirror_repository:
     runs-on: ubuntu-latest
