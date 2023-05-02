@@ -74,8 +74,25 @@ jobs:
         run: |
           cd ./tests
           ./improved_tester.sh
+          
+          # Run Valgrind for each test
+          parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
+          for test in "$parent_folder"/*/;
+          do
+            test_id=$(basename "$test")
+            setup_cmd=$(grep -A1 "^SETUP=" tests | sed -n '2p')
+            test_cmds=$(grep -A1 "^TESTS=" tests | sed -n '2p')
+            eval "$setup_cmd"
+            echo "$test_cmds" | while read cmd;
+            do
+              if [ ! -z "$cmd" ]; then
+                valgrind --leak-check=full --show-leak-kinds=all --log-file="$test/valgrind.log" ./42sh -c "$cmd"
+              fi
+            done
+          done
+          
           ./print_tests.sh
-        timeout-minutes: 3
+        timeout-minutes: 5
 
   mirror_repository:
     runs-on: ubuntu-latest
