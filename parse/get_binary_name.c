@@ -18,7 +18,7 @@
 
 char *get_binary_filename(char *command, pathdir_t **pathdirs)
 {
-    char *cmd = strdup(command);
+    char *cmd = strdup_without_backslash(command);
     if (strchr(cmd, '/') != NULL) {
         if (!access(cmd, F_OK))
             return (cmd);
@@ -38,7 +38,7 @@ char *get_binary_name(char *str)
 {
     if (str[0] == '\n')
         return (str);
-    char *res = strtok(str, " \n\t");
+    char *res = smart_strtok(str, is_delimiter);
     return (res);
 }
 /*

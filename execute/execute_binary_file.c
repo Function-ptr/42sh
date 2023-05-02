@@ -43,7 +43,7 @@ void clean_up_forking(char *filepath, char **argv, char **envtab,
 pid_t fork_and_run(char *filepath, command_t *command, envvar_t **env)
 {
     char **envtab = get_environment(env);
-    char **argv = my_str_to_word_array(command->command, " \t");
+    char **argv = separate_args(command->command);
     pid_t child_pid = fork();
     if (child_pid == 0) {
         if (command->in_fd != STDIN_FILENO)

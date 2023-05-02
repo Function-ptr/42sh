@@ -70,6 +70,10 @@
         int pipe_in_fd;     // file descriptor for input pipe
     } command_t;
 
+    typedef struct escape_char {
+        char original;
+        char escaped;
+    } escape_char_t;
 
 ///////////////
 /// General ///
@@ -168,6 +172,13 @@ void get_word_wait_input(command_t *cmd);
 int load_redirections_for_command(command_t *command);
 void free_commands(command_t **commands);
 void free_command(command_t *command);
+char *strdup_without_backslash(const char*);
+bool is_delimiter(const char *, int);
+bool is_command_delimiter(const char *, int);
+char *smart_strtok(char *, bool (*)(const char *, int));
+char **separate_args(char const*);
+char *my_strchr_escape(char *, char);
+char *my_strrchr_escape(char *, char);
 
 ///////////////
 /// History ///

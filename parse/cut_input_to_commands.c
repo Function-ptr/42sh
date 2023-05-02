@@ -22,7 +22,7 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
     int status = 1;
     command_t *previous = NULL;
     for (int i = 0, pos = 0, tp = 0; tp < nb_cmds; i++, tp++) {
-        char *comm = strtok((!i) ? input : NULL, ";|");
+        char *comm = smart_strtok(input, is_command_delimiter);
         if (comm == NULL)
             break;
         pos += my_strlen(comm);
@@ -44,7 +44,9 @@ command_t **cut_input_to_commands(char *input)
     int nb_cmds = 1, pos = 0, len = my_strlen(input);
     input[len - 1] = 0;
     for (int i = 0; input[i] != 0; i++, pos++)
-        nb_cmds = (input[i] == '|' || input[i] == ';') ? nb_cmds + 1 : nb_cmds;
+        nb_cmds = ((input[i] == '|' && !(i > 0 && input[i-1] == '\\')) ||
+            (input[i] == ';' && !(i > 0 && input[i-1] == '\\'))) ?
+            nb_cmds + 1 : nb_cmds;
     command_t **cmds = malloc(sizeof(command_t*) * (nb_cmds + 1));
     for (int i = 0; i <= nb_cmds; i++)
         cmds[i] = NULL;
