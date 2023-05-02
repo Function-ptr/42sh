@@ -63,8 +63,8 @@ void set_env(envvar_t **env, command_t *command)
     const int setenv_command_len = 7;
     char *cmd = command->command;
     char *variable_name = get_variable_name(&cmd[setenv_command_len]);
-    int var_name_len = strlen(variable_name);
-    int cmdlen = strlen(cmd);
+    int var_name_len = (int)strlen(variable_name);
+    int cmdlen = (int)strlen(cmd);
     const int value_index_offset = 1;
     char *value = &cmd[setenv_command_len + var_name_len + value_index_offset];
     if (setenv_command_len + var_name_len + value_index_offset > cmdlen)
