@@ -61,13 +61,16 @@ jobs:
 
   run_tests_quick:
     runs-on: ubuntu-latest
+    container:
+      image: alpine:latest
     steps:
       - uses: actions/checkout@v3
       - name: Set up environment
         run: |
-          sudo apt-get update
-          sudo apt-get install -y valgrind
-          sudo apt-get install -y tcsh
+          apk update
+          apk add valgrind
+          apk add tcsh
+          apk add build-base # for gcc, make, and other build tools
       - name: Compile program
         run: make
         timeout-minutes: 2
@@ -97,6 +100,7 @@ jobs:
 
           ./print_valgrind.sh
         timeout-minutes: 5
+
 
   run_tests:
     runs-on: ubuntu-latest
