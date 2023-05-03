@@ -37,6 +37,7 @@ void duplicate_environment(char **env, envvar_t **list)
 
 void clear_environment(envdata_t *envdata)
 {
+    free_list(&envdata->aliases);
     clear_path_directories(envdata->path_dirs);
     clear_environment_variables(envdata->env);
     free(envdata->cwd);

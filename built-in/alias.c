@@ -23,11 +23,28 @@ char *get_regex(char *src, char *exp)
     return res;
 }
 
+int show_alias(envdata_t *env)
+{
+    node_t *temp = env->aliases;
+    while (temp != NULL) {
+        printf("%s=%s\n", temp->data_a, temp->data_b);
+        temp = temp->next;
+    }
+    return 0;
+}
+
 int alias(command_t *cmd, envdata_t *env)
 {
+    if (cmd->command[5] == '\0') return show_alias(env);
     char *data_a = get_regex(cmd->command, "alias ([^=']+)=.*");
     char *data_b = get_regex(cmd->command, "alias [^=']+='([^']*)'");
-    if (data_a == NULL || data_b == NULL) return 1;
-    printf("%s\n%s\n", data_a, data_b);
+    if (data_a == NULL || data_b == NULL) {
+        free(data_a);
+        free(data_b);
+        return 1;
+    }
+    append(&env->aliases, data_a, data_b);
+    free(data_a);
+    free(data_b);
     return 0;
 }
