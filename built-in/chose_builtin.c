@@ -48,6 +48,9 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     } if (strcmp(binname, "exit") == 0) {
         status = exit_with_status(cmd); found = true;
     }
+    if (strcmp(binname, "alias") == 0) {
+        status = alias(env); found = true;
+    }
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b);
     return (status);
