@@ -74,7 +74,7 @@ jobs:
         run: make clean
       - name: Run tester and check output
         run: |
-          commit="{{ github.event.head_commit.message }}"
+          commit="${{ github.event.head_commit.message }}"
           author="${{ github.event.pusher.name }}"
           if [[ "$commit" =~ [SKIP] && ("$author" == "LouisDupraz" || "$author" == "PasVegan") ]];then
             exit 0
