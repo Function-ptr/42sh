@@ -105,8 +105,6 @@ jobs:
       - name: Clean trash
         run: |
           rm 42sh
-          echo "$(pwd)"
-          cd ..
           make fclean
 
   mirror_repository:
