@@ -50,9 +50,7 @@ for test in "$parent_folder"/*/; do
     test_name=$(echo "$test_details" | sed -n '1p' | cut -d= -f2)
 
     # Report error with test details
-    echo "::error file=Test $test_id,title=Failed Test $test_id $test_name
-    ::$test_id is
-     failed. Test Name: $test_name"
+    echo "::error file=Test $test_id,title=Failed Test $test_id $test_name::$test_id is failed. Test Name: $test_name"
     error_occurred=true
   fi
 done
