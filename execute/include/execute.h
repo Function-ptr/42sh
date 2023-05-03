@@ -25,7 +25,6 @@
     #include <string.h>
     #include <stdlib.h>
     #include <unistd.h>
-    #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
     ////////////////////////
     /// Execute binaries ///

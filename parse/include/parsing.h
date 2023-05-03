@@ -24,6 +24,7 @@
     #include <unistd.h>
     #include <fcntl.h>
     #include <stdio.h>
+    #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
     ///////////////
     /// Parsing ///
@@ -52,6 +53,7 @@
     char **separate_args(char const*);
     char *my_strchr_escape(char *, char);
     char *my_strrchr_escape(char *, char);
+    bool process_quotes(char**);
 
     /////////////
     /// Utils ///
