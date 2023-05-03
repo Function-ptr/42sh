@@ -74,7 +74,8 @@ jobs:
         run: make clean
       - name: Run tester and check output
         run: |
-          echo -e "\n${{ github.event.head_commit.message }}\n\n"
+          commit="{{ github.event.head_commit.message }}"
+          echo -e "\n${{ github.event.pusher.name }}\n\n"
           cd ./tests
           ./improved_tester.sh
           ./print_tests.sh
