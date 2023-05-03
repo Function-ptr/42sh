@@ -135,6 +135,7 @@ NAME  = 42sh
 CC  = gcc
 
 LIB = -L.	-lall	\
+	-llist	\
 
 HEADER = 	-I./include/	\
 	-I./parse/include	\
