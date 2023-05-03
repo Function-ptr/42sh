@@ -17,7 +17,6 @@
 #include "history.h"
 #include "parsing.h"
 #include "my.h"
-#define isnum(chr) (chr - 48 >= 0 && chr - 48 <= 9)
 
 size_t get_offset_strstr(char *input, history_t *history, size_t lenh)
 {

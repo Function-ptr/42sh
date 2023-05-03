@@ -26,6 +26,8 @@
     #include <time.h>
     #include <unistd.h>
 
+    #define isnum(chr) (chr - 48 >= 0 && chr - 48 <= 9)
+
     ///////////////
     /// History ///
     ///////////////
