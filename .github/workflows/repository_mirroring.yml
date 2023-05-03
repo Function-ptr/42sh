@@ -59,50 +59,6 @@ jobs:
             exit 1
           fi
 
-  run_tests_quick:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up environment
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y valgrind
-          sudo apt-get install -y tcsh
-      - name: Compile program
-        run: make
-        timeout-minutes: 2
-      - name: Clean build
-        run: make clean
-      - name: Run tester and check output
-        run: |
-          cd ./tests
-          ./improved_tester.sh
-          ./print_tests.sh
-
-          # Run Valgrind for each test after tests have been executed and printed
-          parent_folder=$(find /tmp -maxdepth 1 -type d -name 'test*' -print -quit)
-          for test in "$parent_folder"/*/;
-          do
-            test_id=$(basename "$test")
-            setup_cmd=$(grep -A1 "^SETUP=" tests | sed -n '2p')
-            test_cmds=$(grep -A1 "^TESTS=" tests | sed -n '2p')
-            eval "$setup_cmd"
-            echo "$test_cmds" | while read cmd;
-            do
-              if [ ! -z "$cmd" ]; then
-                echo "$cmd" | valgrind --leak-check=full --show-leak-kinds=all --log-file="$test/valgrind.log" ./42sh
-              fi
-            done
-          done
-
-          ./print_valgrind.sh
-        timeout-minutes: 5
-      - name: Clean trash
-        run: |
-          rm 42sh
-          cd ..
-          make fclean
-
   run_tests:
     runs-on: ubuntu-latest
     container:
