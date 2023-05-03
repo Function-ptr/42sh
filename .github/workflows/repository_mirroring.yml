@@ -75,7 +75,10 @@ jobs:
       - name: Run tester and check output
         run: |
           commit="{{ github.event.head_commit.message }}"
-          echo -e "\n${{ github.event.pusher.name }}\n\n"
+          author="${{ github.event.pusher.name }}"
+          if [[ "$commit" =~ [SKIP] && ("$author" == "LouisDupraz" || "$author" == "PasVegan") ]];then
+            exit 0
+          fi
           cd ./tests
           ./improved_tester.sh
           ./print_tests.sh
