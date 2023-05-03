@@ -79,6 +79,7 @@ int nb_in_base(char nb, const char *base);
 
 int my_str_isalphanum(char *str);
 
+int my_char_arraylen(char **arr);
 
 //////////////////
 ///  My Lib C  ///

@@ -36,7 +36,9 @@
     void add_line_to_history(history_t *history, char *line);
     char *history_get_line_from_offset(history_t *history, size_t offset);
     void show_history(history_t *history);
-    void dump_session_to_file(history_t *history);
+    void operate_on_previous_command(char **input, history_t *history);
+    void operate_on_single_arg(char **input, history_t *history);
+    void operate_on_arg_range(char **input, history_t *history);
 
     /////////////
     /// Utils ///

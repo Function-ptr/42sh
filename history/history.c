@@ -16,36 +16,15 @@
 */
 #include "history.h"
 
-void free_history(history_t *history)
-{
-    free(history->filename);
-    for (size_t i = 0; i < history->len_session_history; i++)
-        free(history->session_history[i].line);
-    free(history->session_history);
-    close(history->history_fd);
-    free(history);
-}
-
-void add_line_to_history(history_t *history, char *line)
-{
-    if (strlen(line) == 1)
-        return;
-    time_t curr_time = time(NULL);
-    history->session_history = reallocarray(history->session_history,
-        history->len_session_history + 1, sizeof(history_entry_t));
-    char *dupline = strdup(line);
-    history->session_history[history->len_session_history] = (history_entry_t){
-            .line = dupline,
-            .time = curr_time
-    };
-    history->len_session_history += 1;
-}
-
 void dump_session_to_file(history_t *history)
 {
     close(history->history_fd);
     history->history_fd = open(history->filename, O_CREAT | O_APPEND |
-    O_WRONLY, S_IRUSR | S_IWUSR);
+        O_WRONLY, S_IRUSR | S_IWUSR);
+    if (history->history_fd == -1) {
+        fprintf(stderr, "history: Unable to save history\n");
+        return;
+    }
     for (size_t i = 0; i < history->len_session_history; i++) {
         time_t date = history->session_history[i].time;
         char *line = history->session_history[i].line;
@@ -58,16 +37,51 @@ void dump_session_to_file(history_t *history)
     }
 }
 
+void free_history(history_t *history)
+{
+    if (history == NULL)
+        return;
+    dump_session_to_file(history);
+    free(history->filename);
+    for (size_t i = 0; i < history->len_session_history; i++)
+        free(history->session_history[i].line);
+    free(history->session_history);
+    close(history->history_fd);
+    free(history);
+}
+
+void add_line_to_history(history_t *history, char *line)
+{
+    if (strlen(line) == 1 || history == NULL)
+        return;
+    time_t curr_time = time(NULL);
+    history->session_history = reallocarray(history->session_history,
+        history->len_session_history + 1, sizeof(history_entry_t));
+    char *dupline = strdup(line);
+    history->session_history[history->len_session_history] = (history_entry_t){
+            .line = dupline,
+            .time = curr_time
+    };
+    history->len_session_history += 1;
+}
+
 void init_history(envdata_t *environment)
 {
     history_t *history = malloc(sizeof(history_t));
     char *home = get_environment_variable(environment->env, "HOME");
+    if (home == NULL) {
+        free(history);
+        environment->history = NULL;
+        return;
+    }
     history->filename = calloc(strlen(home) + 10, sizeof(char));
     strcpy(history->filename, home + 5);
     strcat(history->filename, "/.42sh_history");
     history->len_file = get_file_nb_lines(history->filename);
     history->history_fd = open(history->filename, O_CREAT | O_APPEND |
         O_RDONLY, S_IRUSR | S_IWUSR);
+    if (history->history_fd == -1)
+        fprintf(stderr, "history: Unable to load previous history\n");
     history->current_pos = 0;
     history->session_history = NULL;
     history->len_session_history = 0;

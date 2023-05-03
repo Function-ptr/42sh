@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** get_from_history.c
+** previous_commands_operations.c
 ** File description:
-** get from history
+** Previous commands implementation (!)
 */
 /*
  __  __        _                            ___            ___
@@ -15,71 +15,91 @@
                              |___/               |______|
 */
 #include "history.h"
+#include "parsing.h"
+#include "my.h"
+#define isnum(chr) (chr - 48 >= 0 && chr - 48 <= 9)
 
-char *history_file_get_line_from_offset(history_t *history, size_t offset)
+size_t get_offset_strstr(char *input, history_t *history, size_t lenh)
 {
-    FILE *f = fdopen(history->history_fd, "r");
-    if (!f)
-        return NULL;
-    for (int i = 0; i < history->len_file - offset - 1; i++) {
-        char *l = NULL;
-        size_t s = 0;
-        getline(&l, &s, f);
-        free(l);
+    for (size_t i = 1; i <= lenh; i++) {
+        char *s = history_get_line_from_offset(history, i);
+        char *r = strstr(s, input);
+        free(s);
+        if (r)
+            return i;
     }
-    char *line = NULL;
-    size_t s = 0;
-    if (getline(&line, &s, f) == -1) {
-        free(line);
-        fclose(f);
-        return (NULL);
-    }
-    fclose(f);
-    line[strlen(line) - 1] = 0;
-    history->current_pos = history->len_file - offset;
-    return (line);
+    return -1;
 }
 
-char *history_session_get_line_from_offset(history_t *history, size_t offset)
+size_t get_offset_from_str(char *input, history_t *history)
 {
-    size_t i = 1, j = history->len_session_history - 1;
-    for (; i < offset; j--, i++);
-    char *line = strdup(history->session_history[j].line);
-    return (line);
-}
-
-char *process_file_line(char *line)
-{
-    char *first_sp = strchr(line, ' ') + 1;
-    size_t len = strlen(first_sp);
-    char *l = calloc(len + 3, sizeof(char));
-    strcpy(l, first_sp);
-    l[len] = '\n';
-    free(line);
-    return (l);
-}
-
-char *history_get_line_from_offset(history_t *history, size_t offset)
-{
-    if (history == NULL)
-        return (NULL);
-    if (offset > history->len_file + history->len_session_history || !offset)
-        return (NULL);
-    if (offset > history->len_session_history && history->history_fd != -1) {
-        char *l = history_file_get_line_from_offset(history,
-            offset - history->len_session_history);
-        l = process_file_line(l);
-        history->history_fd = open(history->filename, O_CREAT | O_APPEND |
-            O_RDONLY, S_IRUSR | S_IWUSR);
-        return l;
+    size_t lenh = history->len_session_history + history->len_file;
+    if (input[1] == '?') {
+        char *str;
+        if (strchr(input, '?') != strrchr(input, '?'))
+            str = strndup(input + 2, strrchr(input, '?') - strchr(input, '?'));
+        else
+            str = strdup(input + 2);
+        size_t o = get_offset_strstr(str, history, lenh);
+        free(str);
+        return o;
     }
-    if (history->history_fd == -1) {
+    size_t len = strlen(input + 1);
+    for (size_t i = 1; i <= lenh; i++) {
+        char *s = history_get_line_from_offset(history, i);
+        int r = strncmp(s, input + 1, len - 1);
+        free(s);
+        if (!r)
+            return i;
+    }
+    return -1;
+}
+
+void operate_on_line_offset(char **input, history_t *history)
+{
+    size_t offset = -1, s = history->len_session_history + history->len_file;
+    if (isnum((*input)[1])) {
+        size_t val = strtol(*input + 1, NULL, 10);
+        if (val > history->len_session_history + history->len_file) {
+            fprintf(stderr, "%li: Event not found\n", val);
+            return;
+        }
+        offset = s - val;
+    } if ((*input)[1] == '-' && isnum((*input)[2])) {
+        offset = strtol(*input + 2, NULL, 10);
+        if (offset > history->len_session_history + history->len_file) {
+            fprintf(stderr, "%li: Event not found\n", offset);
+            return;
+        }
+    }
+    if (offset == -1) offset = get_offset_from_str(*input, history);
+    if (offset == -1) return;
+    free(*input);
+    *input = history_get_line_from_offset(history, offset);
+}
+
+void operate_on_previous_command(char **input, history_t *history)
+{
+    if (*input[0] != '!') return;
+    if (history == NULL) {
         fprintf(stderr, "history: Unable to load previous history\n");
-        if (offset > history->len_session_history)
-            return NULL;
+        return;
     }
-    char *l = history_session_get_line_from_offset(history, offset);
-    return l;
+    if ((*input)[1] != ':') {
+        if ((*input)[1] != '!')
+            operate_on_line_offset(input, history);
+        else {
+            free(*input);
+            *input = history_get_line_from_offset(history, 1);
+        }
+        printf("%s", *input);
+        return;
+    }
+    if ((strchr(*input, '*') || strchr(*input, '-')) &&
+        ((*input)[2] != '^' && (*input)[2] != '$'))
+        operate_on_arg_range(input, history);
+    else
+        operate_on_single_arg(input, history);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

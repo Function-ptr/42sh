@@ -27,6 +27,11 @@ int shell(envdata_t *env)
             free(input);
             return (status);
         }
+        operate_on_previous_command(&input, env->history);
+        if (input[0] == '!') {
+            free(input);
+            continue;
+        }
         add_line_to_history(env->history, input);
         status = run_user_input(input, env, &exiting);
         free(input);

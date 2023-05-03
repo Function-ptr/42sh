@@ -51,6 +51,7 @@
     char *smart_strtok(char *, bool (*)(const char *, int));
     char **separate_args(char const*);
     char *my_strchr_escape(char *, char);
+    char *word_array_to_command(char **word_array, int *pos);
     char *my_strrchr_escape(char *, char);
 
     /////////////
