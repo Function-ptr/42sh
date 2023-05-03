@@ -79,6 +79,7 @@ jobs:
           if [[ "$commit" =~ [SKIP] && ("$author" == "LouisDupraz" || "$author" == "PasVegan") ]];then
             exit 0
           fi
+
           cd ./tests
           ./improved_tester.sh
           ./print_tests.sh
