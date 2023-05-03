@@ -6,7 +6,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Specify the parent folder containing the subfolders
-parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
+parent_folder=$(find /tmp -maxdepth 1 -type d -name 'test*' -print -quit)
 
 error_occurred=false
 
