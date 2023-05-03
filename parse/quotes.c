@@ -56,9 +56,8 @@ int find_quote(char **str)
 
 bool process_quotes(char **str)
 {
-    int status = 0;
     while (true) {
-        status = find_quote(str);
+        int status = find_quote(str);
         if (status == -1) {
             return false;
         }
