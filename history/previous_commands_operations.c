@@ -20,8 +20,10 @@
 
 size_t get_offset_strstr(char *input, history_t *history, size_t lenh)
 {
-    for (size_t i = 1; i <= lenh; i++) {
+    for (size_t i = 1; i < lenh; i++) {
         char *s = history_get_line_from_offset(history, i);
+        if (s == NULL)
+            return -1;
         char *r = strstr(s, input);
         free(s);
         if (r)
@@ -44,12 +46,12 @@ size_t get_offset_from_str(char *input, history_t *history)
         return o;
     }
     size_t len = strlen(input + 1);
-    for (size_t i = 1; i <= lenh; i++) {
+    for (size_t i = 1; i < lenh; i++) {
         char *s = history_get_line_from_offset(history, i);
+        if (s == NULL) return -1;
         int r = strncmp(s, input + 1, len - 1);
         free(s);
-        if (!r)
-            return i;
+        if (!r) return i;
     }
     return -1;
 }
@@ -85,13 +87,13 @@ void operate_on_previous_command(char **input, history_t *history)
         return;
     }
     if ((*input)[1] != ':') {
-        if ((*input)[1] != '!')
-            operate_on_line_offset(input, history);
+        if ((*input)[1] != '!') operate_on_line_offset(input, history);
         else {
             free(*input);
             *input = history_get_line_from_offset(history, 1);
-        }
-        printf("%s", *input);
+        } if ((*input)[0] != '!') printf("%s", *input);
+        else
+            fprintf(stderr, "%s: Event not found.\n", *input);
         return;
     }
     if ((strchr(*input, '*') || strchr(*input, '-')) &&
