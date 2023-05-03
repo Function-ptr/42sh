@@ -22,6 +22,12 @@
 
     typedef unsigned long size_t;
 
+    typedef enum {
+        None,
+        AND,
+        OR
+    } conditional_separation;
+
     typedef struct envvar {
         char *var;
         struct envvar *next;
@@ -69,7 +75,8 @@
         bool redirect_out;  // is output redirected ( > )
         bool redirect_out_append; // is output redirected with append ( >> )
         char *command;      // command string
-        char next_separator; // next separator ->  "| ; \0"
+        char next_separator[2]; // next separator ->  "| ; \0 && ||"
+        conditional_separation condition;
         int in_fd;          // input file descriptor (default 0)
         int out_fd;         // output file descriptor (default 1)
         int pipe_in_fd;     // file descriptor for input pipe

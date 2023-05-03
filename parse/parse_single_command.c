@@ -16,19 +16,23 @@
 */
 #include "parsing.h"
 
-void init_command(command_t *command, command_t *prev, char next_sep)
+void init_command(command_t *command, command_t *prev, char next_sep[2])
 {
     command->in_fd = STDIN_FILENO;
     command->out_fd = STDOUT_FILENO;
     command->pipe_in_fd = -1;
     command->pipe_out = false;
     command->pipe_in = false;
-
+    command->condition = None;
+    strncpy(command->next_separator, next_sep, 2);
     if (prev != NULL && prev->pipe_out)
         command->pipe_in = true;
-
-    if (next_sep == '|')
+    if (next_sep[0] == '|' && !next_sep[1])
         command->pipe_out = true;
+    if (next_sep[0] == '&' && next_sep[1] == '&')
+        command->condition = AND;
+    if (next_sep[0] == '|' && next_sep[1] == '|')
+        command->condition = OR;
 }
 
 bool has_ambiguous_redirection_in(command_t *command, char *comm)
@@ -69,14 +73,13 @@ bool has_ambiguous_redirection_out(command_t *command, char *comm)
     return false;
 }
 
-command_t *parse_single_command(char *comm, command_t *prev, char next_sep,
+command_t *parse_single_command(char *comm, command_t *prev, char next_sep[2],
     int **statuses)
 {
     command_t *command = malloc(sizeof(command_t));
     int *i = statuses[0], *status = statuses[1];
 
     init_command(command, prev, next_sep);
-    command->next_separator = next_sep;
 
     if (has_ambiguous_redirection_in(command, comm) ||
         has_ambiguous_redirection_out(command, comm)) {

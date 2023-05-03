@@ -21,14 +21,13 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
     char *tmp = strdup(input);
     int status = 1;
     command_t *previous = NULL;
-
     for (int i = 0, pos = 0, tp = 0; tp < nb_cmds; i++, tp++) {
         char *comm = smart_strtok(input, is_command_delimiter);
         if (comm == NULL)
             break;
         pos += strlen(comm);
         int *statuses[2] = {&i, &status};
-        char sep = tmp[pos];
+        char sep[2] = {tmp[pos], tmp[pos + 1] != '|' ? '\0' : '|'};
         commands[i] = parse_single_command(comm, previous, sep, statuses);
         status *= commands[i] ? 1 : 0;
         pos += 1;

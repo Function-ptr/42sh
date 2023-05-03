@@ -21,7 +21,7 @@ bool is_delimiter(const char *string, int i)
 
 bool is_command_delimiter(const char *string, int i)
 {
-    char *delimiters = ";|";
+    char *delimiters = ";|&";
     for (int j = 0; delimiters[j]; j++) {
         if (string[i] == delimiters[j] && !(i > 0 && string[i - 1] == '\\'))
             return true;

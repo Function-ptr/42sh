@@ -16,7 +16,7 @@
 */
 #include "parsing.h"
 
-void detect_redirections(command_t *command, char *comm, char next_sep,
+void detect_redirections(command_t *command, char *comm, char next_sep[2],
     int *status)
 {
     char *redirection_out = my_strchr_escape(comm, '>');
