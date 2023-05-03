@@ -63,18 +63,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Cache apt packages
-        uses: actions/cache@v3
-        with:
-          path: /var/cache/apt/archives
-          key: ${{ runner.os }}-apt-${{ hashFiles('**/apt.packages') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
-      - name: Install dependencies
+      - name: Set up environment
         run: |
-          echo valgrind tcsh > apt.packages
           sudo apt-get update
-          sudo apt-get install -y $(cat apt.packages)
+          sudo apt-get install -y valgrind
+          sudo apt-get install -y tcsh
       - name: Compile program
         run: make
         timeout-minutes: 2
