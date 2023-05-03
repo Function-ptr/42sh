@@ -29,7 +29,7 @@ void restore_terminal(struct termios *old_term)
 void configure_terminal(struct termios *new_term, struct termios *old_term)
 {
     tcgetattr(STDIN_FILENO, old_term);
-    new_term = old_term;
+    memcpy(new_term, old_term, sizeof(struct termios));
 
     new_term->c_lflag &= ~(ECHO | ICANON | ISIG);
     new_term->c_cc[VMIN] = 1;
