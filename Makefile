@@ -32,11 +32,10 @@ SRCS = 	main.c	\
 	parse/load_redirections_for_command.c	\
 	parse/my_strchr_escape.c	\
 	parse/parse_single_command.c	\
+	parse/quotes.c	\
 	parse/remove_spaces_in_command.c	\
 	parse/separate_args.c	\
 	parse/smart_strtok.c	\
-	parse/my_strchr_escape.c	\
-	parse/quotes.c	\
 	errors/execution_errors.c	\
 	errors/parsing_error.c	\
 	errors/redirection_errors.c	\
@@ -80,11 +79,10 @@ OBJS = 	obj/main.o	\
 	obj/parse-load_redirections_for_command.o	\
 	obj/parse-my_strchr_escape.o	\
 	obj/parse-parse_single_command.o	\
+	obj/parse-quotes.o	\
 	obj/parse-remove_spaces_in_command.o	\
 	obj/parse-separate_args.o	\
 	obj/parse-smart_strtok.o	\
-	obj/parse-my_strchr_escape.o	\
-	obj/parse-quotes.o	\
 	obj/errors-execution_errors.o	\
 	obj/errors-parsing_error.o	\
 	obj/errors-redirection_errors.o	\
