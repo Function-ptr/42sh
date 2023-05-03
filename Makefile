@@ -28,14 +28,14 @@ SRCS = 	main.c	\
 	parse/cut_input_to_commands.c	\
 	parse/get_binary_name.c	\
 	parse/handle_redirections.c	\
-	parse/load_redirections_for_command.c	\
-	parse/parse_single_command.c	\
-	parse/remove_spaces_in_command.c	\
-	parse/smart_strtok.c	\
 	parse/inhibitors.c	\
-	parse/separate_args.c	\
+	parse/load_redirections_for_command.c	\
 	parse/my_strchr_escape.c	\
+	parse/parse_single_command.c	\
 	parse/quotes.c	\
+	parse/remove_spaces_in_command.c	\
+	parse/separate_args.c	\
+	parse/smart_strtok.c	\
 	errors/execution_errors.c	\
 	errors/parsing_error.c	\
 	errors/redirection_errors.c	\
@@ -48,7 +48,11 @@ SRCS = 	main.c	\
 	environment/linked_lists_management.c	\
 	environment/path.c	\
 	history/get_file_nb_lines.c	\
+	history/get_from_history.c	\
 	history/history.c	\
+	history/previous_args_operations.c	\
+	history/previous_commands_operations.c	\
+	history/show_history.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
@@ -71,14 +75,14 @@ OBJS = 	obj/main.o	\
 	obj/parse-cut_input_to_commands.o	\
 	obj/parse-get_binary_name.o	\
 	obj/parse-handle_redirections.o	\
-	obj/parse-load_redirections_for_command.o	\
-	obj/parse-parse_single_command.o	\
-	obj/parse-remove_spaces_in_command.o	\
-	obj/parse-smart_strtok.o	\
 	obj/parse-inhibitors.o	\
-	obj/parse-separate_args.o	\
+	obj/parse-load_redirections_for_command.o	\
 	obj/parse-my_strchr_escape.o	\
+	obj/parse-parse_single_command.o	\
 	obj/parse-quotes.o	\
+	obj/parse-remove_spaces_in_command.o	\
+	obj/parse-separate_args.o	\
+	obj/parse-smart_strtok.o	\
 	obj/errors-execution_errors.o	\
 	obj/errors-parsing_error.o	\
 	obj/errors-redirection_errors.o	\
@@ -91,7 +95,11 @@ OBJS = 	obj/main.o	\
 	obj/environment-linked_lists_management.o	\
 	obj/environment-path.o	\
 	obj/history-get_file_nb_lines.o	\
+	obj/history-get_from_history.o	\
 	obj/history-history.o	\
+	obj/history-previous_args_operations.o	\
+	obj/history-previous_commands_operations.o	\
+	obj/history-show_history.o	\
 
 OBJ_DIR = obj
 

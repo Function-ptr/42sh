@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** get_nb_lines.c
+** show_history.c
 ** File description:
-** get number of lines in a file
+** show history
 */
 /*
  __  __        _                            ___            ___
@@ -16,29 +16,58 @@
 */
 #include "history.h"
 
-size_t get_long_len(long val)
+size_t get_line_len(char *line)
 {
-    size_t len = 0;
-    for (; val > 0; len++, val /= 10);
-    return len;
+    size_t total_len = strlen(line);
+    char *d = strdup(line);
+    char *timepart = strtok(d, " ");
+    size_t timelen = strlen(timepart);
+    free(d);
+    return (total_len - timelen);
 }
 
-size_t get_file_nb_lines(char *filename)
+void show_file_history(history_t *history)
 {
-    size_t len = strlen(filename);
-    if (access(filename, F_OK))
-        return 0;
-    char *cmd = calloc(len + 16, sizeof(char));
-    strcpy(cmd, "/usr/bin/wc -l ");
-    strcpy(cmd + 15, filename);
-    FILE *fp = popen(cmd, "r");
-    free(cmd);
-    unsigned long lines = 0;
-    if (fp != NULL) {
-        fscanf(fp, "%lu", &lines);
-        pclose(fp);
+    FILE *f = fdopen(history->history_fd, "r");
+    if (f == NULL) return;
+    for (size_t i = 0; i < history->len_file; i++) {
+        char *buf = NULL;
+        size_t s = 0;
+        time_t time;
+        if (getline(&buf, &s, f) == -1) {
+            free(buf);
+            return;
+        }
+        time = strtol(buf, NULL, 10);
+        char *line = strdup(buf + (strlen(buf) - get_line_len(buf)));
+        char *strdate = ctime(&time), *ret = strchr(strdate, '\n');
+        *ret = 0;
+        printf("%li\t%s\t%s", i + 1, strdate, line);
+        free(buf);
+        free(line);
     }
-    return (size_t)lines;
+    fclose(f);
+}
+
+void show_history(history_t *history)
+{
+    if (history == NULL) {
+        fprintf(stderr, "history: Unable to load previous history\n");
+        return;
+    }
+    if (history->history_fd == -1)
+        fprintf(stderr, "history: Unable to load previous history\n");
+    else
+        show_file_history(history);
+    history->history_fd = open(history->filename, O_CREAT | O_APPEND |
+        O_RDONLY, S_IRUSR | S_IWUSR);
+    for (size_t i = 0; i < history->len_session_history; i++) {
+        char *strdate = ctime(&(history->session_history[i]).time);
+        char *ret = strchr(strdate, '\n');
+        *ret = 0;
+        printf("%li\t%s\t%s", i + 1 + history->len_file, strdate,
+            history->session_history[i].line);
+    }
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

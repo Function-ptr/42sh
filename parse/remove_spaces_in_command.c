@@ -40,8 +40,7 @@ bool is_there_no_command(char **word_array)
 char *word_array_to_command(char **word_array, int *pos)
 {
     int word_array_len = array_len(word_array);
-    int nbchars = word_array_len - 1;
-
+    int nbchars = word_array_len - 1, locpos = 0;
     for (int i = 0; i < word_array_len; i++)
         nbchars += strlen(word_array[i]);
 
@@ -49,11 +48,14 @@ char *word_array_to_command(char **word_array, int *pos)
 
     for (int i = 0; i < word_array_len; i++) {
         int len = strlen(word_array[i]);
-        memcpy(&newcommand[*pos], word_array[i], len);
-        newcommand[*pos + len] = ' ';
-        *pos += len + 1;
-        free(word_array[i]);
+        memcpy(&newcommand[locpos], word_array[i], len);
+        newcommand[locpos + len] = ' ';
+        locpos += len + 1;
+        if (pos != NULL)
+            free(word_array[i]);
     }
+    if (pos != NULL)
+        *pos = locpos;
     return newcommand;
 }
 

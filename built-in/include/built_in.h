@@ -37,6 +37,7 @@
     int exit_with_status(command_t *command);
     int echo(command_t *command);
     bool is_a_builtin(char *binary);
+    void show_history(history_t *history);
 
     /////////////
     /// Utils ///

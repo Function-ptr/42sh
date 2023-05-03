@@ -19,11 +19,11 @@
 
 void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 {
-    if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd);
-        *found = true;
-    }
-    if (!*found)
+    if (strcmp(binname, "exit") == 0) {
+        *status = exit_with_status(cmd); *found = true;
+    } if (strcmp(binname, "echo") == 0) {
+        *status = echo(cmd); *found = true;
+    } if (!*found)
         fprintf(stderr, "%s: Command not found.\n", binname);
     if (cmd->out_fd != STDOUT_FILENO)
         close(cmd->out_fd);
@@ -45,8 +45,8 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         set_env(env->env, cmd); found = true;
     } if (strcmp(binname, "unsetenv") == 0) {
         unset_env(env->env, input); found = true;
-    } if (strcmp(binname, "exit") == 0) {
-        status = exit_with_status(cmd); found = true;
+    } if (strcmp(binname, "history") == 0) {
+        show_history(env->history); found = true;
     }
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b);

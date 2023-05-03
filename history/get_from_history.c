@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** get_nb_lines.c
+** get_from_history.c
 ** File description:
-** get number of lines in a file
+** get from history
 */
 /*
  __  __        _                            ___            ___
@@ -16,29 +16,70 @@
 */
 #include "history.h"
 
-size_t get_long_len(long val)
+char *history_file_get_line_from_offset(history_t *history, size_t offset)
 {
-    size_t len = 0;
-    for (; val > 0; len++, val /= 10);
-    return len;
+    FILE *f = fdopen(history->history_fd, "r");
+    if (!f)
+        return NULL;
+    for (int i = 0; i < history->len_file - offset - 1; i++) {
+        char *l = NULL;
+        size_t s = 0;
+        getline(&l, &s, f);
+        free(l);
+    }
+    char *line = NULL;
+    size_t s = 0;
+    if (getline(&line, &s, f) == -1) {
+        free(line);
+        fclose(f);
+        return (NULL);
+    }
+    fclose(f);
+    line[strlen(line) - 1] = 0;
+    history->current_pos = history->len_file - offset;
+    return (line);
 }
 
-size_t get_file_nb_lines(char *filename)
+char *history_session_get_line_from_offset(history_t *history, size_t offset)
 {
-    size_t len = strlen(filename);
-    if (access(filename, F_OK))
-        return 0;
-    char *cmd = calloc(len + 16, sizeof(char));
-    strcpy(cmd, "/usr/bin/wc -l ");
-    strcpy(cmd + 15, filename);
-    FILE *fp = popen(cmd, "r");
-    free(cmd);
-    unsigned long lines = 0;
-    if (fp != NULL) {
-        fscanf(fp, "%lu", &lines);
-        pclose(fp);
+    size_t i = 1, j = history->len_session_history - 1;
+    for (; i < offset; j--, i++);
+    char *line = strdup(history->session_history[j].line);
+    return (line);
+}
+
+char *process_file_line(char *line)
+{
+    char *first_sp = strchr(line, ' ') + 1;
+    size_t len = strlen(first_sp);
+    char *l = calloc(len + 3, sizeof(char));
+    strcpy(l, first_sp);
+    l[len] = '\n';
+    free(line);
+    return (l);
+}
+
+char *history_get_line_from_offset(history_t *history, size_t offset)
+{
+    if (history == NULL)
+        return (NULL);
+    if (offset > history->len_file + history->len_session_history || !offset)
+        return (NULL);
+    if (offset > history->len_session_history && history->history_fd != -1) {
+        char *l = history_file_get_line_from_offset(history,
+            offset - history->len_session_history);
+        l = process_file_line(l);
+        history->history_fd = open(history->filename, O_CREAT | O_APPEND |
+            O_RDONLY, S_IRUSR | S_IWUSR);
+        return l;
     }
-    return (size_t)lines;
+    if (history->history_fd == -1) {
+        fprintf(stderr, "history: Unable to load previous history\n");
+        if (offset > history->len_session_history)
+            return NULL;
+    }
+    char *l = history_session_get_line_from_offset(history, offset);
+    return l;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
