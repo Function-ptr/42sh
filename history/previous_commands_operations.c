@@ -51,8 +51,7 @@ size_t get_offset_from_str(char *input, history_t *history)
         if (s == NULL) return -1;
         int r = strncmp(s, input + 1, len - 1);
         free(s);
-        if (!r)
-            return i;
+        if (!r) return i;
     }
     return -1;
 }
