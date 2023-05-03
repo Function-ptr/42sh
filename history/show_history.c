@@ -38,26 +38,34 @@ void show_file_history(history_t *history)
             free(buf);
             return;
         }
-        char *line = calloc(get_line_len(buf), sizeof(char));
-        sscanf(buf, "%li %s", &time, line);
+        time = strtol(buf, NULL, 10);
+        char *line = strdup(buf + (strlen(buf) - get_line_len(buf)));
         char *strdate = ctime(&time), *ret = strchr(strdate, '\n');
         *ret = 0;
-        printf("%li %s %s\n", i + 1, strdate, line);
+        printf("%li\t%s\t%s", i + 1, strdate, line);
         free(buf);
+        free(line);
     }
     fclose(f);
 }
 
 void show_history(history_t *history)
 {
-    show_file_history(history);
+    if (history == NULL) {
+        fprintf(stderr, "history: Unable to load previous history\n");
+        return;
+    }
+    if (history->history_fd == -1)
+        fprintf(stderr, "history: Unable to load previous history\n");
+    else
+        show_file_history(history);
     history->history_fd = open(history->filename, O_CREAT | O_APPEND |
         O_RDONLY, S_IRUSR | S_IWUSR);
     for (size_t i = 0; i < history->len_session_history; i++) {
         char *strdate = ctime(&(history->session_history[i]).time);
         char *ret = strchr(strdate, '\n');
         *ret = 0;
-        printf("%li %s %s", i + 1 + history->len_file, strdate,
+        printf("%li\t%s\t%s", i + 1 + history->len_file, strdate,
             history->session_history[i].line);
     }
 }
