@@ -35,6 +35,7 @@ SRCS = 	main.c	\
 	parse/inhibitors.c	\
 	parse/separate_args.c	\
 	parse/my_strchr_escape.c	\
+	parse/quotes.c	\
 	errors/execution_errors.c	\
 	errors/parsing_error.c	\
 	errors/redirection_errors.c	\
@@ -77,6 +78,7 @@ OBJS = 	obj/main.o	\
 	obj/parse-inhibitors.o	\
 	obj/parse-separate_args.o	\
 	obj/parse-my_strchr_escape.o	\
+	obj/parse-quotes.o	\
 	obj/errors-execution_errors.o	\
 	obj/errors-parsing_error.o	\
 	obj/errors-redirection_errors.o	\
