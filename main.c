@@ -7,6 +7,7 @@
 
 #include "shell.h"
 #include "history.h"
+#include "line_edition.h"
 
 int main(int ac, char **av, char **env)
 {
@@ -19,8 +20,11 @@ int main(int ac, char **av, char **env)
         environment = initialize_fallback_environment();
     if (environment == NULL)
         return (84);
+    struct termios old_term, new_term;
+    configure_terminal(&new_term, &old_term);
     init_history(environment);
     int status = shell(environment);
     clear_environment(environment);
+    restore_terminal(&old_term);
     return (status);
 }

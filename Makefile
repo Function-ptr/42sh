@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-SOURCES = . built-in execute parse errors environment history
+SOURCES = . built-in execute parse errors environment history line_edition
 
 SRCS = 	main.c	\
 	shell.c	\
@@ -53,6 +53,8 @@ SRCS = 	main.c	\
 	history/previous_args_operations.c	\
 	history/previous_commands_operations.c	\
 	history/show_history.c	\
+	line_edition/configure_terminal.c	\
+	line_edition/read_keys.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
@@ -100,6 +102,8 @@ OBJS = 	obj/main.o	\
 	obj/history-previous_args_operations.o	\
 	obj/history-previous_commands_operations.o	\
 	obj/history-show_history.o	\
+	obj/line_edition-configure_terminal.o	\
+	obj/line_edition-read_keys.o	\
 
 OBJ_DIR = obj
 
@@ -161,6 +165,7 @@ HEADER = 	-I./include/	\
 	-I./built-in/include	\
 	-I./errors/include	\
 	-I./environment/include	\
+	-I./line_edition/include	\
 
 CFLAGS += -Wall \
 	$(LIB) $(HEADER)
