@@ -77,6 +77,7 @@ jobs:
           commit="${{ github.event.head_commit.message }}"
           author="${{ github.event.pusher.name }}"
           if [[ "$commit" =~ [SKIP] && ("$author" == "LouisDupraz" || "$author" == "PasVegan") ]];then
+            echo "Tests force skipped by user $author"
             exit 0
           fi
 
