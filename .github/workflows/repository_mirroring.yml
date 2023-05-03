@@ -80,7 +80,7 @@ jobs:
           ./print_tests.sh
 
           # Run Valgrind for each test after tests have been executed and printed
-          parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
+          parent_folder=$(find /tmp -maxdepth 1 -type d -name 'test*' -print -quit)
           for test in "$parent_folder"/*/;
           do
             test_id=$(basename "$test")
