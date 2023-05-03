@@ -48,12 +48,9 @@ for test in "$parent_folder"/*/; do
     # Load test details
     test_details=$(grep -A4 "^\[$test_id\]" tests | sed -n '2,5p')
     test_name=$(echo "$test_details" | sed -n '1p' | cut -d= -f2)
-    test_setup=$(echo "$test_details" | sed -n '2p' | cut -d= -f2)
-    test_clean=$(echo "$test_details" | sed -n '3p' | cut -d= -f2)
-    test_commands=$(echo "$test_details" | sed -n '4p' | cut -d= -f2)
 
     # Report error with test details
-    echo "::error file=Test $test_id,title=Failed Test $test_id::$test_id is failed. Test Name: $test_name, Setup: $test_setup, Clean: $test_clean, Test Commands: $test_commands. Expected output: $tcsh_output, Actual output: $mysh_output"
+    echo "::error file=Test $test_id,title=Failed Test $test_id::$test_id is failed. Test Name: $test_name"
     error_occurred=true
   fi
 done
