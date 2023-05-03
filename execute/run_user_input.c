@@ -43,6 +43,9 @@ int run_user_input(char *input, envdata_t *env, int *exiting)
     for (; commands[nb_commands] != NULL; nb_commands++);
     int *data[3] = {&i, &nb_commands, exiting};
     for (; i < nb_commands && status != -1; i++) {
+        if (i > 0 && ((commands[i - 1]->condition == AND && status) ||
+            (commands[i - 1]->condition == OR && !status)))
+            continue;
         status = 0;
         if (!commands[i]->pipe_out)
             status = run_command(commands[i], exiting, env);
