@@ -123,3 +123,29 @@ TESTS=
   echo 'ls -l'
   echo 'exit 45|cat /etc/resolv.conf'
 [12-END]
+
+[13]
+NAME="Conditional separators &&"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'cd /random && ls'
+  echo 'ls && setenv TESTVAR it_works'
+  echo 'cd / && ls'
+  echo 'cat sometext.txt && pwd'
+  echo 'env && echo Here is the env'
+  echo 'echo test && pwd'
+[13-END]
+
+[14]
+NAME="Conditional separators ||"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'cd /random || echo Dir not found'
+  echo 'ls || /usr/bin/ls'
+  echo 'cd / || pwd'
+  echo 'cat sometext.txt || echo File not found'
+  echo 'env || echo Failed to read env'
+  echo 'setenv PATH /tmp; ls || /usr/bin/ls'
+[14-END]
