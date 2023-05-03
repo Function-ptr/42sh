@@ -23,6 +23,7 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <errno.h>
+    #include <string.h>
 
     enum keys {
         KEY_ARROW_UP = 1000,
@@ -34,6 +35,7 @@
     void configure_terminal(struct termios *new_term, struct termios *old_term);
     void restore_terminal(struct termios *old_term);
     int read_key(void);
+    void process_input(char *buffer, int *pos);
 
 #endif //INC_42SH_LINE_EDITION_H
 

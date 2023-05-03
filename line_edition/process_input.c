@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** configure_terminal.c
+** process_input.c
 ** File description:
-** configure_terminal file for 42sh
+** process_input file for 42sh
 */
 /*
  _____               __      __
@@ -15,27 +15,56 @@
                                       |___/
 */
 
-
 #include "line_edition.h"
 
-void restore_terminal(struct termios *old_term)
+void process_input(char *buffer, int *pos)
 {
-    printf("\e[m");
-    fflush(stdout);
-
-    tcsetattr(0, TCSANOW, old_term);
-}
-
-void configure_terminal(struct termios *new_term, struct termios *old_term)
-{
-    tcgetattr(STDIN_FILENO, old_term);
-    *new_term = *old_term;
-
-    new_term->c_lflag &= ~(ECHO | ICANON | ISIG);
-    new_term->c_cc[VMIN] = 1;
-    new_term->c_cc[VTIME] = 0;
-
-    tcsetattr(0, TCSANOW, new_term);
+    int c;
+    int buf_len = strlen(buffer);
+    while ((c = read_key()) != '\r') {
+        switch (c) {
+            case KEY_ARROW_LEFT:
+                if (*pos > 0) {
+                    printf("\x1b[1D");
+                    fflush(stdout);
+                    (*pos)--;
+                }
+                break;
+            case KEY_ARROW_RIGHT:
+                if (*pos < buf_len) {
+                    printf("\x1b[1C");
+                    fflush(stdout);
+                    (*pos)++;
+                }
+                break;
+            case 127:  // Backspace
+                if (*pos > 0) {
+                    memmove(&buffer[*pos - 1], &buffer[*pos], buf_len - *pos + 1);
+                    buf_len--;
+                    printf("\x1b[1D\x1b[K");
+                    fflush(stdout);
+                    printf("%s", &buffer[*pos - 1]);
+                    fflush(stdout);
+                    printf("\x1b[%dD", buf_len - *pos + 1);
+                    fflush(stdout);
+                    (*pos)--;
+                }
+                break;
+            default:
+                memmove(&buffer[*pos + 1], &buffer[*pos], buf_len - *pos + 1);
+                buffer[*pos] = c;
+                buf_len++;
+                printf("\x1b[K");
+                fflush(stdout);
+                printf("%s", &buffer[*pos]);
+                fflush(stdout);
+                printf("\x1b[%dD", buf_len - *pos - 1);
+                fflush(stdout);
+                (*pos)++;
+                break;
+        }
+    }
+    buffer[buf_len] = '\0'; // Ensure the buffer is null-terminated
 }
 
 /*
