@@ -24,6 +24,7 @@
     #include <unistd.h>
     #include <fcntl.h>
     #include <stdio.h>
+    #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
     ///////////////
     /// Parsing ///
@@ -53,6 +54,7 @@
     char *my_strchr_escape(char *, char);
     char *word_array_to_command(char **word_array, int *pos);
     char *my_strrchr_escape(char *, char);
+    bool process_quotes(char**);
 
     /////////////
     /// Utils ///
