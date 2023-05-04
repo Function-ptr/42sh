@@ -24,17 +24,18 @@ pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
         free_command(command);
         return (-1);
     }
-    if (load_redirections_for_command(command) == -1)
-        return (-1);
+    if (load_redirections_for_command(command) == -1) return (-1);
     char *bname = strdup(command->command);
-    if (!strcmp(get_binary_name(bname), "exit"))
-        *exiting = 1;
+    if (!strcmp(get_binary_name(bname), "exit")) *exiting = 1;
     if (is_a_builtin(get_binary_name(bname))) {
         *builtin_status = builtin_funcs(command, env);
-        free(bname);
+        free_command(command); free(bname);
         return (-2);
     }
     char *path = get_binary_filename(get_binary_name(bname), env->path_dirs);
+    if (!path) { free(bname);
+        return (-1);
+    }
     pid_t program_pid = fork_and_run(path, command, env->env);
     free(bname);
     return (program_pid);
@@ -89,13 +90,13 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
     open_pipe(commands[*i]);
     pid_t first = start_piped_command(commands[*i], &exit_now, env, &status);
     if (first == -1)
-        return (1);
+        return (-1);
     for (; *i < nb_commands - 1; *i += 1) {
         process_command(pos_status_exit, commands, env, &first);
-        if (first == -1) {
+        if (first == -1 && status != -1)
             free_remaining_piped_commands(commands, nb_commands, i);
+        if (first == -1)
             return status;
-        }
     }
     if (status != -2 && first != -2)
         wait_and_free_command(commands[*i], env->path_dirs, &status, first);
