@@ -126,8 +126,8 @@ TESTS=
 
 [13]
 NAME="Conditional separators &&"
-SETUP=""
-CLEAN=""
+SETUP="echo 'Starting && tests'"
+CLEAN="echo '&& tests done'"
 TESTS=
   echo 'cd /random && ls'
   echo 'ls && setenv TESTVAR it_works'
@@ -139,8 +139,8 @@ TESTS=
 
 [14]
 NAME="Conditional separators ||"
-SETUP=""
-CLEAN=""
+SETUP="echo 'Starting || tests'"
+CLEAN="echo '|| tests done'"
 TESTS=
   echo 'cd /random || echo Dir not found'
   echo 'ls || /usr/bin/ls'
