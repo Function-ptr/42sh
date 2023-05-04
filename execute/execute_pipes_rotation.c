@@ -90,13 +90,13 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
     open_pipe(commands[*i]);
     pid_t first = start_piped_command(commands[*i], &exit_now, env, &status);
     if (first == -1)
-        return (-1);
+        return (1);
     for (; *i < nb_commands - 1; *i += 1) {
         process_command(pos_status_exit, commands, env, &first);
         if (first == -1 && status != -1)
             free_remaining_piped_commands(commands, nb_commands, i);
         if (first == -1)
-            return status;
+            return (status == -1) ? 1 : status;
     }
     if (status != -2 && first != -2)
         wait_and_free_command(commands[*i], env->path_dirs, &status, first);
