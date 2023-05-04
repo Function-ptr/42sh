@@ -22,7 +22,7 @@ int write_prompt(envdata_t *env)
 int shell(envdata_t *env)
 {
     int status = 0, exiting = 0;
-    char input[4096];
+    char input[2048];
     size_t buffer_length = 0;
     size_t cursor_position = 0;
 
@@ -73,35 +73,50 @@ int shell(envdata_t *env)
         } else if (c == 'q') {
             break;
         } else if (c == 0x7f) {
-            // if backspace and cursor_position > 0
             if (cursor_position > 0) {
-                // remove char from buffer using memmove
                 memmove(input + cursor_position - 1, input + cursor_position,
                         (buffer_length - cursor_position) * sizeof(char));
                 buffer_length--;
-                //input[buffer_length] = '\0';
-
-                // go one char left
-                printf("\x1b[D");
-                fflush(stdout);
                 cursor_position--;
-                // clear the line to the right of the cursor
-                //printf("%s", input + cursor_position);
-                // print the updated buffer from the current cursor position
-//                // move the cursor back to the correct position
-                printf("\x1b[%zuD", buffer_length - cursor_position);
+                printf("\x1B[D\x1B[P");
+                fflush(stdout);
             }
             fflush(stdout);
             continue;
         } else {
             // Add the character to the input buffer
             if (buffer_length < sizeof(input) - 1) {
-                buffer_length++;
-                input[cursor_position] = (char)c;
-                cursor_position++;
+                if (cursor_position < buffer_length) {
+                    // Move the characters to the right of the cursor
+                    memmove(input + cursor_position + 1, input + cursor_position, buffer_length - cursor_position);
+
+                    // Insert the new character
+                    input[cursor_position] = (char)c;
+
+                    // Clear the line to the right of the cursor
+                    printf("\x1b[K");
+                    fflush(stdout);
+
+                    // Print the updated buffer from the current cursor position
+                    printf("%s", input + cursor_position);
+                    fflush(stdout);
+
+                    // Increment the buffer_length and cursor_position
+                    buffer_length++;
+                    cursor_position++;
+
+                    // Move the cursor back to the correct position
+                    printf("\x1b[%dD", (int)buffer_length - (int)
+                    cursor_position);
+                    fflush(stdout);
+                } else {
+                    buffer_length++;
+                    input[cursor_position] = (char)c;
+                    cursor_position++;
+                    printf("\x1b[K%s", input + cursor_position - 1);
+                }
+                fflush(stdout);
             }
-            printf("\x1b[K%s", input + cursor_position - 1);
-            fflush(stdout);
         }
     }
     return (status);
