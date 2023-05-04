@@ -36,13 +36,15 @@ int execution_loop(command_t **commands, int nb_commands, int *exiting,
 {
     int status = 0, i = 0;
     int *data[3] = {&i, &nb_commands, exiting};
+    conditional_separation prev_cond = None;
     for (; i < nb_commands && status != -1; i++) {
-        if (i > 0 && ((commands[i - 1]->condition == AND && status) ||
-            (commands[i - 1]->condition == OR && !status))) {
+        if (i > 0 && ((prev_cond == AND && status) ||
+            (prev_cond == OR && !status))) {
             free_command(commands[i]);
             continue;
         }
         status = 0;
+        prev_cond = commands[i]->condition;
         if (!commands[i]->pipe_out)
             status = run_command(commands[i], exiting, env);
         else
