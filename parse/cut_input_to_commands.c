@@ -46,20 +46,17 @@ command_t **cut_input_to_commands(char *input)
     int len = (int)strlen(input);
     input[len - 1] = 0;
     for (int i = 0; input[i] != 0; i++)
-        nb_cmds += ((input[i] == '|' && !(i > 0 && input[i - 1] == '\\')) ||
-            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\')));
-    command_t **cmds = malloc(sizeof(command_t*) * (nb_cmds + 1));
-
-    for (int i = 0; i <= nb_cmds; i++)
-        cmds[i] = NULL;
-
+        nb_cmds += (((i > 0 && input[i] == '|' && input[i - 1] != '|' &&
+            input[i + 1] != '|') && !(i > 0 && input[i - 1] == '\\')) ||
+            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\')) ||
+            (i > 0 && input[i] == '|' && input[i - 1] == '|') ||
+            (i > 0 && input[i] == '&' && input[i - 1] == '&'));
+    command_t **cmds = calloc(nb_cmds + 1, sizeof(command_t*));
     int status = separate_commands(nb_cmds, input, cmds);
-
     if (!status) {
         free_commands(cmds);
         return NULL;
     }
-
     return cmds;
 }
 
