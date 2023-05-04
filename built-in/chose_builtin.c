@@ -52,8 +52,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         status = alias(cmd, env); found = true;
     }
     builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b);
-    return (status);
+    free(b); return (status);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
