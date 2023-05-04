@@ -29,7 +29,7 @@ pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
     if (!strcmp(get_binary_name(bname), "exit")) *exiting = 1;
     if (is_a_builtin(get_binary_name(bname))) {
         *builtin_status = builtin_funcs(command, env);
-        free_command(command); free(bname);
+        free(bname);
         return (-2);
     }
     char *path = get_binary_filename(get_binary_name(bname), env->path_dirs);
