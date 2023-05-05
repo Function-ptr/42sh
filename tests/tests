@@ -143,6 +143,6 @@ CLEAN="while read varenv ; do export "$varenv" 2>/dev/null ; done  < <(/bin/cat 
 TESTS=
   echo 'ls || /usr/bin/ls'
   echo 'cd / || pwd'
-  echo 'rm -rf yolo || echo Unable to delete directory'
+  echo 'echo OK || echo Unable to delete directory'
   echo 'cat sometext.txt || echo File not found'
 [14-END]
