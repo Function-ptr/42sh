@@ -64,7 +64,7 @@ done
 
 printf "\nOBJS = " >> Makefile
 for i in $(seq 0 "$NBDIRS"); do
-    CURRDIR=$(echo "$SOURCES" | cut -d ' ' -f$((i + 1)))
+    CURRDIR=$(echo "$SOURCES" | cut -d ' ' -f$i)
     for FILE in "$CURRDIR"/*; do
         if [[ $FILE =~ \.c ]]; then
             if [[ $FILE =~ \./ ]]; then
