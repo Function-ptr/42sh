@@ -40,6 +40,7 @@ int execution_loop(command_t **commands, int nb_commands, int *exiting,
     for (; i < nb_commands && status != -1; i++) {
         if (i > 0 && ((prev_cond == AND && status) ||
             (prev_cond == OR && !status))) {
+            status = 1;
             free_command(commands[i]);
             continue;
         }
