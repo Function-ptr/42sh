@@ -19,7 +19,7 @@
 int detect_command_type_and_run(command_t *command, int *exiting,
     envdata_t *env)
 {
-    exec_alias(command, env);
+    if (strncmp(command->command, "unalias", 7)) exec_alias(command, env);
     int status = 0;
     char *bname = strdup(command->command);
     if (!strcmp(get_binary_name(bname), "exit"))
