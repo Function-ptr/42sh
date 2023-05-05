@@ -27,7 +27,8 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
             break;
         pos += strlen(input);
         int *statuses[2] = {&i, &status};
-        char sep[2] = {tmp[pos], strchr("&|", tmp[pos + 1]) ? tmp[pos + 1] : 0};
+        char sep[2] = {tmp[pos], tmp[pos] && strchr("&|", tmp[pos + 1])
+            ? tmp[pos + 1] : 0};
         commands[i] = parse_single_command(input, previous, sep, statuses);
         status *= commands[i] ? 1 : 0;
         pos += 1;
