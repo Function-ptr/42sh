@@ -27,7 +27,7 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
             break;
         pos += strlen(input);
         int *statuses[2] = {&i, &status};
-        char sep = tmp[pos];
+        char sep[2] = {tmp[pos], strchr("&|", tmp[pos + 1]) ? tmp[pos + 1] : 0};
         commands[i] = parse_single_command(input, previous, sep, statuses);
         status *= commands[i] ? 1 : 0;
         pos += 1;
@@ -46,20 +46,17 @@ command_t **cut_input_to_commands(char *input)
     int len = (int)strlen(input);
     input[len - 1] = 0;
     for (int i = 0; input[i] != 0; i++)
-        nb_cmds += ((input[i] == '|' && !(i > 0 && input[i - 1] == '\\')) ||
-            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\')));
-    command_t **cmds = malloc(sizeof(command_t*) * (nb_cmds + 1));
-
-    for (int i = 0; i <= nb_cmds; i++)
-        cmds[i] = NULL;
-
+        nb_cmds += (((i > 0 && input[i] == '|' && input[i - 1] != '|' &&
+            input[i + 1] != '|') && !(i > 0 && input[i - 1] == '\\')) ||
+            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\')) ||
+            (i > 0 && input[i] == '|' && input[i - 1] == '|') ||
+            (i > 0 && input[i] == '&' && input[i - 1] == '&'));
+    command_t **cmds = calloc(nb_cmds + 1, sizeof(command_t*));
     int status = separate_commands(nb_cmds, input, cmds);
-
     if (!status) {
         free_commands(cmds);
         return NULL;
     }
-
     return cmds;
 }
 
