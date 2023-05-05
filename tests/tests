@@ -141,8 +141,8 @@ NAME="Conditional separators ||"
 SETUP=""
 CLEAN=""
 TESTS=
-  echo 'cd /random || echo Dir not found'
-  echo 'setenv PATH /tmp; ls || /usr/bin/ls'
-  echo 'cat sometext.txt || echo File not found'
+  echo 'ls || /usr/bin/ls'
+  echo 'cd / || pwd'
   echo 'env || echo Failed to read env'
+  echo 'cat sometext.txt || echo File not found'
 [14-END]
