@@ -19,6 +19,7 @@
     #define INC_42SH_EXECUTE_H
 
     #include "types.h"
+    #include "../alias/include/alias.h"
     #include <sys/types.h>
     #include <sys/wait.h>
     #include <stdio.h>

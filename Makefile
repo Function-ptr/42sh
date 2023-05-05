@@ -5,10 +5,12 @@
 ## Makefile
 ##
 
-SOURCES = . built-in execute parse errors environment history
+SOURCES = . alias built-in execute parse errors environment history
 
 SRCS = 	main.c	\
 	shell.c	\
+	alias/exec_alias.c	\
+	alias/init_alias.c	\
 	built-in/alias.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
@@ -48,6 +50,8 @@ SRCS = 	main.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
+	obj/alias-exec_alias.o	\
+	obj/alias-init_alias.o	\
 	obj/built-in-alias.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
@@ -146,6 +150,7 @@ HEADER = 	-I./include/	\
 	-I./built-in/include	\
 	-I./errors/include	\
 	-I./environment/include	\
+	-I./alias/include	\
 
 CFLAGS += -Wall \
 	$(LIB) $(HEADER)
