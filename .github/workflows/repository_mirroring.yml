@@ -99,11 +99,6 @@ jobs:
 
           ./print_valgrind.sh
         timeout-minutes: 5
-      - name: Clean trash
-        run: |
-          rm 42sh
-          cd ..
-          make fclean
 
   mirror_repository:
     runs-on: ubuntu-latest
