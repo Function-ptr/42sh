@@ -147,7 +147,8 @@ echo -e '$(NAME): $(OBJ)';
 } >> Makefile
 if [ "$NBLIBS" -ne 0 ]; then
     for i in $(seq 1 "$NBLIBS"); do
-        CURRLIB="$(echo "$LIBS" | cut -d ' ' -f$((i + 1)))"
+        echo "$i"
+        CURRLIB="$(echo "$LIBS" | cut -d ' ' -f$i)"
         echo -e "\t@make -s -C $LIBPOS/$CURRLIB">> Makefile
     done
 fi
