@@ -38,7 +38,7 @@ int alias(command_t *cmd, envdata_t *env)
     if (cmd->command[5] == '\0') return show_alias(env);
     char *data_a = get_regex(cmd->command,
     "alias[[:space:]]*['\"]?([^=[:space:]\'\"]+)['\"]?");
-    char *data_b = get_regex(cmd->command, "alias [^=']+='([^']*)'");
+    char *data_b = get_regex(cmd->command, "=\\s*['\"]?([^'\"]+)['\"]?");
     if (data_a == NULL && data_b == NULL) return 1;
     if (data_a == NULL) { free(data_b); return 1; };
     if (data_b == NULL) { free(data_a); return 1; };
