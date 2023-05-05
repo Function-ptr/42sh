@@ -12,5 +12,6 @@
     #define header
 
 void init_alias(envdata_t *env);
+void exec_alias(command_t *cmd, envdata_t *env);
 
 #endif /* !header */

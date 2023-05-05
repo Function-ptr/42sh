@@ -47,3 +47,11 @@ int alias(command_t *cmd, envdata_t *env)
     free(data_b);
     return 0;
 }
+
+int unalias(command_t *cmd, envdata_t *env)
+{
+    if (cmd->command[7] == '\0') return 1;
+    char *alias = cmd->command + 8;
+    delete_element(&env->aliases, alias);
+    return 0;
+}

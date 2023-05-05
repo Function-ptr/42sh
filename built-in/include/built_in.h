@@ -39,6 +39,7 @@
     int echo(command_t *command);
     bool is_a_builtin(char *binary);
     int alias(command_t *cmd, envdata_t *env);
+    int unalias(command_t *cmd, envdata_t *env);
 
     /////////////
     /// Utils ///

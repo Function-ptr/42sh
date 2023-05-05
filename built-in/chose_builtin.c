@@ -47,9 +47,10 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         unset_env(env->env, input); found = true;
     } if (strcmp(binname, "exit") == 0) {
         status = exit_with_status(cmd); found = true;
-    }
-    if (strcmp(binname, "alias") == 0) {
+    } if (strcmp(binname, "alias") == 0) {
         status = alias(cmd, env); found = true;
+    } if (strcmp(binname, "unalias") == 0) {
+        status = unalias(cmd, env); found = true;
     }
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b); return (status);
