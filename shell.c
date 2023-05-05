@@ -8,6 +8,7 @@
 #include "shell.h"
 #include "history.h"
 #include "line_edition.h"
+#include <locale.h>
 
 int write_prompt(envdata_t *env)
 {
@@ -22,9 +23,10 @@ int write_prompt(envdata_t *env)
 int shell(envdata_t *env)
 {
     int status = 0, exiting = 0;
-    char input[2048];
+    char input[4096];
     size_t buffer_length = 0;
     size_t cursor_position = 0;
+    setlocale(LC_ALL, ""); // Set the locale to the user's default locale
 
     int c;
     if (isatty(0))
@@ -73,7 +75,7 @@ int shell(envdata_t *env)
         } else if (c == 'q') {
             break;
         } else if (c == 0x7f) {
-            if (cursor_position > 0) {
+            if (cursor_position > 0 && buffer_length > 0 && cursor_position < buffer_length) {
                 memmove(input + cursor_position - 1, input + cursor_position,
                         (buffer_length - cursor_position) * sizeof(char));
                 buffer_length--;
@@ -81,17 +83,39 @@ int shell(envdata_t *env)
                 printf("\x1B[D\x1B[P");
                 fflush(stdout);
             }
+            if (cursor_position == buffer_length && buffer_length > 0 && cursor_position > 0) {
+                buffer_length--;
+                cursor_position--;
+                input[cursor_position] = '\0';
+                printf("\x1B[D\x1B[P");
+                fflush(stdout);
+            }
             fflush(stdout);
             continue;
         } else {
-            // Add the character to the input buffer
-            if (buffer_length < sizeof(input) - 1) {
+            // Read the rest of the UTF-8 character bytes
+            int remaining_bytes = 0;
+            if ((c & 0xE0) == 0xC0) {
+                remaining_bytes = 1;
+            } else if ((c & 0xF0) == 0xE0) {
+                remaining_bytes = 2;
+            } else if ((c & 0xF8) == 0xF0) {
+                remaining_bytes = 3;
+            }
+
+            // Read the remaining bytes of the character and add them to the input buffer
+            char utf8_char[4] = {c};
+            for (int i = 0; i < remaining_bytes; i++) {
+                utf8_char[i + 1] = getchar();
+            }
+
+            if (buffer_length + remaining_bytes + 1 < sizeof(input)) {
                 if (cursor_position < buffer_length) {
                     // Move the characters to the right of the cursor
-                    memmove(input + cursor_position + 1, input + cursor_position, buffer_length - cursor_position);
+                    memmove(input + cursor_position + remaining_bytes + 1, input + cursor_position, buffer_length - cursor_position);
 
                     // Insert the new character
-                    input[cursor_position] = (char)c;
+                    memcpy(input + cursor_position, utf8_char, remaining_bytes + 1);
 
                     // Clear the line to the right of the cursor
                     printf("\x1b[K");
@@ -102,18 +126,24 @@ int shell(envdata_t *env)
                     fflush(stdout);
 
                     // Increment the buffer_length and cursor_position
-                    buffer_length++;
+                    buffer_length += remaining_bytes == 0 ? 1 : remaining_bytes;
                     cursor_position++;
 
+                    // Add a null terminator
+                    input[buffer_length] = '\0';
+
                     // Move the cursor back to the correct position
-                    printf("\x1b[%dD", (int)buffer_length - (int)
-                    cursor_position);
+                    printf("\x1b[%dD", (int)buffer_length - (int)cursor_position);
                     fflush(stdout);
                 } else {
-                    buffer_length++;
-                    input[cursor_position] = (char)c;
+                    memcpy(input + cursor_position, utf8_char, remaining_bytes + 1);
+                    buffer_length += remaining_bytes == 0 ? 1 : remaining_bytes;
                     cursor_position++;
-                    printf("\x1b[K%s", input + cursor_position - 1);
+
+                    // Add a null terminator
+                    input[buffer_length] = '\0';
+
+                    printf("\x1b[K%s", utf8_char);
                 }
                 fflush(stdout);
             }
