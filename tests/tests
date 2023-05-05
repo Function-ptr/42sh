@@ -138,8 +138,8 @@ TESTS=
 
 [14]
 NAME="Conditional separators ||"
-SETUP=""
-CLEAN=""
+SETUP="/usr/bin/env > .lstenv ; while read varenv ; do unset $varenv ; done < <(/bin/cat .lstenv | /usr/bin/cut -f1 -d=) ; export PATH=/bin:/usr/bin"
+CLEAN="while read varenv ; do export "$varenv" 2>/dev/null ; done  < <(/bin/cat .lstenv) ; /bin/rm -f .lstenv"
 TESTS=
   echo 'ls || /usr/bin/ls'
   echo 'cd / || pwd'
