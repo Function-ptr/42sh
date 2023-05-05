@@ -23,8 +23,7 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
     command_t *previous = NULL;
     for (int i = 0, pos = 0, tp = 0; tp < nb_cmds; i++, tp++) {
         input = smart_strtok(input, is_command_delimiter);
-        if (!input)
-            break;
+        if (!input) break;
         pos += strlen(input);
         int *statuses[2] = {&i, &status};
         char sep[2] = {tmp[pos], tmp[pos] && strchr("&|", tmp[pos + 1])
