@@ -131,7 +131,7 @@ CLEAN=""
 TESTS=
   echo 'ls && setenv TESTVAR it_works'
   echo 'cd / && ls'
-  echo 'env && echo Here is the env'
+  echo 'pwd && echo Current path'
   echo 'echo test && pwd'
   echo 'cat sometext.txt && pwd'
 [13-END]
@@ -143,6 +143,6 @@ CLEAN="while read varenv ; do export "$varenv" 2>/dev/null ; done  < <(/bin/cat 
 TESTS=
   echo 'ls || /usr/bin/ls'
   echo 'cd / || pwd'
-  echo 'env || echo Failed to read env'
+  echo 'mkdir yolo || echo Unable to create directory'
   echo 'cat sometext.txt || echo File not found'
 [14-END]
