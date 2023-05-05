@@ -138,11 +138,11 @@ TESTS=
 
 [14]
 NAME="Conditional separators ||"
-SETUP="/usr/bin/env > .lstenv ; while read varenv ; do unset $varenv ; done < <(/bin/cat .lstenv | /usr/bin/cut -f1 -d=) ; export PATH=/bin:/usr/bin"
+SETUP="/usr/bin/env > .lstenv ; while read varenv ; do unset $varenv ; done < <(/bin/cat .lstenv | /usr/bin/cut -f1 -d=) ; export PATH=/bin:/usr/bin; mkdir yolo"
 CLEAN="while read varenv ; do export "$varenv" 2>/dev/null ; done  < <(/bin/cat .lstenv) ; /bin/rm -f .lstenv"
 TESTS=
   echo 'ls || /usr/bin/ls'
   echo 'cd / || pwd'
-  echo 'mkdir yolo || echo Unable to create directory'
+  echo 'rm -rf yolo || echo Unable to delete directory'
   echo 'cat sometext.txt || echo File not found'
 [14-END]
