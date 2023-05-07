@@ -7,7 +7,8 @@
 
 #include "alias.h"
 
-void replace(char *str, char *src, char *dest) {
+void replace(char *str, char *src, char *dest)
+{
     int srcLen = strlen(src), destLen = strlen(dest), strLen = strlen(str),
     count = 0; char *pos = str;
     while ((pos = strstr(pos, src)) != NULL) {

@@ -52,8 +52,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     } if (strcmp(binname, "unalias") == 0) {
         status = unalias(cmd, env); found = true;
     }
-    builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b); return (status);
+    builtin_funcs_bis(binname, cmd, &found, &status); free(b); return (status);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
