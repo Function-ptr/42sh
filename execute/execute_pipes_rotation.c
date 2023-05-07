@@ -21,20 +21,20 @@ pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
 {
     *builtin_status = -1;
     if (!command->command || command->command[0] == 0) {
-        free_command(command);
-        return (-1);
+        free_command(command); return (-1);
+    } if (load_redirections_for_command(command) == -1) return (-1);
+    if (strchr(command->command, '(')) {
+        *builtin_status = run_parentheses_command(command, env); return -2;
     }
-    if (load_redirections_for_command(command) == -1) return (-1);
     char *bname = strdup(command->command);
     if (!strcmp(get_binary_name(bname), "exit")) *exiting = 1;
     if (is_a_builtin(get_binary_name(bname))) {
         *builtin_status = builtin_funcs(command, env);
-        free(bname);
-        return (-2);
+        free(bname); return (-2);
     }
     char *path = get_binary_filename(get_binary_name(bname), env->path_dirs);
-    if (!path) { free(bname);
-        return (-1);
+    if (!path) {
+        free(bname);  return (-1);
     }
     pid_t program_pid = fork_and_run(path, command, env->env);
     free(bname);

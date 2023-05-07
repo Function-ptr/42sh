@@ -20,6 +20,7 @@ SRCS = 	main.c	\
 	execute/check_program_exit_status.c	\
 	execute/detect_command_type.c	\
 	execute/execute_binary_file.c	\
+	execute/execute_parentheses.c	\
 	execute/execute_pipes_rotation.c	\
 	execute/execute_using_path.c	\
 	execute/run_user_input.c	\
@@ -68,6 +69,7 @@ OBJS = 	obj/main.o	\
 	obj/execute-check_program_exit_status.o	\
 	obj/execute-detect_command_type.o	\
 	obj/execute-execute_binary_file.o	\
+	obj/execute-execute_parentheses.o	\
 	obj/execute-execute_pipes_rotation.o	\
 	obj/execute-execute_using_path.o	\
 	obj/execute-run_user_input.o	\
