@@ -24,15 +24,14 @@ void init_command(command_t *command, command_t *prev, char next_sep[2])
     command->pipe_out = false;
     command->pipe_in = false;
     command->condition = None;
+    command->depth = Curr_shell;
     strncpy(command->next_separator, next_sep, 2);
-    if (prev != NULL && prev->pipe_out)
-        command->pipe_in = true;
-    if (next_sep[0] == '|' && !next_sep[1])
-        command->pipe_out = true;
-    if (next_sep[0] == '&' && next_sep[1] == '&')
-        command->condition = AND;
-    if (next_sep[0] == '|' && next_sep[1] == '|')
-        command->condition = OR;
+    if (prev != NULL && prev->pipe_out) command->pipe_in = true;
+    if (next_sep[0] == '|' && !next_sep[1]) command->pipe_out = true;
+    if (next_sep[0] == '&' && next_sep[1] == '&') command->condition = AND;
+    if (next_sep[0] == '|' && next_sep[1] == '|') command->condition = OR;
+    if (strchr(command->command, '(')) command->depth = Parentheses;
+    if (strchr(command->command, '`')) command->depth = Backticks;
 }
 
 bool has_ambiguous_redirection_in(command_t *command, char *comm)
