@@ -23,7 +23,7 @@ pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
     if (!command->command || command->command[0] == 0) {
         free_command(command); return (-1);
     } if (load_redirections_for_command(command) == -1) return (-1);
-    if (strchr(command->command, '(')) {
+    if (command->depth == Parentheses) {
         *builtin_status = run_parentheses_command(command, env); return -2;
     }
     char *bname = strdup(command->command);
