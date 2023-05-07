@@ -77,17 +77,14 @@ command_t *parse_single_command(char *comm, command_t *prev, char next_sep[2],
 {
     command_t *command = malloc(sizeof(command_t));
     int *i = statuses[0], *status = statuses[1];
-
+    command->command = comm;
     init_command(command, prev, next_sep);
-
     if (has_ambiguous_redirection_in(command, comm) ||
         has_ambiguous_redirection_out(command, comm)) {
         free(command);
         return NULL;
     }
-
     detect_redirections(command, comm, next_sep, status);
-
     if (command->command == NULL) {
         *i = (*i > 0) ? (*i - 1) : 0;
         free_command(command);
