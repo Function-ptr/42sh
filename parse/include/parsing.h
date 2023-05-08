@@ -24,18 +24,19 @@
     #include <unistd.h>
     #include <fcntl.h>
     #include <stdio.h>
+    #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
     ///////////////
     /// Parsing ///
     ///////////////
 
     command_t **cut_input_to_commands(char *input);
-    command_t *parse_single_command(char *comm, command_t *prev, char next_sep,
-        int **data);
-    void detect_redirections(command_t *command, char *comm, char next_sep,
+    command_t *parse_single_command(char *comm, command_t *prev,
+    char next_sep[2], int **statuses);
+    void detect_redirections(command_t *command, char *comm, char next_sep[2],
         int *status);
     int get_redirections_file_descriptors(command_t *command, char *comm);
-    char *remove_spaces_in_command(char *comm, char sep, bool pipe_in,
+    char *remove_spaces_in_command(char *comm, char sep[2], bool pipe_in,
         int *status);
     bool parse_and_load_redirections(command_t *command);
     void get_word_wait_input(command_t *cmd);
@@ -45,6 +46,15 @@
     char *get_binary_name(char *str);
     char *get_binary_filename(char *command, pathdir_t **pathdirs);
     int is_argv_long_enough(char *command, int cap);
+    char *strdup_without_backslash(const char*);
+    bool is_delimiter(const char *, int);
+    bool is_command_delimiter(const char *, int);
+    char *smart_strtok(char *, bool (*)(const char *, int));
+    char **separate_args(char const*);
+    char *my_strchr_escape(char *, char);
+    char *word_array_to_command(char **word_array, int *pos);
+    char *my_strrchr_escape(char *, char);
+    bool process_quotes(char**);
 
     /////////////
     /// Utils ///

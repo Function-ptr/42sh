@@ -16,6 +16,7 @@
 */
 
 #include "built_in.h"
+#include "environment.h"
 
 bool is_empty(command_t *command, envvar_t **env)
 {
@@ -30,15 +31,15 @@ bool is_empty(command_t *command, envvar_t **env)
     return false;
 }
 
-bool does_already_exist(envvar_t *var, char *variable_name, char *value)
+bool does_already_exist(envvar_t **var, char *variable_name, char *value)
 {
-    for (; var != NULL; var = var->next) {
-        if (compare_variable_name(var->var, variable_name) == 0) {
-            free(var->var);
-            set_value(var, variable_name, value);
+    for (; *var != NULL; *var = (*var)->next) {
+        if (compare_variable_name((*var)->var, variable_name) == 0) {
+            free((*var)->var);
+            set_value(*var, variable_name, value);
             free(variable_name);
             return true;
-        } if (var->next == NULL)
+        } if ((*var)->next == NULL)
             break;
     }
     return false;
@@ -57,26 +58,26 @@ void add_new_variable(envvar_t *var, envvar_t **env, char *variable_name,
         *env = nvar;
 }
 
-void set_env(envvar_t **env, command_t *command)
+void set_env(envvar_t **env, command_t *command, envdata_t *envdata)
 {
-    if (is_empty(command, env))
-        return;
+    if (is_empty(command, env)) return;
+    const int setenv_command_len = 7, value_index_offset = 1;
     char *cmd = command->command;
-    char *variable_name = get_variable_name(&cmd[7]);
-    int variable_name_len = strlen(variable_name);
-    char *value = &cmd[8 + variable_name_len];
-    int cmdlen = strlen(cmd);
-    if (8 + variable_name_len > cmdlen)
+    char *variable_name = get_variable_name(&cmd[setenv_command_len]);
+    int var_name_len = (int)strlen(variable_name), cmdlen = (int)strlen(cmd);
+    char *value = &cmd[setenv_command_len + var_name_len + value_index_offset];
+    if (setenv_command_len + var_name_len + value_index_offset > cmdlen)
         value = "\0";
-    if (name_does_not_start_with_letter(variable_name[0]))
-        return;
+    if (name_does_not_start_with_letter(variable_name[0])) return;
     if (!my_str_isalphanum(variable_name)) {
         name_not_alphanumeric();
         return;
     }
     envvar_t *var = *env;
-    if (does_already_exist(var, variable_name, value))
-        return;
+    if (!strcmp(variable_name, "PATH")) {
+        clear_path_directories(envdata->path_dirs);
+        envdata->path_dirs = get_path_directories(value);
+    } if (does_already_exist(&var, variable_name, value)) return;
     else
         add_new_variable(var, env, variable_name, value);
 }

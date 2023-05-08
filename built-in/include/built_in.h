@@ -33,13 +33,14 @@
     int builtin_funcs(command_t *cmd, envdata_t *env);
     void show_environment(envvar_t **env, command_t *command);
     int change_dir(envdata_t *env, char *input);
-    void unset_env(envvar_t **env, char *inp);
-    void set_env(envvar_t **env, command_t *command);
+    void unset_env(envvar_t **env, char *inp, envdata_t *envdata);
+    void set_env(envvar_t **env, command_t *command, envdata_t *envdata);
     int exit_with_status(command_t *command);
     int echo(command_t *command);
     bool is_a_builtin(char *binary);
     int alias(command_t *cmd, envdata_t *env);
     int unalias(command_t *cmd, envdata_t *env);
+    void show_history(history_t *history);
 
     /////////////
     /// Utils ///

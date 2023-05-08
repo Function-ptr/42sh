@@ -22,38 +22,44 @@ int separate_commands(int nb_cmds, char *input, command_t **commands)
     int status = 1;
     command_t *previous = NULL;
     for (int i = 0, pos = 0, tp = 0; tp < nb_cmds; i++, tp++) {
-        char *comm = strtok((!i) ? input : NULL, ";|");
-        if (comm == NULL)
-            break;
-        pos += strlen(comm);
+        input = smart_strtok(input, is_command_delimiter);
+        if (!input) break;
+        pos += strlen(input);
         int *statuses[2] = {&i, &status};
-        char sep = tmp[pos];
-        commands[i] = parse_single_command(comm, previous, sep, statuses);
-        status *= (commands[i] == NULL) ? (0) : (1);
+        char sep[2] = {tmp[pos], tmp[pos] && strchr("&|", tmp[pos + 1])
+            ? tmp[pos + 1] : 0};
+        commands[i] = parse_single_command(input, previous, sep, statuses);
+        status *= commands[i] ? 1 : 0;
         pos += 1;
         previous = commands[i];
         for (int j = i + 1; j <= nb_cmds; j++)
             commands[j] = NULL;
+        input += strlen(input) + 1;
     }
     free(tmp);
-    return (status);
+    return status;
 }
 
 command_t **cut_input_to_commands(char *input)
 {
-    int nb_cmds = 1, pos = 0, len = strlen(input);
+    int nb_cmds = 1;
+    int len = (int)strlen(input);
     input[len - 1] = 0;
-    for (int i = 0; input[i] != 0; i++, pos++)
-        nb_cmds = (input[i] == '|' || input[i] == ';') ? nb_cmds + 1 : nb_cmds;
-    command_t **cmds = malloc(sizeof(command_t*) * (nb_cmds + 1));
-    for (int i = 0; i <= nb_cmds; i++)
-        cmds[i] = NULL;
+    for (int i = 0; input[i] != 0; i++)
+        nb_cmds += (((i > 0 && input[i] == '|' && input[i - 1] != '|' &&
+            input[i + 1] != '|') && !(i > 0 && input[i - 1] == '\\')) ||
+            (input[i] == ';' && !(i > 0 && input[i - 1] == '\\')) ||
+            (i > 0 && input[i] == '|' && input[i - 1] == '|') ||
+            (i > 0 && input[i] == '&' && input[i - 1] == '&'));
+    command_t **cmds = calloc(nb_cmds + 1, sizeof(command_t*));
     int status = separate_commands(nb_cmds, input, cmds);
     if (!status) {
         free_commands(cmds);
-        return (NULL);
-    } return (cmds);
+        return NULL;
+    }
+    return cmds;
 }
+
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⢟⣽⠿⠯⠛⡸⢹⠀⢹⠒⣊⡡⠜⠓⠢⣄⠀⠀⠀⠀

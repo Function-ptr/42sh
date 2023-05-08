@@ -49,17 +49,19 @@ void get_word_wait_input(command_t *cmd)
 
 bool parse_and_load_redirections(command_t *command)
 {
-    if (command == NULL || command->command == NULL)
-        return (true);
+    if (!command || !command->command) {
+        return true;
+    }
+
     int status = get_redirections_file_descriptors(command, command->command);
     int useless_status = 1;
     char *to_free = command->command;
-    command->command = remove_spaces_in_command(command->command, \
-command->next_separator, command->pipe_in, &useless_status);
+
+    command->command = remove_spaces_in_command(command->command,
+        command->next_separator, command->pipe_in, &useless_status);
     free(to_free);
-    if (command->command == NULL || status)
-        return (true);
-    return (false);
+
+    return (command->command == NULL || status);
 }
 
 int load_redirections_for_command(command_t *command)
@@ -68,8 +70,10 @@ int load_redirections_for_command(command_t *command)
         free_commands(&command);
         return (-1);
     }
+
     if (command->redirect_in_word_wait)
         get_word_wait_input(command);
+
     return (0);
 }
 /*

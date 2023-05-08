@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** chose_builtin.c
+** get_from_history.c
 ** File description:
-** chose builitin to run
+** get from history
 */
 /*
  __  __        _                            ___            ___
@@ -14,45 +14,77 @@
                               __/ |               ______
                              |___/               |______|
 */
+#include "history.h"
 
-#include "built_in.h"
-
-void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
+char *history_file_get_line_from_offset(history_t *history, size_t offset)
 {
-    if (strcmp(binname, "exit") == 0) {
-        *status = exit_with_status(cmd); *found = true;
-    } if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd); *found = true;
-    } if (!*found)
-        fprintf(stderr, "%s: Command not found.\n", binname);
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
+    FILE *f = fdopen(history->history_fd, "r");
+    if (!f)
+        return NULL;
+    for (int i = 0; i < history->len_file - offset - 1; i++) {
+        char *l = NULL;
+        size_t s = 0;
+        getline(&l, &s, f);
+        free(l);
+    }
+    char *line = NULL;
+    size_t s = 0;
+    if (getline(&line, &s, f) == -1) {
+        free(line);
+        fclose(f);
+        return (NULL);
+    }
+    fclose(f);
+    line[strlen(line) - 1] = 0;
+    history->current_pos = history->len_file - offset;
+    return (line);
 }
 
-int builtin_funcs(command_t *cmd, envdata_t *env)
+char *history_session_get_line_from_offset(history_t *history, size_t offset)
 {
-    char *input = cmd->command, *b = strdup(input);
-    char *binname = get_binary_name(b); int status = 0; bool found = false;
-    if (strcmp(binname, "cd") == 0) {
-        status = change_dir(env, input); found = true;
-    } if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, cmd); found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, cmd, env); found = true;
-    } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input); found = true;
-    } if (strcmp(binname, "exit") == 0) {
-        status = exit_with_status(cmd); found = true;
-    } if (strcmp(binname, "alias") == 0) {
-        status = alias(cmd, env); found = true;
-    } if (strcmp(binname, "unalias") == 0) {
-        status = unalias(cmd, env); found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); found = true;
+    size_t i = 1, j = history->len_session_history - 1;
+    for (; i < offset; j--, i++);
+    char *line = strdup(history->session_history[j].line);
+    return (line);
+}
+
+char *process_file_line(char *line)
+{
+    char *first_sp = strchr(line, ' ');
+    if (first_sp == NULL) {
+        free(line);
+        return NULL;
     }
-    builtin_funcs_bis(binname, cmd, &found, &status); free(b); return (status);
+    first_sp++;
+    size_t len = strlen(first_sp);
+    char *l = calloc(len + 3, sizeof(char));
+    strcpy(l, first_sp);
+    l[len] = '\n';
+    free(line);
+    return (l);
+}
+
+char *history_get_line_from_offset(history_t *history, size_t offset)
+{
+    if (history == NULL)
+        return (NULL);
+    if (offset > history->len_file + history->len_session_history || !offset)
+        return (NULL);
+    if (offset > history->len_session_history && history->history_fd != -1) {
+        char *l = history_file_get_line_from_offset(history,
+            offset - history->len_session_history);
+        l = process_file_line(l);
+        history->history_fd = open(history->filename, O_CREAT | O_APPEND |
+            O_RDONLY, S_IRUSR | S_IWUSR);
+        return l;
+    }
+    if (history->history_fd == -1) {
+        fprintf(stderr, "history: Unable to load previous history\n");
+        if (offset > history->len_session_history)
+            return NULL;
+    }
+    char *l = history_session_get_line_from_offset(history, offset);
+    return l;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

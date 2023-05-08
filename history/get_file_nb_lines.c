@@ -16,12 +16,21 @@
 */
 #include "history.h"
 
+size_t get_long_len(long val)
+{
+    size_t len = 0;
+    for (; val > 0; len++, val /= 10);
+    return len;
+}
+
 size_t get_file_nb_lines(char *filename)
 {
     size_t len = strlen(filename);
-    char *cmd = calloc(len + 7, sizeof(char));
-    strcpy(cmd, "wc -l ");
-    strcpy(cmd + 6, filename);
+    if (access(filename, F_OK))
+        return 0;
+    char *cmd = calloc(len + 16, sizeof(char));
+    strcpy(cmd, "/usr/bin/wc -l ");
+    strcpy(cmd + 15, filename);
     FILE *fp = popen(cmd, "r");
     free(cmd);
     unsigned long lines = 0;

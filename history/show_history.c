@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** chose_builtin.c
+** show_history.c
 ** File description:
-** chose builitin to run
+** show history
 */
 /*
  __  __        _                            ___            ___
@@ -14,45 +14,60 @@
                               __/ |               ______
                              |___/               |______|
 */
+#include "history.h"
 
-#include "built_in.h"
-
-void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
+size_t get_line_len(char *line)
 {
-    if (strcmp(binname, "exit") == 0) {
-        *status = exit_with_status(cmd); *found = true;
-    } if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd); *found = true;
-    } if (!*found)
-        fprintf(stderr, "%s: Command not found.\n", binname);
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
+    size_t total_len = strlen(line);
+    char *d = strdup(line);
+    char *timepart = strtok(d, " ");
+    size_t timelen = strlen(timepart);
+    free(d);
+    return (total_len - timelen);
 }
 
-int builtin_funcs(command_t *cmd, envdata_t *env)
+void show_file_history(history_t *history)
 {
-    char *input = cmd->command, *b = strdup(input);
-    char *binname = get_binary_name(b); int status = 0; bool found = false;
-    if (strcmp(binname, "cd") == 0) {
-        status = change_dir(env, input); found = true;
-    } if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, cmd); found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, cmd, env); found = true;
-    } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input); found = true;
-    } if (strcmp(binname, "exit") == 0) {
-        status = exit_with_status(cmd); found = true;
-    } if (strcmp(binname, "alias") == 0) {
-        status = alias(cmd, env); found = true;
-    } if (strcmp(binname, "unalias") == 0) {
-        status = unalias(cmd, env); found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); found = true;
+    FILE *f = fdopen(history->history_fd, "r");
+    if (f == NULL) return;
+    for (size_t i = 0; i < history->len_file; i++) {
+        char *buf = NULL;
+        size_t s = 0;
+        time_t time;
+        if (getline(&buf, &s, f) == -1) {
+            free(buf);
+            return;
+        }
+        time = strtol(buf, NULL, 10);
+        char *line = strdup(buf + (strlen(buf) - get_line_len(buf)));
+        char *strdate = ctime(&time), *ret = strchr(strdate, '\n');
+        *ret = 0;
+        printf("%li\t%s\t%s", i + 1, strdate, line);
+        free(buf);
+        free(line);
     }
-    builtin_funcs_bis(binname, cmd, &found, &status); free(b); return (status);
+    fclose(f);
+}
+
+void show_history(history_t *history)
+{
+    if (history == NULL) {
+        fprintf(stderr, "history: Unable to load previous history\n");
+        return;
+    }
+    if (history->history_fd == -1)
+        fprintf(stderr, "history: Unable to load previous history\n");
+    else
+        show_file_history(history);
+    history->history_fd = open(history->filename, O_CREAT | O_APPEND |
+        O_RDONLY, S_IRUSR | S_IWUSR);
+    for (size_t i = 0; i < history->len_session_history; i++) {
+        char *strdate = ctime(&(history->session_history[i]).time);
+        char *ret = strchr(strdate, '\n');
+        *ret = 0;
+        printf("%li\t%s\t%s", i + 1 + history->len_file, strdate,
+            history->session_history[i].line);
+    }
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

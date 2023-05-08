@@ -6,6 +6,7 @@
 */
 
 #include "shell.h"
+#include "history.h"
 
 int main(int ac, char **av, char **env)
 {
