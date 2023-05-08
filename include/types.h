@@ -28,6 +28,12 @@
         OR
     } conditional_separation;
 
+    typedef enum {
+        Curr_shell,
+        Parentheses,
+        Backticks
+    } exec_depth;
+
     typedef struct envvar {
         char *var;
         struct envvar *next;
@@ -77,6 +83,7 @@
         char *command;      // command string
         char next_separator[2]; // next separator ->  "| ; \0 && ||"
         conditional_separation condition;
+        exec_depth depth;   // is a normal command or has () or ``
         int in_fd;          // input file descriptor (default 0)
         int out_fd;         // output file descriptor (default 1)
         int pipe_in_fd;     // file descriptor for input pipe

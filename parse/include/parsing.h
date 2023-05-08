@@ -55,6 +55,8 @@
     char *word_array_to_command(char **word_array, int *pos);
     char *my_strrchr_escape(char *, char);
     bool process_quotes(char**);
+    int separate_command_with_parentheses(int nb_cmds, char *input,
+        command_t **commands);
 
     /////////////
     /// Utils ///
