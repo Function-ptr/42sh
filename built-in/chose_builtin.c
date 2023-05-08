@@ -42,7 +42,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     } if (strcmp(binname, "setenv") == 0) {
         set_env(env->env, cmd, env); found = true;
     } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input); found = true;
+        unset_env(env->env, input, env); found = true;
     } if (strcmp(binname, "exit") == 0) {
         status = exit_with_status(cmd); found = true;
     } if (strcmp(binname, "alias") == 0) {
