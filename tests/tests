@@ -146,3 +146,14 @@ TESTS=
   echo 'echo OK || echo Unable to delete directory'
   echo 'cat sometext.txt || echo File not found'
 [14-END]
+
+[15]
+NAME="Parentheses"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'echo test && (env | grep PATH)'
+  echo '(env | grep HOME) && echo yay'
+  echo 'cd /etc; (cd / && ls); ls'
+  echo '(ls && cd /random) || pwd'
+[15-END]
