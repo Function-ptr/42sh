@@ -27,6 +27,7 @@ command_t *add_cmd_parentheses(char *cmd, command_t **prev, int *stats[2],
     command_t *command = parse_single_command(trimmed, *prev, sep, stats);
     *status *= command ? 1 : 0;
     *prev = command;
+    free(trimmed);
     return command;
 }
 
@@ -60,7 +61,7 @@ int separate_command_with_parentheses(int nb_cmds, char *inp,
         if (inp[i] == '"') inquote = !inquote;
         currcmd[cmdsize] = inp[i];
         cmdsize++;
-    }
+    } free(currcmd);
     return status;
 }
 /*

@@ -18,17 +18,14 @@
 
 bool command_has_parentheses(char *input)
 {
-    int inpar = false, inquote = false, parlayer = 0, haspar = false;
+    int inquote = false, parlayer = 0, haspar = false;
     for (int i = 0; input[i]; i++) {
         if (input[i] == '"') inquote = !inquote;
         if (!inquote && input[i] == '(') {
-            inpar = true;
             haspar = true;
             parlayer += 1;
-        } if (!inquote && input[i] == ')') {
+        } if (!inquote && input[i] == ')')
             parlayer -= 1;
-            inpar = (parlayer) ? true : false;
-        }
     }
     return haspar;
 }

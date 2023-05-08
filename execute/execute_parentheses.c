@@ -24,11 +24,9 @@ void run_forked_parentheses(command_t *command, envdata_t *env)
         dup2(command->in_fd, STDIN_FILENO);
     *(strchr(command->command, '(')) = ' ';
     *(strrchr(command->command, ')')) = ' ';
-    char *new = calloc(strlen(command->command) + 1, sizeof(char));
+    char *new = calloc(strlen(command->command) + 2, sizeof(char));
     strcpy(new, command->command);
-    printf("%s |||", new);
     new[strlen(new)] = '\n';
-    printf("%s", new);
     int exiting = 0;
     int status = run_user_input(new, env, &exiting);
     free(new);
