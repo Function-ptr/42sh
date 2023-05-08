@@ -16,6 +16,23 @@
 */
 #include "parsing.h"
 
+bool command_has_parentheses(char *input)
+{
+    int inpar = false, inquote = false, parlayer = 0, haspar = false;
+    for (int i = 0; input[i]; i++) {
+        if (input[i] == '"') inquote = !inquote;
+        if (!inquote && input[i] == '(') {
+            inpar = true;
+            haspar = true;
+            parlayer += 1;
+        } if (!inquote && input[i] == ')') {
+            parlayer -= 1;
+            inpar = (parlayer) ? true : false;
+        }
+    }
+    return haspar;
+}
+
 void init_command(command_t *command, command_t *prev, char next_sep[2])
 {
     command->in_fd = STDIN_FILENO;
@@ -30,7 +47,7 @@ void init_command(command_t *command, command_t *prev, char next_sep[2])
     if (next_sep[0] == '|' && !next_sep[1]) command->pipe_out = true;
     if (next_sep[0] == '&' && next_sep[1] == '&') command->condition = AND;
     if (next_sep[0] == '|' && next_sep[1] == '|') command->condition = OR;
-    if (strchr(command->command, '(')) command->depth = Parentheses;
+    if (command_has_parentheses(command->command)) command->depth = Parentheses;
     if (strchr(command->command, '`')) command->depth = Backticks;
 }
 
