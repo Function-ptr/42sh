@@ -32,7 +32,6 @@ void detect_redirections(command_t *command, char *comm, char next_sep[2],
         redirection_out_append == redirection_out + 1);
 
     command->awaited_word = NULL;
-    command->command = comm;
     command->command = remove_spaces_in_command(command->command,
         next_sep, command->pipe_in, status);
 }

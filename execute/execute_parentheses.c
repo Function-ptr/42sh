@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** detect_command_type.c
+** execute_parentheses.c
 ** File description:
-** Select whether the command is a builtin, a command in path or a given path
+** execute parentheses
 */
 /*
  __  __        _                            ___            ___
@@ -16,28 +16,35 @@
 */
 #include "execute.h"
 
-int detect_command_type_and_run(command_t *command, int *exiting,
-    envdata_t *env)
+void run_forked_parentheses(command_t *command, envdata_t *env)
 {
-    if (strncmp(command->command, "unalias", 7)) exec_alias(command, env);
-    int status = 0;
-    if (command->depth == Parentheses)
-        return (run_parentheses_command(command, env));
-    char *bname = strdup(command->command);
-    if (!strcmp(get_binary_name(bname), "exit")) *exiting = 1;
-    if (is_a_builtin(get_binary_name(bname))) {
-        status = builtin_funcs(command, env);
-        free(bname);
-        return (status);
-    }
-    char *path = get_binary_filename(get_binary_name(bname), env->path_dirs);
-    if (path != NULL) {
-        pid_t program_pid = fork_and_run(path, command, env->env);
-        status = monitor_program(program_pid, path);
-    } else
-        status = 1;
-    free(bname);
-    return (status);
+    if (command->out_fd != STDOUT_FILENO)
+        dup2(command->out_fd, STDOUT_FILENO);
+    if (command->in_fd != STDIN_FILENO)
+        dup2(command->in_fd, STDIN_FILENO);
+    *(strchr(command->command, '(')) = ' ';
+    *(strrchr(command->command, ')')) = ' ';
+    char *new = calloc(strlen(command->command) + 2, sizeof(char));
+    strcpy(new, command->command);
+    new[strlen(new)] = '\n';
+    int exiting = 0;
+    int status = run_user_input(new, env, &exiting);
+    free(new);
+    exit(status);
+}
+
+int run_parentheses_command(command_t *command, envdata_t *env)
+{
+    pid_t pid = fork();
+    if (pid == 0)
+        run_forked_parentheses(command, env);
+    int status;
+    waitpid(pid, &status, WUNTRACED);
+    if (command->out_fd != STDOUT_FILENO)
+        close(command->out_fd);
+    if (command->in_fd != STDIN_FILENO)
+        close(command->in_fd);
+    return status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

@@ -41,6 +41,7 @@
     int monitor_program(pid_t child_pid, char *filepath);
     char *get_binary_filename(char *command, pathdir_t **pathdirs);
     int loop_over_pipes(command_t **commands, envdata_t *env, int **data);
+    int run_parentheses_command(command_t *command, envdata_t *env);
 
     /////////////
     /// Utils ///
