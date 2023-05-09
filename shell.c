@@ -179,10 +179,11 @@ int shell(envdata_t *env)
                         cursor_position += len;
                         i = cursor_position - (prev_len - 1);
                     } else {
-                        memmove(input + cursor_position,
+                        int offset = prev_len > 1 ? 0 : len;
+                        memmove(input + cursor_position + offset,
                                 input + cursor_position - (prev_len - 1),
                                 (buffer_length - cursor_position) + (prev_len
-                                - 1)*
+                                - 1) *
                                 sizeof(char));
                         // Insert the new character
                         memcpy(input + cursor_position - (prev_len - 1), utf8_char, len);
