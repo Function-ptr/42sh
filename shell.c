@@ -105,6 +105,23 @@ int shell(envdata_t *env)
                                 cursor_position += c_len - 1;
                         }
                     }
+                } else if (c == 'H' || c == '1') {
+                    // Home key
+                    if (c == '1' && getchar() != '~')
+                        continue;
+                    while (cursor_position > 0) {
+                        int prev_len = previous_utf8_char_length(input, cursor_position);
+                        cursor_position -= prev_len == 1 ? 1 : prev_len;
+                        printf("\x1b[D");
+                    }
+                } else if (c == 'F' || c == '4') {
+                    // End key
+                    if (c == '4' && getchar() != '~')
+                        continue;
+                    while (cursor_position < buffer_length) {
+                        cursor_position += utf8_char_length(input[cursor_position]);
+                        printf("\x1b[C");
+                    }
                 }
                 fflush(stdout);
                 continue;
