@@ -44,6 +44,7 @@ int execution_loop(command_t **commands, int nb_commands, int *exiting,
             free_command(commands[i]);
             continue;
         }
+        if (status == 136) break;
         status = 0;
         prev_cond = commands[i]->condition;
         if (!commands[i]->pipe_out)

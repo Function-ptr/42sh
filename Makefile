@@ -9,6 +9,7 @@ SOURCES = . built-in execute parse errors environment history
 
 SRCS = 	main.c	\
 	shell.c	\
+	sighandler.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
 	built-in/command_is_a_builtin.c	\
@@ -58,6 +59,7 @@ SRCS = 	main.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
+	obj/sighandler.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
 	obj/built-in-command_is_a_builtin.o	\
