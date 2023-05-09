@@ -122,8 +122,7 @@ int shell(envdata_t *env)
 
             // Clear the input buffer and reset the buffer length and cursor position
             memset(input, 0, sizeof(input));
-            buffer_length = 0;
-            cursor_position = 0;
+            buffer_length = cursor_position = 0;
             write_prompt(env);
         } else if (c == 0x7f) {
             if (cursor_position > 0 && buffer_length > 0 && cursor_position < buffer_length) {
