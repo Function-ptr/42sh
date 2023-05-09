@@ -14,12 +14,10 @@
 
 int write_prompt(envdata_t *env)
 {
-    if (!env->is_fallback) {
-        printf("<%s@%s %s >$ ", env->user, env->hostname, env->cwd);
-    } else
-        printf("> ");
+    printf(env->is_fallback ? "> " : "<%s@%s %s >$ ", env->user,
+        env->hostname, env->cwd);
     fflush(stdout);
-    return (1);
+    return 1;
 }
 
 int utf8_char_length(uint8_t byte)
