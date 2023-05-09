@@ -79,25 +79,25 @@ void operate_on_line_offset(char **input, history_t *history)
     *input = history_get_line_from_offset(history, offset);
 }
 
-void operate_on_previous_command(char **input, history_t *history)
+void operate_on_previous_command(char *input, history_t *history)
 {
-    if (*input[0] != '!') return;
+    if (input[0] != '!') return;
     if (history == NULL) {
         fprintf(stderr, "history: Unable to load previous history\n");
         return;
     }
-    if ((*input)[1] != ':') {
-        if ((*input)[1] != '!') operate_on_line_offset(input, history);
+    if ((input)[1] != ':') {
+        if ((input)[1] != '!') operate_on_line_offset(input, history);
         else {
-            free(*input);
-            *input = history_get_line_from_offset(history, 1);
-        } if ((*input)[0] != '!') printf("%s", *input);
+            free(input);
+            input = history_get_line_from_offset(history, 1);
+        } if ((input)[0] != '!') printf("%s", input);
         else
-            fprintf(stderr, "%s: Event not found.\n", *input);
+            fprintf(stderr, "%s: Event not found.\n", input);
         return;
     }
-    if ((strchr(*input, '*') || strchr(*input, '-')) &&
-        ((*input)[2] != '^' && (*input)[2] != '$'))
+    if ((strchr(input, '*') || strchr(input, '-')) &&
+        (input)[2] != '^' && (input)[2] != '$')
         operate_on_arg_range(input, history);
     else
         operate_on_single_arg(input, history);

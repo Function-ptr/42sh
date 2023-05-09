@@ -122,7 +122,7 @@ int shell(envdata_t *env)
             input[buffer_length] = '\0';
 
             // Process the input buffer when the 'Enter' key is pressed
-            operate_on_previous_command((char **) &input, env->history);
+            operate_on_previous_command(input, env->history);
             if (input[0] == '!') {
                 continue;
             }
