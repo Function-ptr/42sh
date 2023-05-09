@@ -10,7 +10,6 @@
 #include "line_edition.h"
 #include <locale.h>
 #include <stdint.h>
-#include <wchar.h>
 #include <stdio.h>
 
 int write_prompt(envdata_t *env)
@@ -47,14 +46,6 @@ int previous_utf8_char_length(const char *input, size_t cursor_position) {
 
     return len;
 }
-
-int utf8_char_display_width(const char *utf8_char) {
-    wchar_t wc;
-    mbstate_t state = {0};
-    size_t bytes = mbrtowc(&wc, utf8_char, MB_CUR_MAX, &state);
-    return wcwidth(wc);
-}
-
 
 int shell(envdata_t *env)
 {
@@ -145,8 +136,6 @@ int shell(envdata_t *env)
             buffer_length = 0;
             cursor_position = 0;
             write_prompt(env);
-        } else if (c == 'q') {
-            break;
         } else if (c == 0x7f) {
             if (cursor_position > 0 && buffer_length > 0 && cursor_position < buffer_length) {
                 int len = previous_utf8_char_length(input, cursor_position - 1);
@@ -183,15 +172,15 @@ int shell(envdata_t *env)
             }
 
             // Read the remaining bytes of the character and add them to the input buffer
-            char utf8_char[4] = {c};
+            char utf8_char[4] = {(char)c};
             for (int i = 0; i < remaining_bytes; i++) {
-                utf8_char[i + 1] = getchar();
+                utf8_char[i + 1] = (char)getchar();
             }
 
             if (buffer_length + remaining_bytes + 1 < sizeof(input)) {
                 int len = utf8_char_length(utf8_char[0]);
                 if (cursor_position < buffer_length) {
-                    size_t i = cursor_position;
+                    size_t i;
                     int prev_len = utf8_char_length(input[cursor_position]);
                     if (prev_len <= 0)
                         prev_len = previous_utf8_char_length(input,
@@ -215,7 +204,6 @@ int shell(envdata_t *env)
                         // Increment the buffer_length and cursor_position
                         buffer_length += len;
                         cursor_position += len;
-                        i = cursor_position - (prev_len - 1);
                     } else {
                         int offset = prev_len > 1 ? 0 : len;
                         memmove(input + cursor_position + offset,
@@ -235,7 +223,6 @@ int shell(envdata_t *env)
                         // Increment the buffer_length and cursor_position
                         buffer_length += len;
                         cursor_position += len;
-                        i = cursor_position;
                     }
 
                     // Add a null terminator
@@ -243,19 +230,14 @@ int shell(envdata_t *env)
 
                     // Calculate the display width difference between the current cursor position
                     // and the end of the buffer
-                    int display_width_diff = 0;
                     i = buffer_length - 1;
                     while (i >= cursor_position) {
-                        display_width_diff += utf8_char_display_width(&input[i]);
                         int c_len = utf8_char_length(input[i]);
                         if (c_len <= 0)
                             c_len = previous_utf8_char_length(input, i);
                         i -= c_len;
                         printf("\x1b[D");
                     }
-
-                    // Move the cursor back to the correct position
-                    //printf("\x1b[%dD", display_width_diff);
 
                     fflush(stdout);
                 } else {

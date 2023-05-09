@@ -31,7 +31,7 @@ void configure_terminal(struct termios *new_term, struct termios *old_term)
     tcgetattr(STDIN_FILENO, old_term);
     *new_term = *old_term;
 
-    new_term->c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
+    new_term->c_lflag &= ~(ECHO | ICANON | IEXTEN);
     new_term->c_cc[VMIN] = 1;
     new_term->c_cc[VTIME] = 0;
 
