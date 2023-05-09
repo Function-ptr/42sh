@@ -28,15 +28,11 @@ int utf8_char_length(uint8_t byte)
            (byte & 0xF8) == 0xF0 ? 4 : -1;
 }
 
-int previous_utf8_char_length(const char *input, size_t cursor_position) {
+int previous_utf8_char_length(const char *input, size_t cursor_position)
+{
     int len = 1;
-    size_t pos = cursor_position;
-
-    while (pos > 0 && (input[pos] & 0xC0) == 0x80) {
+    while (cursor_position-- > 0 && (input[cursor_position] & 0xC0) == 0x80)
         len++;
-        pos--;
-    }
-
     return len;
 }
 
