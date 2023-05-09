@@ -87,6 +87,21 @@ int shell(envdata_t *env)
                         cursor_position -= prev_len == 1 ? 1 : prev_len;
                         printf("\x1b[D");
                     }
+                } else if (c == '3') {
+                    c = getchar();
+                    if (c == '~') {
+                        // Delete key
+                        if (cursor_position < buffer_length) {
+                            int len = utf8_char_length(input[cursor_position]);
+                            memmove(input + cursor_position, input + cursor_position + len,
+                                    (buffer_length - cursor_position) * sizeof(char));
+                            for (int i = 0; i <= len; i++)
+                                input[buffer_length - i] = '\0';
+                            buffer_length -= len;
+                            printf("\x1B[P");
+                            fflush(stdout);
+                        }
+                    }
                 }
                 fflush(stdout);
                 continue;
