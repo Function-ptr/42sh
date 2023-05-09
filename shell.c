@@ -114,9 +114,11 @@ int shell(envdata_t *env)
             break;
         } else if (c == 0x7f) {
             if (cursor_position > 0 && buffer_length > 0 && cursor_position < buffer_length) {
-                int len = previous_utf8_char_length(input, cursor_position);
+                int len = previous_utf8_char_length(input, cursor_position - 1);
                 memmove(input + cursor_position - len, input + cursor_position,
                         (buffer_length - cursor_position) * sizeof(char));
+                for (int i = 0; i <= len; i++)
+                    input[buffer_length - i] = '\0';
                 buffer_length -= len;
                 cursor_position -= len;
                 printf("\x1B[D\x1B[P");
@@ -131,6 +133,7 @@ int shell(envdata_t *env)
                 printf("\x1B[D\x1B[P");
                 fflush(stdout);
             }
+
             fflush(stdout);
             continue;
         } else {
