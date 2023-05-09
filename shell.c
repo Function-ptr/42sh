@@ -100,6 +100,9 @@ int shell(envdata_t *env)
                             buffer_length -= len;
                             printf("\x1B[P");
                             fflush(stdout);
+                            int c_len = utf8_char_length(input[cursor_position]);
+                            if (c_len > 1)
+                                cursor_position += c_len - 1;
                         }
                     }
                 }
