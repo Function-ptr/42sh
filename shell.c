@@ -22,15 +22,10 @@ int write_prompt(envdata_t *env)
 
 int utf8_char_length(uint8_t byte)
 {
-    if ((byte & 0x80) == 0x00)
-        return 1;
-    if ((byte & 0xE0) == 0xC0)
-        return 2;
-    if ((byte & 0xF0) == 0xE0)
-        return 3;
-    if ((byte & 0xF8) == 0xF0)
-        return 4;
-    return -1;
+    return (byte & 0x80) == 0x00 ? 1 :
+           (byte & 0xE0) == 0xC0 ? 2 :
+           (byte & 0xF0) == 0xE0 ? 3 :
+           (byte & 0xF8) == 0xF0 ? 4 : -1;
 }
 
 int previous_utf8_char_length(const char *input, size_t cursor_position) {
