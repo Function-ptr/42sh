@@ -150,14 +150,7 @@ int shell(envdata_t *env)
             continue;
         } else {
             // Read the rest of the UTF-8 character bytes
-            int remaining_bytes = 0;
-            if ((c & 0xE0) == 0xC0) {
-                remaining_bytes = 1;
-            } else if ((c & 0xF0) == 0xE0) {
-                remaining_bytes = 2;
-            } else if ((c & 0xF8) == 0xF0) {
-                remaining_bytes = 3;
-            }
+            int remaining_bytes = utf8_char_length(c) - 1;
 
             // Read the remaining bytes of the character and add them to the input buffer
             char utf8_char[4] = {(char)c};
