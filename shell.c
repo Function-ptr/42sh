@@ -32,9 +32,13 @@ int previous_utf8_char_length(const char *input, uint16_t cursor_position)
 {
     int len = 1;
 
-    while (cursor_position > 0 && (input[cursor_position] & 0xC0) == 0x80) {
+    for (int i = 0; i < 3 && (input[cursor_position] & 0xC0) == 0x80; ++i) {
         len++;
-        cursor_position--;
+        if (cursor_position > 0) {
+            cursor_position--;
+        } else {
+            break;
+        }
     }
     return len;
 }
@@ -106,7 +110,6 @@ int shell(envdata_t *env)
                         printf("\x1b[C");
                     }
                 }
-                fflush(stdout);
                 continue;
             }
         } else if (c == '\n') {
@@ -128,6 +131,9 @@ int shell(envdata_t *env)
             buffer_length = cursor_position = 0;
             write_prompt(env);
         } else if (c == 0x7f) {
+            if (cursor_position <= 0 || buffer_length <= 0 ||
+                cursor_position > buffer_length)
+                continue;
             int len = previous_utf8_char_length(input, cursor_position - 1);
             if (cursor_position < buffer_length && cursor_position > 0 &&
                 buffer_length > 0)
@@ -138,7 +144,6 @@ int shell(envdata_t *env)
             buffer_length -= len;
             cursor_position -= len;
             printf("\x1B[D\x1B[P");
-            fflush(stdout);
         } else {
             // Read the rest of the UTF-8 character bytes
             int remaining_bytes = utf8_char_length(c) - 1;
@@ -168,11 +173,9 @@ int shell(envdata_t *env)
                         memcpy(input + cursor_position - (prev_len - 1), utf8_char, len);
                         // Clear the line to the right of the cursor
                         printf("\x1b[K");
-                        fflush(stdout);
 
                         // Print the updated buffer from the current cursor position
                         printf("%s", input + cursor_position - (prev_len - 1));
-                        fflush(stdout);
                         // Increment the buffer_length and cursor_position
                         buffer_length += len;
                         cursor_position += len;
@@ -187,11 +190,9 @@ int shell(envdata_t *env)
                         memcpy(input + cursor_position - (prev_len - 1), utf8_char, len);
                         // Clear the line to the right of the cursor
                         printf("\x1b[K");
-                        fflush(stdout);
 
                         // Print the updated buffer from the current cursor position
                         printf("%s", input + cursor_position - (prev_len - 1));
-                        fflush(stdout);
                         // Increment the buffer_length and cursor_position
                         buffer_length += len;
                         cursor_position += len;
@@ -211,7 +212,6 @@ int shell(envdata_t *env)
                         printf("\x1b[D");
                     }
 
-                    fflush(stdout);
                 } else {
                     memcpy(input + cursor_position, utf8_char, len);
                     buffer_length += len;
@@ -222,9 +222,9 @@ int shell(envdata_t *env)
 
                     printf("\x1b[K%s", utf8_char);
                 }
-                fflush(stdout);
             }
         }
+        fflush(stdout);
     }
     return (status);
 }
