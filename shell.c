@@ -28,16 +28,14 @@ int utf8_char_length(uint8_t byte)
            (byte & 0xF8) == 0xF0 ? 4 : -1;
 }
 
-int previous_utf8_char_length(const char *input, size_t cursor_position)
+int previous_utf8_char_length(const char *input, uint16_t cursor_position)
 {
     int len = 1;
-    size_t pos = cursor_position;
 
-    while (pos > 0 && (input[pos] & 0xC0) == 0x80) {
+    while (cursor_position > 0 && (input[cursor_position] & 0xC0) == 0x80) {
         len++;
-        pos--;
+        cursor_position--;
     }
-
     return len;
 }
 
@@ -130,29 +128,17 @@ int shell(envdata_t *env)
             buffer_length = cursor_position = 0;
             write_prompt(env);
         } else if (c == 0x7f) {
-            if (cursor_position > 0 && buffer_length > 0 && cursor_position < buffer_length) {
-                int len = previous_utf8_char_length(input, cursor_position - 1);
-                memmove(input + cursor_position - len, input + cursor_position,
-                        (buffer_length - cursor_position) * sizeof(char));
-                for (int i = 0; i <= len; i++)
-                    input[buffer_length - i] = '\0';
-                buffer_length -= len;
-                cursor_position -= len;
-                printf("\x1B[D\x1B[P");
-                fflush(stdout);
-            }
-            if (cursor_position == buffer_length && buffer_length > 0 && cursor_position > 0) {
-                int len = previous_utf8_char_length(input, cursor_position - 1);
-                for (int i = 0; i <= len; i++)
-                    input[cursor_position - i] = '\0';
-                buffer_length -= len;
-                cursor_position -= len;
-                printf("\x1B[D\x1B[P");
-                fflush(stdout);
-            }
-
+            int len = previous_utf8_char_length(input, cursor_position - 1);
+            if (cursor_position < buffer_length && cursor_position > 0 &&
+                buffer_length > 0)
+                memmove(input + cursor_position - len,
+                    input + cursor_position,(buffer_length - cursor_position));
+            for (int i = 0; i <= len; i++)
+                input[buffer_length - i] = '\0';
+            buffer_length -= len;
+            cursor_position -= len;
+            printf("\x1B[D\x1B[P");
             fflush(stdout);
-            continue;
         } else {
             // Read the rest of the UTF-8 character bytes
             int remaining_bytes = utf8_char_length(c) - 1;
