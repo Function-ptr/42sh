@@ -163,7 +163,7 @@ NAME="Aliases"
 SETUP=""
 CLEAN=""
 TESTS=
-  echo 'alias ll=ls -l; alias lla = ls -l -a!; alias'
+  echo 'alias ll=ls -l; alias lla = ls -l -a; alias'
   echo 'alias ll=ls -l; ll / | grep usr'
   echo 'alias; alias dir = ls -l; alias cls=clear; alias; exit'
   echo 'alias nope='

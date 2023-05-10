@@ -36,16 +36,17 @@ int show_alias(envdata_t *env)
 int alias(command_t *cmd, envdata_t *env)
 {
     if (cmd->command[5] == '\0') return show_alias(env);
-    char *data_a = strdup_without_backslash(get_regex(cmd->command,
-    "alias[[:space:]]*['\"]?([^=[:space:]\'\"]+)['\"]?"));
-    char *data_b = strdup_without_backslash(get_regex(cmd->command,
-    "=\\s*['\"]?([^'\"]+)['\"]?"));
-    if (data_a == NULL && data_b == NULL) return 1;
+    char *command = strdup_without_backslash(cmd->command);
+    char *data_a = get_regex(cmd->command,
+    "alias[[:space:]]*['\"]?([^=[:space:]\'\"]+)['\"]?");
+    char *data_b = get_regex(cmd->command, "=\\s*['\"]?([^'\"]+)['\"]?");
+    if (data_a == NULL && data_b == NULL) { free(command); return 1; }
     if (data_a == NULL) { free(data_b); return 1; };
     if (data_b == NULL) { free(data_a); return 1; };
     append(&env->aliases, data_a, data_b);
     free(data_a);
     free(data_b);
+    free(command);
     return 0;
 }
 
