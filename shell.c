@@ -140,8 +140,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                 continue;
             int len = previous_utf8_char_length(input, cursor_position -
                 previous_utf8_char_length(input, cursor_position));
-            if (cursor_position < buffer_length && cursor_position > 0 &&
-                buffer_length > 0)
+            if (cursor_position < buffer_length)
                 memmove(input + cursor_position - len,
                     input + cursor_position,(buffer_length - cursor_position));
             for (int i = 0; i <= len; i++)
