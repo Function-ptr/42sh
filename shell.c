@@ -47,8 +47,8 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
     int status, exiting = 0;
     char input[4096] = {0};
-    size_t buffer_length = 0;
-    size_t cursor_position = 0;
+    uint16_t buffer_length = 0;
+    uint16_t cursor_position = 0;
     setlocale(LC_ALL, ""); // Set the locale to the user's default locale
     bool is_tty = false;
 
@@ -65,20 +65,18 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         uint8_t read_len = read(STDIN_FILENO, buf, sizeof(buf));
         if (buf[0] == '\x1b' && buf[1] == '[') {
             // Check for arrow key escape sequence
-            if (buf[2] == 'C') {
+            if (buf[2] == 'C' && cursor_position < buffer_length) {
                 // Right arrow key
-                if (cursor_position < buffer_length) {
-                    cursor_position += utf8_char_length
-                        (input[cursor_position + 1]);
-                    printf("\x1b[C");
-                }
-            } else if (buf[2] == 'D') {
+                cursor_position += utf8_char_length
+                    (input[cursor_position + 1]);
+                printf("\x1b[C");
+                continue;
+            } if (buf[2] == 'D' && cursor_position > 0) {
                 // Left arrow key
-                if (cursor_position > 0) {
-                    int prev_len = previous_utf8_char_length(input, cursor_position);
-                    cursor_position -= prev_len == 1 ? 1 : prev_len;
-                    printf("\x1b[D");
-                }
+                int prev_len = previous_utf8_char_length(input, cursor_position);
+                cursor_position -= prev_len == 1 ? 1 : prev_len;
+                printf("\x1b[D");
+                continue;
             } else if (buf[2] == '3' && buf[3] == '~') {
                 // Delete key
                 if (cursor_position < buffer_length) {
@@ -164,8 +162,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                         memmove(input + cursor_position + len - 1,
                                 input + cursor_position - (prev_len - 1),
                                 (buffer_length - cursor_position) +
-                                (prev_len - 1) *
-                                sizeof(char));
+                                (prev_len - 1));
                         // Insert the new character
                         memcpy(input + cursor_position - (prev_len - 1), buf,
                                len);
@@ -182,8 +179,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                         memmove(input + cursor_position + offset,
                                 input + cursor_position - (prev_len - 1),
                                 (buffer_length - cursor_position) + (prev_len
-                                - 1) *
-                                sizeof(char));
+                                - 1));
                         // Insert the new character
                         memcpy(input + cursor_position - (prev_len - 1), buf,
                                len);
