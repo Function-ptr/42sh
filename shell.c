@@ -28,7 +28,7 @@ int utf8_char_length(uint8_t byte)
            (byte & 0xF8) == 0xF0 ? 4 : -1;
 }
 
-int previous_utf8_char_length(const char *input, uint16_t cursor_position)
+int previous_utf8_char_length(const char input[4], uint16_t cursor_position)
 {
     int len = 1;
 
@@ -51,68 +51,60 @@ int shell(envdata_t *env)
     size_t cursor_position = 0;
     setlocale(LC_ALL, ""); // Set the locale to the user's default locale
 
-    int c;
+    // Buffer to hold input data
+    char buf[4] = {0};
     if (isatty(0))
         write_prompt(env);
     while (1) {
-        c = getchar();
-        if (c == '\x1b') {
+        fflush(stdout);
+        memset(buf, 0, sizeof(buf));
+        uint8_t read_len = read(STDIN_FILENO, buf, sizeof(buf));
+        if (buf[0] == '\x1b' && buf[1] == '[') {
             // Check for arrow key escape sequence
-            if (getchar() == '[') {
-                c = getchar();
-                if (c == 'C') {
-                    // Right arrow key
-                    if (cursor_position < buffer_length) {
-                        cursor_position += utf8_char_length
-                            (input[cursor_position + 1]);
-                        printf("\x1b[C");
-                    }
-                } else if (c == 'D') {
-                    // Left arrow key
-                    if (cursor_position > 0) {
-                        int prev_len = previous_utf8_char_length(input, cursor_position);
-                        cursor_position -= prev_len == 1 ? 1 : prev_len;
-                        printf("\x1b[D");
-                    }
-                } else if (c == '3') {
-                    c = getchar();
-                    if (c == '~') {
-                        // Delete key
-                        if (cursor_position < buffer_length) {
-                            int len = utf8_char_length(input[cursor_position]);
-                            memmove(input + cursor_position, input + cursor_position + len,
-                                    (buffer_length - cursor_position) * sizeof(char));
-                            for (int i = 0; i <= len; i++)
-                                input[buffer_length - i] = '\0';
-                            buffer_length -= len;
-                            printf("\x1B[P");
-                            fflush(stdout);
-                            int c_len = utf8_char_length(input[cursor_position]);
-                            if (c_len > 1)
-                                cursor_position += c_len - 1;
-                        }
-                    }
-                } else if (c == 'H' || c == '1') {
-                    // Home key
-                    if (c == '1' && getchar() != '~')
-                        continue;
-                    while (cursor_position > 0) {
-                        int prev_len = previous_utf8_char_length(input, cursor_position);
-                        cursor_position -= prev_len == 1 ? 1 : prev_len;
-                        printf("\x1b[D");
-                    }
-                } else if (c == 'F' || c == '4') {
-                    // End key
-                    if (c == '4' && getchar() != '~')
-                        continue;
-                    while (cursor_position < buffer_length) {
-                        cursor_position += utf8_char_length(input[cursor_position]);
-                        printf("\x1b[C");
-                    }
+            if (buf[2] == 'C') {
+                // Right arrow key
+                if (cursor_position < buffer_length) {
+                    cursor_position += utf8_char_length
+                        (input[cursor_position + 1]);
+                    printf("\x1b[C");
                 }
-                continue;
+            } else if (buf[2] == 'D') {
+                // Left arrow key
+                if (cursor_position > 0) {
+                    int prev_len = previous_utf8_char_length(input, cursor_position);
+                    cursor_position -= prev_len == 1 ? 1 : prev_len;
+                    printf("\x1b[D");
+                }
+            } else if (buf[2] == '3' && buf[3] == '~') {
+                // Delete key
+                if (cursor_position < buffer_length) {
+                    int len = utf8_char_length(input[cursor_position]);
+                    memmove(input + cursor_position, input + cursor_position + len,
+                            (buffer_length - cursor_position) * sizeof(char));
+                    for (int i = 0; i <= len; i++)
+                        input[buffer_length - i] = '\0';
+                    buffer_length -= len;
+                    printf("\x1B[P");
+                    int c_len = utf8_char_length(input[cursor_position]);
+                    if (c_len > 1)
+                        cursor_position += c_len - 1;
+                }
+            } else if (buf[2] == 'H' || (buf[2] == '1' && buf[3] == '~')) {
+                // Home key
+                while (cursor_position > 0) {
+                    int prev_len = previous_utf8_char_length(input, cursor_position);
+                    cursor_position -= prev_len == 1 ? 1 : prev_len;
+                    printf("\x1b[D");
+                }
+            } else if (buf[2] == 'F' || (buf[2] == '4' && buf[3] == '~')) {
+                // End key
+                while (cursor_position < buffer_length) {
+                    cursor_position += utf8_char_length(input[cursor_position]);
+                    printf("\x1b[C");
+                }
             }
-        } else if (c == '\n') {
+            continue;
+        } else if (buf[0] == '\n') {
             // Null-terminate the input buffer
             input[buffer_length] = '\0';
 
@@ -122,6 +114,8 @@ int shell(envdata_t *env)
                 continue;
             }
             add_line_to_history(env->history, input);
+            input[buffer_length] = input[buffer_length - 1];
+            printf("\n");
             status = run_user_input(input, env, &exiting);
             if (exiting)
                 return (status);
@@ -130,7 +124,7 @@ int shell(envdata_t *env)
             memset(input, 0, sizeof(input));
             buffer_length = cursor_position = 0;
             write_prompt(env);
-        } else if (c == 0x7f) {
+        } else if (buf[0] == 0x7f) {
             if (cursor_position <= 0 || buffer_length <= 0 ||
                 cursor_position > buffer_length)
                 continue;
@@ -145,17 +139,10 @@ int shell(envdata_t *env)
             cursor_position -= len;
             printf("\x1B[D\x1B[P");
         } else {
-            // Read the rest of the UTF-8 character bytes
-            int remaining_bytes = utf8_char_length(c) - 1;
-
-            // Read the remaining bytes of the character and add them to the input buffer
-            char utf8_char[4] = {(char)c};
-            for (int i = 0; i < remaining_bytes; i++) {
-                utf8_char[i + 1] = (char)getchar();
-            }
-
-            if (buffer_length + remaining_bytes + 1 < sizeof(input)) {
-                int len = utf8_char_length(utf8_char[0]);
+            if (buffer_length + read_len < sizeof(input)) {
+                int len = utf8_char_length(buf[0]);
+                if (len == 1 && read_len > 1)
+                    len = read_len;
                 if (cursor_position < buffer_length) {
                     size_t i;
                     int prev_len = utf8_char_length(input[cursor_position]);
@@ -170,7 +157,8 @@ int shell(envdata_t *env)
                                 (prev_len - 1) *
                                 sizeof(char));
                         // Insert the new character
-                        memcpy(input + cursor_position - (prev_len - 1), utf8_char, len);
+                        memcpy(input + cursor_position - (prev_len - 1), buf,
+                               len);
                         // Clear the line to the right of the cursor
                         printf("\x1b[K");
 
@@ -187,7 +175,8 @@ int shell(envdata_t *env)
                                 - 1) *
                                 sizeof(char));
                         // Insert the new character
-                        memcpy(input + cursor_position - (prev_len - 1), utf8_char, len);
+                        memcpy(input + cursor_position - (prev_len - 1), buf,
+                               len);
                         // Clear the line to the right of the cursor
                         printf("\x1b[K");
 
@@ -213,18 +202,18 @@ int shell(envdata_t *env)
                     }
 
                 } else {
-                    memcpy(input + cursor_position, utf8_char, len);
+                    memcpy(input + cursor_position, buf, len);
                     buffer_length += len;
                     cursor_position += len;
 
                     // Add a null terminator
                     input[buffer_length] = '\0';
 
-                    printf("\x1b[K%s", utf8_char);
+                    printf("%.*s", len, buf);
                 }
             }
         }
-        fflush(stdout);
+
     }
     return (status);
 }
