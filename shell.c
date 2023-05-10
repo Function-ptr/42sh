@@ -107,7 +107,24 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                 continue;
             }
             continue;
-        } else if (strchr(buf, '\n')) {
+        }
+        if (buf[0] == 0x7f) {
+            if (cursor_position <= 0 || buffer_length <= 0 ||
+                cursor_position > buffer_length)
+                continue;
+            int len = previous_utf8_char_length(input, cursor_position -
+                previous_utf8_char_length(input, cursor_position));
+            if (cursor_position < buffer_length)
+                memmove(input + cursor_position - len,
+                    input + cursor_position,(buffer_length - cursor_position));
+            for (int i = 0; i <= len; i++)
+                input[buffer_length - i] = '\0';
+            buffer_length -= len;
+            cursor_position -= len;
+            printf("\x1B[D\x1B[P");
+            continue;
+        }
+        if (strchr(buf, '\n')) {
             int len = utf8_char_length(buf[0]);
                 if (len == 1 && read_len > 1)
                     len = read_len;
@@ -133,20 +150,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             memset(input, 0, sizeof(input));
             buffer_length = cursor_position = 0;
             write_prompt(env);
-        } else if (buf[0] == 0x7f) {
-            if (cursor_position <= 0 || buffer_length <= 0 ||
-                cursor_position > buffer_length)
-                continue;
-            int len = previous_utf8_char_length(input, cursor_position -
-                previous_utf8_char_length(input, cursor_position));
-            if (cursor_position < buffer_length)
-                memmove(input + cursor_position - len,
-                    input + cursor_position,(buffer_length - cursor_position));
-            for (int i = 0; i <= len; i++)
-                input[buffer_length - i] = '\0';
-            buffer_length -= len;
-            cursor_position -= len;
-            printf("\x1B[D\x1B[P");
+            continue;
         } else {
             if (buffer_length + read_len < sizeof(input)) {
                 int len = utf8_char_length(buf[0]);
