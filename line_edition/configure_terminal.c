@@ -20,9 +20,6 @@
 
 void restore_terminal(struct termios *old_term)
 {
-    printf("\e[m");
-    fflush(stdout);
-
     tcsetattr(0, TCSANOW, old_term);
 }
 
