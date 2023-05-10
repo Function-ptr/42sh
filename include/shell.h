@@ -12,12 +12,14 @@
     #include <stdio.h>
     #include <unistd.h>
     #include <stdlib.h>
+    #include <termios.h>
 
     /////////////
     /// Shell ///
     /////////////
 
-    int shell(envdata_t *env);
+    int shell(envdata_t *env, struct termios *old_term,
+        struct termios *new_term);
     int array_len(char **arr);
 
     /////////////

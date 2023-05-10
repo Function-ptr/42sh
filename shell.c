@@ -43,18 +43,22 @@ int previous_utf8_char_length(const char input[4], uint16_t cursor_position)
     return len;
 }
 
-int shell(envdata_t *env)
+int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
     int status = 0, exiting = 0;
     char input[4096] = {0};
     size_t buffer_length = 0;
     size_t cursor_position = 0;
     setlocale(LC_ALL, ""); // Set the locale to the user's default locale
+    bool is_tty = false;
 
     // Buffer to hold input data
     char buf[4] = {0};
-    if (isatty(0))
+    if (isatty(0)) {
+        configure_terminal(new_term, old_term);
         write_prompt(env);
+        is_tty = true;
+    }
     while (1) {
         fflush(stdout);
         memset(buf, 0, sizeof(buf));
@@ -104,9 +108,14 @@ int shell(envdata_t *env)
                 }
             }
             continue;
-        } else if (buf[0] == '\n') {
-            // Null-terminate the input buffer
-            input[buffer_length] = '\0';
+        } else if (strchr(buf, '\n')) {
+            int len = utf8_char_length(buf[0]);
+                if (len == 1 && read_len > 1)
+                    len = read_len;
+            memcpy(input + cursor_position, buf, len);
+                buffer_length += len;
+                cursor_position += len;
+            //input[buffer_length - 1] = '\0';
 
             // Process the input buffer when the 'Enter' key is pressed
             operate_on_previous_command(input, env->history);
@@ -114,10 +123,11 @@ int shell(envdata_t *env)
                 continue;
             }
             add_line_to_history(env->history, input);
-            input[buffer_length] = input[buffer_length - 1];
-            printf("\n");
+
+            if (is_tty)
+                printf("\n");
             status = run_user_input(input, env, &exiting);
-            if (exiting)
+            if (exiting || !is_tty)
                 return (status);
 
             // Clear the input buffer and reset the buffer length and cursor position
@@ -208,8 +218,8 @@ int shell(envdata_t *env)
 
                     // Add a null terminator
                     input[buffer_length] = '\0';
-
-                    printf("%.*s", len, buf);
+                    if (is_tty)
+                        printf("%.*s", len, buf);
                 }
             }
         }

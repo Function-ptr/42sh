@@ -21,9 +21,8 @@ int main(int ac, char **av, char **env)
     if (environment == NULL)
         return (84);
     struct termios old_term, new_term;
-    configure_terminal(&new_term, &old_term);
     init_history(environment);
-    int status = shell(environment);
+    int status = shell(environment, &old_term, &new_term);
     clear_environment(environment);
     restore_terminal(&old_term);
     return (status);
