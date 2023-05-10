@@ -19,6 +19,7 @@
     #define INC_42SH_BUILT_IN_H
 
     #include "types.h"
+    #include "parsing.h"
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
