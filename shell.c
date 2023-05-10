@@ -152,76 +152,76 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             write_prompt(env);
             continue;
         } else {
-            if (buffer_length + read_len < sizeof(input)) {
-                int len = utf8_char_length(buf[0]);
-                if (len == 1 && read_len > 1)
-                    len = read_len;
-                if (cursor_position < buffer_length) {
-                    size_t i;
-                    int prev_len = utf8_char_length(input[cursor_position]);
-                    if (prev_len <= 0)
-                        prev_len = previous_utf8_char_length(input,
-                                                             cursor_position);
-                    // Move the characters to the right of the cursor
-                    if (prev_len > 1 && len > 1) {
-                        memmove(input + cursor_position + len - 1,
-                                input + cursor_position - (prev_len - 1),
-                                (buffer_length - cursor_position) +
-                                (prev_len - 1));
-                        // Insert the new character
-                        memcpy(input + cursor_position - (prev_len - 1), buf,
-                               len);
-                        // Clear the line to the right of the cursor
-                        printf("\x1b[K");
+            if (buffer_length + read_len > sizeof(input))
+                continue;
+            int len = utf8_char_length(buf[0]);
+            if (len == 1 && read_len > 1)
+                len = read_len;
+            if (cursor_position < buffer_length) {
+                size_t i;
+                int prev_len = utf8_char_length(input[cursor_position]);
+                if (prev_len <= 0)
+                    prev_len = previous_utf8_char_length(input,
+                                                         cursor_position);
+                // Move the characters to the right of the cursor
+                if (prev_len > 1 && len > 1) {
+                    memmove(input + cursor_position + len - 1,
+                            input + cursor_position - (prev_len - 1),
+                            (buffer_length - cursor_position) +
+                            (prev_len - 1));
+                    // Insert the new character
+                    memcpy(input + cursor_position - (prev_len - 1), buf,
+                           len);
+                    // Clear the line to the right of the cursor
+                    printf("\x1b[K");
 
-                        // Print the updated buffer from the current cursor position
-                        printf("%s", input + cursor_position - (prev_len - 1));
-                        // Increment the buffer_length and cursor_position
-                        buffer_length += len;
-                        cursor_position += len;
-                    } else {
-                        int offset = prev_len > 1 ? 0 : len;
-                        memmove(input + cursor_position + offset,
-                                input + cursor_position - (prev_len - 1),
-                                (buffer_length - cursor_position) + (prev_len
-                                - 1));
-                        // Insert the new character
-                        memcpy(input + cursor_position - (prev_len - 1), buf,
-                               len);
-                        // Clear the line to the right of the cursor
-                        printf("\x1b[K");
-
-                        // Print the updated buffer from the current cursor position
-                        printf("%s", input + cursor_position - (prev_len - 1));
-                        // Increment the buffer_length and cursor_position
-                        buffer_length += len;
-                        cursor_position += len;
-                    }
-
-                    // Add a null terminator
-                    input[buffer_length] = '\0';
-
-                    // Calculate the display width difference between the current cursor position
-                    // and the end of the buffer
-                    i = buffer_length - 1;
-                    while (i >= cursor_position) {
-                        int c_len = utf8_char_length(input[i]);
-                        if (c_len <= 0)
-                            c_len = previous_utf8_char_length(input, i);
-                        i -= c_len;
-                        printf("\x1b[D");
-                    }
-
-                } else {
-                    memcpy(input + cursor_position, buf, len);
+                    // Print the updated buffer from the current cursor position
+                    printf("%s", input + cursor_position - (prev_len - 1));
+                    // Increment the buffer_length and cursor_position
                     buffer_length += len;
                     cursor_position += len;
+                } else {
+                    int offset = prev_len > 1 ? 0 : len;
+                    memmove(input + cursor_position + offset,
+                            input + cursor_position - (prev_len - 1),
+                            (buffer_length - cursor_position) + (prev_len
+                            - 1));
+                    // Insert the new character
+                    memcpy(input + cursor_position - (prev_len - 1), buf,
+                           len);
+                    // Clear the line to the right of the cursor
+                    printf("\x1b[K");
 
-                    // Add a null terminator
-                    input[buffer_length] = '\0';
-                    if (is_tty)
-                        printf("%.*s", len, buf);
+                    // Print the updated buffer from the current cursor position
+                    printf("%s", input + cursor_position - (prev_len - 1));
+                    // Increment the buffer_length and cursor_position
+                    buffer_length += len;
+                    cursor_position += len;
                 }
+
+                // Add a null terminator
+                input[buffer_length] = '\0';
+
+                // Calculate the display width difference between the current cursor position
+                // and the end of the buffer
+                i = buffer_length - 1;
+                while (i >= cursor_position) {
+                    int c_len = utf8_char_length(input[i]);
+                    if (c_len <= 0)
+                        c_len = previous_utf8_char_length(input, i);
+                    i -= c_len;
+                    printf("\x1b[D");
+                }
+
+            } else {
+                memcpy(input + cursor_position, buf, len);
+                buffer_length += len;
+                cursor_position += len;
+
+                // Add a null terminator
+                input[buffer_length] = '\0';
+                if (is_tty)
+                    printf("%.*s", len, buf);
             }
         }
 
