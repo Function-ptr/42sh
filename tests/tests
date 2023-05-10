@@ -157,3 +157,14 @@ TESTS=
   echo 'cd /etc; (cd / && ls); ls'
   echo '(ls && cd /random) || pwd'
 [15-END]
+
+[16]
+NAME="Aliases"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'alias ll=ls -l; alias lla = ls -l -a!; alias'
+  echo 'alias ll=ls -l; ll / | grep usr'
+  echo 'alias; alias dir = ls -l; alias cls=clear; alias; exit'
+  echo 'alias nope='
+[16-END]
