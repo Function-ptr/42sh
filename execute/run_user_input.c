@@ -31,7 +31,7 @@ int run_command(command_t *command, int *exiting, envdata_t *env)
     return (status);
 }
 
-int run_user_input(char *input, envdata_t *env, int *exiting)
+int run_user_input(char *input, envdata_t *env, bool *exiting)
 {
     char *res = strdup(input);
     if (process_quotes(&res))

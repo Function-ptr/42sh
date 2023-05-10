@@ -33,7 +33,7 @@
     int check_exit_status(int status);
     int detect_command_type_and_run(command_t *command, int *exiting,
         envdata_t *env);
-    int run_user_input(char *input, envdata_t *env, int *exiting);
+    int run_user_input(char *input, envdata_t *env, bool *exiting);
     int run_command(command_t *command, int *exiting, envdata_t *env);
     pid_t fork_and_run(char *filepath, command_t *command, envvar_t **env);
     char *get_command_in_path(char *command, pathdir_t **path_dirs);
