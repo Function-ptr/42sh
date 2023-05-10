@@ -45,7 +45,7 @@ int previous_utf8_char_length(const char input[4], uint16_t cursor_position)
 
 int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
-    int status = 0, exiting = 0;
+    int status, exiting = 0;
     char input[4096] = {0};
     size_t buffer_length = 0;
     size_t cursor_position = 0;
@@ -138,7 +138,8 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             if (cursor_position <= 0 || buffer_length <= 0 ||
                 cursor_position > buffer_length)
                 continue;
-            int len = previous_utf8_char_length(input, cursor_position - 1);
+            int len = previous_utf8_char_length(input, cursor_position -
+                previous_utf8_char_length(input, cursor_position));
             if (cursor_position < buffer_length && cursor_position > 0 &&
                 buffer_length > 0)
                 memmove(input + cursor_position - len,
@@ -225,5 +226,4 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         }
 
     }
-    return (status);
 }
