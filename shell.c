@@ -77,33 +77,34 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                 cursor_position -= prev_len == 1 ? 1 : prev_len;
                 printf("\x1b[D");
                 continue;
-            } else if (buf[2] == '3' && buf[3] == '~') {
+            } if (buf[2] == '3' && buf[3] == '~' && cursor_position < buffer_length) {
                 // Delete key
-                if (cursor_position < buffer_length) {
-                    int len = utf8_char_length(input[cursor_position]);
-                    memmove(input + cursor_position, input + cursor_position + len,
-                            (buffer_length - cursor_position) * sizeof(char));
-                    for (int i = 0; i <= len; i++)
-                        input[buffer_length - i] = '\0';
-                    buffer_length -= len;
-                    printf("\x1B[P");
-                    int c_len = utf8_char_length(input[cursor_position]);
-                    if (c_len > 1)
-                        cursor_position += c_len - 1;
-                }
-            } else if (buf[2] == 'H' || (buf[2] == '1' && buf[3] == '~')) {
+                int len = utf8_char_length(input[cursor_position]);
+                memmove(input + cursor_position, input + cursor_position + len,
+                        (buffer_length - cursor_position) * sizeof(char));
+                for (int i = 0; i <= len; i++)
+                    input[buffer_length - i] = '\0';
+                buffer_length -= len;
+                printf("\x1B[P");
+                int c_len = utf8_char_length(input[cursor_position]);
+                if (c_len > 1)
+                    cursor_position += c_len - 1;
+                continue;
+            } if (buf[2] == 'H' || (buf[2] == '1' && buf[3] == '~')) {
                 // Home key
                 while (cursor_position > 0) {
                     int prev_len = previous_utf8_char_length(input, cursor_position);
                     cursor_position -= prev_len == 1 ? 1 : prev_len;
                     printf("\x1b[D");
                 }
-            } else if (buf[2] == 'F' || (buf[2] == '4' && buf[3] == '~')) {
+                continue;
+            } if (buf[2] == 'F' || (buf[2] == '4' && buf[3] == '~')) {
                 // End key
                 while (cursor_position < buffer_length) {
                     cursor_position += utf8_char_length(input[cursor_position]);
                     printf("\x1b[C");
                 }
+                continue;
             }
             continue;
         } else if (strchr(buf, '\n')) {
