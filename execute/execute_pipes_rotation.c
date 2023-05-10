@@ -15,6 +15,7 @@
                              |___/               |______|
 */
 #include "execute.h"
+#include "shell.h"
 
 pid_t start_piped_command(command_t *command, int *exiting, envdata_t *env,
     int *builtin_status)
@@ -74,10 +75,13 @@ void process_command(int **data, command_t **commands, envdata_t *env,
     *status = 0;
     *exit_now = 0;
     second = start_piped_command(commands[*i + 1], exit_now, env, status);
+    cpid2 = second;
     if (*first != -2)
-        wait_and_free_command(commands[*i], env->path_dirs, NULL, *first);
+        wait_and_free_command(commands[*i], env->path_dirs, status, *first);
     free_command(commands[*i]);
     *first = second;
+    cpid1 = cpid2;
+    cpid2 = -1;
 }
 
 /*
@@ -89,10 +93,11 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
     int exit_now = 0, *pos_status_exit[3] = {i, &status, &exit_now};
     open_pipe(commands[*i]);
     pid_t first = start_piped_command(commands[*i], &exit_now, env, &status);
-    if (first == -1)
-        return (1);
+    cpid1 = first;
+    if (first == -1) return (1);
     for (; *i < nb_commands - 1; *i += 1) {
         process_command(pos_status_exit, commands, env, &first);
+        if (status == 136) break;
         if (first == -1) {
             *i += 1;
             free_remaining_piped_commands(commands, nb_commands, i);
@@ -102,7 +107,7 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
     if (status != -2 && first != -2)
         wait_and_free_command(commands[*i], env->path_dirs, &status, first);
     free_command(commands[*i]);
-    *exiting = exit_now;
+    *exiting = exit_now; cpid1 = -1;
     return status;
 }
 /*
