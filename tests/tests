@@ -164,7 +164,7 @@ SETUP=""
 CLEAN=""
 TESTS=
   echo 'alias ll=ls -l'
-  echo 'alias ll=ls -l; unalias ll; alias'
+  echo 'alias lb=ls -l; unalias lb; alias'
   echo 'alias; alias dir = ls -l; alias cls=clear; alias'
   echo 'alias nope='
 [16-END]
