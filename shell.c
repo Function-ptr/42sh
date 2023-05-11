@@ -85,6 +85,8 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                 // Left arrow key
                 uint8_t prev_len = previous_utf8_char_length(input_data
                     .input, input_data.cursor_pos);
+                if (prev_len > input_data.cursor_pos)
+                    continue;
                 input_data.cursor_pos -= prev_len == 1 ? 1 : prev_len;
                 printf("\x1b[D");
                 continue;
