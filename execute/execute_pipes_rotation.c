@@ -99,6 +99,7 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
     cpid1 = first;
     if (first == -1) return (1);
     for (; *i < nb_commands - 1; *i += 1) {
+        if (!commands[*i]->pipe_out) break;
         process_command(pos_status_exit, commands, env, &first);
         if (status == 136 || status == -3) break;
         if (first == -1) {
@@ -110,8 +111,7 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
     if (status != -2 && first != -2)
         wait_and_free_command(commands[*i], env->path_dirs, &status, first);
     free_command(commands[*i]);
-    *exiting = exit_now; cpid1 = -1;
-    return status;
+    *exiting = exit_now; cpid1 = -1; return status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
