@@ -123,11 +123,32 @@ bool process_home_end_keys(InputBuffer *input_data)
     return false;
 }
 
-bool process_backspace_key(InputBuffer *input_data) {
-    // Handle backspace key here
+void process_backspace_key(InputBuffer *input_data)
+{
+    if (input_data->cursor_pos <= 0 || input_data->input_len <= 0 ||
+    input_data->cursor_pos > input_data->input_len)
+        return;
+    uint8_t len = previous_utf8_char_length(input_data->input,
+        input_data->cursor_pos);
+    if (len > input_data->cursor_pos || input_data->cursor_pos - len < 0)
+        return;
+    if (input_data->cursor_pos >= len)
+        len = previous_utf8_char_length(input_data->input,
+        input_data->cursor_pos - previous_utf8_char_length(input_data->input,
+                                                    input_data->cursor_pos));
+    if (input_data->cursor_pos < input_data->input_len)
+        memmove(input_data->input + input_data->cursor_pos - len,
+            input_data->input + input_data->cursor_pos,
+            (input_data->input_len - input_data->cursor_pos));
+    for (uint8_t i = 0; i <= len; i++)
+        input_data->input[input_data->input_len - i] = '\0';
+    input_data->input_len -= len;
+    input_data->cursor_pos -= len;
+    printf("\x1B[D\x1B[P");
 }
 
-bool process_enter_key(ShellContext *context, InputBuffer *input_data) {
+bool process_enter_key(ShellContext *context, InputBuffer *input_data)
+{
     // Handle enter key here
 }
 
@@ -143,7 +164,8 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         if (process_home_end_keys(input_data)) return;
     }
     if (input_data->read[0] == 0x7f) {
-
+        process_backspace_key(input_data);
+        return;
     }
     if (strchr(input_data->read, '\n')) {
 
@@ -166,12 +188,6 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         fflush(stdout);
         memset(input_data.read, 0, 4);
         input_data.read_len = read(STDIN_FILENO, input_data.read, 4);
-        if (input_data.read[0] == '\x1b' && input_data.read[1] == '[') {
-            // Check for arrow key escape sequence
-
-            }
-            continue;
-        }
         if (input_data.read[0] == 0x7f) {
             if (input_data.cursor_pos <= 0 || input_data.input_len <= 0 ||
                 input_data.cursor_pos > input_data.input_len)
