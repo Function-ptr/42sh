@@ -157,3 +157,27 @@ TESTS=
   echo 'cd /etc; (cd / && ls); ls'
   echo '(ls && cd /random) || pwd'
 [15-END]
+
+[40]
+NAME="&& et || : Advanced"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'ls / && echo displayOK || echo error4'
+  echo 'ls /azerty && echo displayOK1 || error5'
+[40-END]
+
+[41]
+NAME="Advanced Redirection : Same file"
+SETUP="cp data foo"
+CLEAN=""
+TESTS=
+  echo 'cat foo >> foo'
+[41-END]
+
+[42]
+NAME="Advanced Pipes"
+SETUP="PATH=/bin:/usr/bin; ulimit -n 10"
+TESTS=
+  echo 'cat data | grep A | grep B | grep C'
+[42-END]
