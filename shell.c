@@ -147,9 +147,24 @@ void process_backspace_key(InputBuffer *input_data)
     printf("\x1B[D\x1B[P");
 }
 
-bool process_enter_key(ShellContext *context, InputBuffer *input_data)
+void process_enter_key(ShellContext *context, InputBuffer *input_data)
 {
-    // Handle enter key here
+    int8_t len = utf8_char_len(input_data->read[0]);
+    if (len == 1 && input_data->read_len > 1)
+        len = input_data->read_len;
+    memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
+    input_data->input_len += len;
+    input_data->cursor_pos += len;
+    operate_on_previous_command(input_data->input, context->env->history);
+    if (input_data->input[0] == '!') return;
+    add_line_to_history(context->env->history, input_data->input);
+    if (input_data->is_tty) printf("\n");
+    context->status = run_user_input(input_data->input, context->env,
+                        &context->exiting);
+    if (context->exiting || !input_data->is_tty) return;
+    memset(input_data->input, 0, sizeof(input_data->input));
+    input_data->input_len = input_data->cursor_pos = 0;
+    write_prompt(context->env);
 }
 
 bool process_regular_key(ShellContext *context, InputBuffer *input_data) {
@@ -188,26 +203,6 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         fflush(stdout);
         memset(input_data.read, 0, 4);
         input_data.read_len = read(STDIN_FILENO, input_data.read, 4);
-        if (input_data.read[0] == 0x7f) {
-            if (input_data.cursor_pos <= 0 || input_data.input_len <= 0 ||
-                input_data.cursor_pos > input_data.input_len)
-                continue;
-            uint8_t len = previous_utf8_char_length(input_data.input, input_data.cursor_pos);
-            if (len > input_data.cursor_pos || input_data.cursor_pos - len < 0)
-                continue;
-            if (input_data.cursor_pos >= len)
-                len = previous_utf8_char_length(input_data.input, input_data.cursor_pos -
-                    previous_utf8_char_length(input_data.input, input_data.cursor_pos));
-            if (input_data.cursor_pos < input_data.input_len)
-                memmove(input_data.input + input_data.cursor_pos - len,
-                    input_data.input + input_data.cursor_pos,(input_data.input_len - input_data.cursor_pos));
-            for (uint8_t i = 0; i <= len; i++)
-                input_data.input[input_data.input_len - i] = '\0';
-            input_data.input_len -= len;
-            input_data.cursor_pos -= len;
-            printf("\x1B[D\x1B[P");
-            continue;
-        }
         if (strchr(input_data.read, '\n')) {
             int8_t len = utf8_char_len(input_data.read[0]);
                 if (len == 1 && input_data.read_len > 1)
