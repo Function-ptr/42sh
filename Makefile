@@ -9,6 +9,7 @@ SOURCES = . built-in execute parse errors environment history
 
 SRCS = 	main.c	\
 	shell.c	\
+	sighandler.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
 	built-in/command_is_a_builtin.c	\
@@ -20,6 +21,7 @@ SRCS = 	main.c	\
 	execute/check_program_exit_status.c	\
 	execute/detect_command_type.c	\
 	execute/execute_binary_file.c	\
+	execute/execute_parentheses.c	\
 	execute/execute_pipes_rotation.c	\
 	execute/execute_using_path.c	\
 	execute/run_user_input.c	\
@@ -29,6 +31,7 @@ SRCS = 	main.c	\
 	parse/get_binary_name.c	\
 	parse/handle_redirections.c	\
 	parse/inhibitors.c	\
+	parse/line_with_parentheses.c	\
 	parse/load_redirections_for_command.c	\
 	parse/my_strchr_escape.c	\
 	parse/parse_single_command.c	\
@@ -56,6 +59,7 @@ SRCS = 	main.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
+	obj/sighandler.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
 	obj/built-in-command_is_a_builtin.o	\
@@ -67,6 +71,7 @@ OBJS = 	obj/main.o	\
 	obj/execute-check_program_exit_status.o	\
 	obj/execute-detect_command_type.o	\
 	obj/execute-execute_binary_file.o	\
+	obj/execute-execute_parentheses.o	\
 	obj/execute-execute_pipes_rotation.o	\
 	obj/execute-execute_using_path.o	\
 	obj/execute-run_user_input.o	\
@@ -76,6 +81,7 @@ OBJS = 	obj/main.o	\
 	obj/parse-get_binary_name.o	\
 	obj/parse-handle_redirections.o	\
 	obj/parse-inhibitors.o	\
+	obj/parse-line_with_parentheses.o	\
 	obj/parse-load_redirections_for_command.o	\
 	obj/parse-my_strchr_escape.o	\
 	obj/parse-parse_single_command.o	\

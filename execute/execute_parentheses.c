@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** get_from_history.c
+** execute_parentheses.c
 ** File description:
-** get from history
+** execute parentheses
 */
 /*
  __  __        _                            ___            ___
@@ -14,77 +14,37 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "history.h"
+#include "execute.h"
 
-char *history_file_get_line_from_offset(history_t *history, size_t offset)
+void run_forked_parentheses(command_t *command, envdata_t *env)
 {
-    FILE *f = fdopen(history->history_fd, "r");
-    if (!f)
-        return NULL;
-    for (int i = 0; i < history->len_file - offset - 1; i++) {
-        char *l = NULL;
-        size_t s = 0;
-        getline(&l, &s, f);
-        free(l);
-    }
-    char *line = NULL;
-    size_t s = 0;
-    if (getline(&line, &s, f) == -1) {
-        free(line);
-        fclose(f);
-        return (NULL);
-    }
-    fclose(f);
-    line[strlen(line) - 1] = 0;
-    history->current_pos = history->len_file - offset;
-    return (line);
+    if (command->out_fd != STDOUT_FILENO)
+        dup2(command->out_fd, STDOUT_FILENO);
+    if (command->in_fd != STDIN_FILENO)
+        dup2(command->in_fd, STDIN_FILENO);
+    *(strchr(command->command, '(')) = ' ';
+    *(strrchr(command->command, ')')) = ' ';
+    char *new = calloc(strlen(command->command) + 2, sizeof(char));
+    strcpy(new, command->command);
+    new[strlen(new)] = '\n';
+    int exiting = 0;
+    int status = run_user_input(new, env, &exiting);
+    free(new);
+    exit(status);
 }
 
-char *history_session_get_line_from_offset(history_t *history, size_t offset)
+int run_parentheses_command(command_t *command, envdata_t *env)
 {
-    size_t i = 1, j = history->len_session_history - 1;
-    for (; i < offset; j--, i++);
-    char *line = strdup(history->session_history[j].line);
-    return (line);
-}
-
-char *process_file_line(char *line)
-{
-    char *first_sp = strchr(line, ' ');
-    if (first_sp == NULL) {
-        free(line);
-        return NULL;
-    }
-    first_sp++;
-    size_t len = strlen(first_sp);
-    char *l = calloc(len + 3, sizeof(char));
-    strcpy(l, first_sp);
-    l[len] = '\n';
-    free(line);
-    return (l);
-}
-
-char *history_get_line_from_offset(history_t *history, size_t offset)
-{
-    if (history == NULL)
-        return (NULL);
-    if (offset > history->len_file + history->len_session_history || !offset)
-        return (NULL);
-    if (offset > history->len_session_history && history->history_fd != -1) {
-        char *l = history_file_get_line_from_offset(history,
-            offset - history->len_session_history);
-        l = process_file_line(l);
-        history->history_fd = open(history->filename, O_CREAT | O_APPEND |
-            O_RDONLY, S_IRUSR | S_IWUSR);
-        return l;
-    }
-    if (history->history_fd == -1) {
-        fprintf(stderr, "history: Unable to load previous history\n");
-        if (offset > history->len_session_history)
-            return NULL;
-    }
-    char *l = history_session_get_line_from_offset(history, offset);
-    return l;
+    pid_t pid = fork();
+    if (pid == 0)
+        run_forked_parentheses(command, env);
+    int status;
+    waitpid(pid, &status, WUNTRACED);
+    if (command->out_fd != STDOUT_FILENO)
+        close(command->out_fd);
+    if (command->in_fd != STDIN_FILENO)
+        close(command->in_fd);
+    return status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

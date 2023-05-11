@@ -35,6 +35,7 @@ void add_path_directory(pathdir_t **pathdirs, char *dir, int len)
 
 void clear_path_directories(pathdir_t **list)
 {
+    if (list == NULL) return;
     pathdir_t *dir = *list;
     while (dir != NULL) {
         pathdir_t *tmp = dir->next;

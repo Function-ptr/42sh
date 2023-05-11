@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** get_from_history.c
+** line_with_parentheses.c
 ** File description:
-** get from history
+** parse line with parentheses
 */
 /*
  __  __        _                            ___            ___
@@ -14,77 +14,55 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "history.h"
+#include "parsing.h"
 
-char *history_file_get_line_from_offset(history_t *history, size_t offset)
+command_t *add_cmd_parentheses(char *cmd, command_t **prev, int *stats[2],
+    char *inp)
 {
-    FILE *f = fdopen(history->history_fd, "r");
-    if (!f)
-        return NULL;
-    for (int i = 0; i < history->len_file - offset - 1; i++) {
-        char *l = NULL;
-        size_t s = 0;
-        getline(&l, &s, f);
-        free(l);
-    }
-    char *line = NULL;
-    size_t s = 0;
-    if (getline(&line, &s, f) == -1) {
-        free(line);
-        fclose(f);
-        return (NULL);
-    }
-    fclose(f);
-    line[strlen(line) - 1] = 0;
-    history->current_pos = history->len_file - offset;
-    return (line);
+    int *status = stats[1];
+    char sep[2] = {*inp, *inp && strchr("&|", *(inp + 1))
+        ? *(inp + 1) : 0};
+    char *trimmed = strdup(cmd);
+    free(cmd);
+    command_t *command = parse_single_command(trimmed, *prev, sep, stats);
+    *status *= command ? 1 : 0;
+    *prev = command;
+    free(trimmed);
+    return command;
 }
 
-char *history_session_get_line_from_offset(history_t *history, size_t offset)
+void nullify_remaining_commands(command_t **commands, int *i, int nb_cmds,
+    int *cmdsize)
 {
-    size_t i = 1, j = history->len_session_history - 1;
-    for (; i < offset; j--, i++);
-    char *line = strdup(history->session_history[j].line);
-    return (line);
+    for (int j = *i + 1; j <= nb_cmds; j++)
+        commands[j] = NULL;
+    *i += 1;
+    *cmdsize = 0;
 }
 
-char *process_file_line(char *line)
+int separate_command_with_parentheses(int nb_cmds, char *inp,
+    command_t **commands)
 {
-    char *first_sp = strchr(line, ' ');
-    if (first_sp == NULL) {
-        free(line);
-        return NULL;
-    }
-    first_sp++;
-    size_t len = strlen(first_sp);
-    char *l = calloc(len + 3, sizeof(char));
-    strcpy(l, first_sp);
-    l[len] = '\n';
-    free(line);
-    return (l);
-}
-
-char *history_get_line_from_offset(history_t *history, size_t offset)
-{
-    if (history == NULL)
-        return (NULL);
-    if (offset > history->len_file + history->len_session_history || !offset)
-        return (NULL);
-    if (offset > history->len_session_history && history->history_fd != -1) {
-        char *l = history_file_get_line_from_offset(history,
-            offset - history->len_session_history);
-        l = process_file_line(l);
-        history->history_fd = open(history->filename, O_CREAT | O_APPEND |
-            O_RDONLY, S_IRUSR | S_IWUSR);
-        return l;
-    }
-    if (history->history_fd == -1) {
-        fprintf(stderr, "history: Unable to load previous history\n");
-        if (offset > history->len_session_history)
-            return NULL;
-    }
-    char *l = history_session_get_line_from_offset(history, offset);
-    return l;
+    int status = 1, len = strlen(inp), inquote = 0, inpar = 0, cmdsize = 0;
+    int cpos = 0, *stats[2] = {&cpos, &status};
+    command_t *prev = NULL;
+    char *currcmd = calloc(len + 1, sizeof(char));
+    for (int i = 0; i <= len; i++) {
+        if ((!inpar && !inquote && is_command_delimiter(inp, i)) || !inp[i]) {
+            commands[cpos] = add_cmd_parentheses(currcmd,
+                &prev, stats, inp + i);
+            nullify_remaining_commands(commands, &cpos, nb_cmds, &cmdsize);
+            i += (inp[i] && strchr("&|", inp[i + 1])) ? 1 : 0;
+            currcmd = calloc(len - i + 1, sizeof(char));
+            continue;
+        }
+        if (!inquote && inp[i] == '(') inpar = true;
+        if (!inquote && inp[i] == ')') inpar = false;
+        if (inp[i] == '"') inquote = !inquote;
+        currcmd[cmdsize] = inp[i];
+        cmdsize++;
+    } free(currcmd);
+    return status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

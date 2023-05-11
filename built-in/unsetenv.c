@@ -16,6 +16,7 @@
 */
 
 #include "built_in.h"
+#include "environment.h"
 
 bool does_variable_exist(envvar_t **var, envvar_t **tmp, char *variable_name)
 {
@@ -34,7 +35,7 @@ bool does_variable_exist(envvar_t **var, envvar_t **tmp, char *variable_name)
     return true;
 }
 
-void unset_env(envvar_t **env, char *inp)
+void unset_env(envvar_t **env, char *inp, envdata_t *envdata)
 {
     if (!is_argv_long_enough(inp, 2)) {
         fprintf(stderr, "unsetenv: Too few arguments.\n");
@@ -42,12 +43,15 @@ void unset_env(envvar_t **env, char *inp)
     }
     char *variable_name = get_variable_name(&inp[9]);
     envvar_t *var = *env, *tmp = *env;
-    if (does_variable_exist(&var, &tmp, variable_name) == false)
-        return;
+    if (does_variable_exist(&var, &tmp, variable_name) == false) return;
     if (var->next == NULL) {
         *env = NULL;
     } else
         tmp->next = var->next;
+    if (!strcmp(variable_name, "PATH")) {
+        clear_path_directories(envdata->path_dirs);
+        envdata->path_dirs = NULL;
+    }
     free(var->var);
     free(var);
     free(variable_name);

@@ -42,9 +42,9 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     } if (strcmp(binname, "env") == 0) {
         show_environment(env->env, cmd); found = true;
     } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, cmd); found = true;
+        set_env(env->env, cmd, env); found = true;
     } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input); found = true;
+        unset_env(env->env, input, env); found = true;
     } if (strcmp(binname, "history") == 0) {
         show_history(env->history); found = true;
     }

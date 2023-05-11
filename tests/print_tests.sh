@@ -8,6 +8,10 @@ NC='\033[0m' # No Color
 # Specify the parent folder containing the subfolders
 parent_folder=$(find /tmp -maxdepth 1 -type d -name 'test*' -print -quit)
 
+if [ "$parent_folder" == "" ]; then
+  exit 0
+fi
+
 error_occurred=false
 
 # Loop through each test ID in the parent folder

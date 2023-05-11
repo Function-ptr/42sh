@@ -36,8 +36,15 @@ char *is_command_in_path(pathdir_t *dir, char *binary)
 char *get_command_in_path(char *command, pathdir_t **path_dirs)
 {
     char *cmd = strdup(command);
-    if (cmd[0] == '\n')
+    if (cmd[0] == '\n') {
+        free(cmd);
         return (0);
+    }
+    if (path_dirs == NULL) {
+        fprintf(stderr, "%s: Command not found.\n", cmd);
+        free(cmd);
+        return (NULL);
+    }
     pathdir_t *dir = *path_dirs;
     char *result = is_command_in_path(dir, cmd);
     if (result == NULL)
