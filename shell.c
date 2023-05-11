@@ -99,8 +99,28 @@ bool process_delete_key(InputBuffer *input_data)
     return false;
 }
 
-bool process_home_end_keys(InputBuffer *input_data) {
-    // Handle home and end keys here
+bool process_home_end_keys(InputBuffer *input_data)
+{
+    if (input_data->read[2] == 'H' || (input_data->read[2] == '1' &&
+    input_data->read[3] == '~')) {
+        while (input_data->cursor_pos > 0) {
+            uint8_t prev_len = previous_utf8_char_length(input_data->input,
+                input_data->cursor_pos);
+            input_data->cursor_pos -= prev_len == 1 ? 1 : prev_len;
+            printf("\x1b[D");
+        }
+        return true;
+    }
+    if (input_data->read[2] == 'F' || (input_data->read[2] == '4' &&
+    input_data->read[3] == '~')) {
+        while (input_data->cursor_pos < input_data->input_len) {
+            input_data->cursor_pos += utf8_char_len(
+                input_data->input[input_data->cursor_pos]);
+            printf("\x1b[C");
+        }
+        return true;
+    }
+    return false;
 }
 
 bool process_backspace_key(InputBuffer *input_data) {
@@ -120,6 +140,7 @@ void process_key(ShellContext *context, InputBuffer *input_data)
     if (input_data->read[0] == '\x1b' && input_data->read[1] == '[') {
         if (process_arrow_keys(input_data)) return;
         if (process_delete_key(input_data)) return;
+        if (process_home_end_keys(input_data)) return;
     }
     if (input_data->read[0] == 0x7f) {
 
@@ -148,22 +169,6 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         if (input_data.read[0] == '\x1b' && input_data.read[1] == '[') {
             // Check for arrow key escape sequence
 
-            } if (input_data.read[2] == 'H' || (input_data.read[2] == '1' && input_data.read[3] == '~')) {
-                // Home key
-                while (input_data.cursor_pos > 0) {
-                    uint8_t prev_len = previous_utf8_char_length(input_data.input, input_data.cursor_pos);
-                    input_data.cursor_pos -= prev_len == 1 ? 1 : prev_len;
-                    printf("\x1b[D");
-                }
-                continue;
-            } if (input_data.read[2] == 'F' || (input_data.read[2] == '4' && input_data.read[3] == '~')) {
-                // End key
-                while (input_data.cursor_pos < input_data.input_len) {
-                    input_data.cursor_pos += utf8_char_len(
-                        input_data.input[input_data.cursor_pos]);
-                    printf("\x1b[C");
-                }
-                continue;
             }
             continue;
         }
