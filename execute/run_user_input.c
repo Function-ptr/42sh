@@ -41,6 +41,7 @@ int execution_loop(command_t **commands, int nb_commands, int *exiting,
         if (i > 0 && ((prev_cond == AND && status) ||
             (prev_cond == OR && !status))) {
             status = 1;
+            prev_cond = commands[i]->condition;
             free_command(commands[i]);
             continue;
         }
