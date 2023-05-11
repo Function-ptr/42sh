@@ -128,8 +128,12 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             if (input_data.cursor_pos <= 0 || input_data.input_len <= 0 ||
                 input_data.cursor_pos > input_data.input_len)
                 continue;
-            uint8_t len = previous_utf8_char_length(input_data.input, input_data.cursor_pos -
-                previous_utf8_char_length(input_data.input, input_data.cursor_pos));
+            uint8_t len = previous_utf8_char_length(input_data.input, input_data.cursor_pos);
+            if (len > input_data.cursor_pos || input_data.cursor_pos - len < 0)
+                continue;
+            if (input_data.cursor_pos >= len)
+                len = previous_utf8_char_length(input_data.input, input_data.cursor_pos -
+                    previous_utf8_char_length(input_data.input, input_data.cursor_pos));
             if (input_data.cursor_pos < input_data.input_len)
                 memmove(input_data.input + input_data.cursor_pos - len,
                     input_data.input + input_data.cursor_pos,(input_data.input_len - input_data.cursor_pos));
