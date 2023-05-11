@@ -200,3 +200,12 @@ CLEAN="rm -f fic fic2"
 TESTS=
   echo 'grep CDH < data | tr R T > fic ; cat fic | sed s/A// > fic2 ; cat fic2 | tr Z R'
 [20-END]
+
+[21]
+NAME="Basic variables"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'set TESTVAR=TESTVALUE; set; echo hello, $TESTVAR'
+  echo 'set TEST1=LOL; set TEST2=MDR; set; unset TEST1; set'
+[21-END]
