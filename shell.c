@@ -35,7 +35,7 @@ uint8_t write_prompt(envdata_t *env)
     return 1;
 }
 
-int8_t utf8_char_length(uint8_t byte)
+int8_t utf8_char_len(uint8_t byte)
 {
     return (byte & 0x80) == 0x00 ? 1 :
            (byte & 0xE0) == 0xC0 ? 2 :
@@ -57,6 +57,79 @@ uint8_t previous_utf8_char_length(const char* input, uint16_t cursor_position)
     return len;
 }
 
+bool process_arrow_keys(InputBuffer *input_data)
+{
+    if (input_data->read[2] == 'C' && input_data->cursor_pos <
+        input_data->input_len) {
+        input_data->cursor_pos += utf8_char_len
+            (input_data->input[input_data->cursor_pos + 1]);
+        printf("\x1b[C");
+        return true;
+    }
+    if (input_data->read[2] == 'D' && input_data->cursor_pos > 0) {
+        uint8_t prev_len = previous_utf8_char_length(input_data->input,
+            input_data->cursor_pos);
+        if (prev_len > input_data->cursor_pos)
+            return true;
+        input_data->cursor_pos -= prev_len == 1 ? 1 : prev_len;
+        printf("\x1b[D");
+        return true;
+    }
+    return false;
+}
+
+bool process_delete_key(InputBuffer *input_data)
+{
+    if (input_data->read[2] == '3' && input_data->read[3] == '~' &&
+    input_data->cursor_pos < input_data->input_len) {
+        int8_t len = utf8_char_len(input_data->input[input_data->cursor_pos]);
+        memmove(input_data->input + input_data->cursor_pos,
+                input_data->input + input_data->cursor_pos + len,
+                input_data->input_len - input_data->cursor_pos);
+        for (uint8_t i = 0; i <= len; i++)
+            input_data->input[input_data->input_len - i] = '\0';
+        input_data->input_len -= len;
+        printf("\x1B[P");
+        int8_t c_len = utf8_char_len(
+            input_data->input[input_data->cursor_pos]);
+        if (c_len > 1)
+            input_data->cursor_pos += c_len - 1;
+        return true;
+    }
+    return false;
+}
+
+bool process_home_end_keys(InputBuffer *input_data) {
+    // Handle home and end keys here
+}
+
+bool process_backspace_key(InputBuffer *input_data) {
+    // Handle backspace key here
+}
+
+bool process_enter_key(ShellContext *context, InputBuffer *input_data) {
+    // Handle enter key here
+}
+
+bool process_regular_key(ShellContext *context, InputBuffer *input_data) {
+    // Handle regular key here
+}
+
+void process_key(ShellContext *context, InputBuffer *input_data)
+{
+    if (input_data->read[0] == '\x1b' && input_data->read[1] == '[') {
+        if (process_arrow_keys(input_data)) return;
+        if (process_delete_key(input_data)) return;
+    }
+    if (input_data->read[0] == 0x7f) {
+
+    }
+    if (strchr(input_data->read, '\n')) {
+
+    } else {
+    }
+}
+
 int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
     ShellContext context = {env, 0, false};
@@ -74,38 +147,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         input_data.read_len = read(STDIN_FILENO, input_data.read, 4);
         if (input_data.read[0] == '\x1b' && input_data.read[1] == '[') {
             // Check for arrow key escape sequence
-            if (input_data.read[2] == 'C' && input_data.cursor_pos <
-            input_data.input_len) {
-                // Right arrow key
-                input_data.cursor_pos += utf8_char_length
-                    (input_data.input[input_data.cursor_pos + 1]);
-                printf("\x1b[C");
-                continue;
-            } if (input_data.read[2] == 'D' && input_data.cursor_pos > 0) {
-                // Left arrow key
-                uint8_t prev_len = previous_utf8_char_length(input_data
-                    .input, input_data.cursor_pos);
-                if (prev_len > input_data.cursor_pos)
-                    continue;
-                input_data.cursor_pos -= prev_len == 1 ? 1 : prev_len;
-                printf("\x1b[D");
-                continue;
-            } if (input_data.read[2] == '3' && input_data.read[3] == '~' &&
-            input_data.cursor_pos < input_data.input_len) {
-                // Delete key
-                int8_t len = utf8_char_length(input_data.input[input_data.cursor_pos]);
-                memmove(input_data.input + input_data.cursor_pos, input_data.input +
-                input_data.cursor_pos + len,
-                        (input_data.input_len - input_data.cursor_pos));
-                for (uint8_t i = 0; i <= len; i++)
-                    input_data.input[input_data.input_len - i] = '\0';
-                input_data.input_len -= len;
-                printf("\x1B[P");
-                int8_t c_len = utf8_char_length(input_data.input[input_data
-                                                                  .cursor_pos]);
-                if (c_len > 1)
-                    input_data.cursor_pos += c_len - 1;
-                continue;
+
             } if (input_data.read[2] == 'H' || (input_data.read[2] == '1' && input_data.read[3] == '~')) {
                 // Home key
                 while (input_data.cursor_pos > 0) {
@@ -117,7 +159,8 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             } if (input_data.read[2] == 'F' || (input_data.read[2] == '4' && input_data.read[3] == '~')) {
                 // End key
                 while (input_data.cursor_pos < input_data.input_len) {
-                    input_data.cursor_pos += utf8_char_length(input_data.input[input_data.cursor_pos]);
+                    input_data.cursor_pos += utf8_char_len(
+                        input_data.input[input_data.cursor_pos]);
                     printf("\x1b[C");
                 }
                 continue;
@@ -145,7 +188,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             continue;
         }
         if (strchr(input_data.read, '\n')) {
-            int8_t len = utf8_char_length(input_data.read[0]);
+            int8_t len = utf8_char_len(input_data.read[0]);
                 if (len == 1 && input_data.read_len > 1)
                     len = input_data.read_len;
             memcpy(input_data.input + input_data.cursor_pos, input_data.read, len);
@@ -173,7 +216,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         } else {
             if (input_data.input_len + input_data.read_len > sizeof(input_data.input))
                 continue;
-            int8_t len = utf8_char_length(input_data.read[0]);
+            int8_t len = utf8_char_len(input_data.read[0]);
             if (len == 1 && input_data.read_len > 1)
                 len = input_data.read_len;
             if (input_data.cursor_pos >= input_data.input_len) {
@@ -187,7 +230,8 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                     printf("%.*s", len, input_data.read);
                 continue;
             }
-            int8_t prev_len = utf8_char_length(input_data.input[input_data.cursor_pos]);
+            int8_t prev_len = utf8_char_len(
+                input_data.input[input_data.cursor_pos]);
             if (prev_len <= 0)
                 prev_len = previous_utf8_char_length(input_data.input,
                     input_data.cursor_pos);
@@ -233,7 +277,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             uint16_t i;
             i = input_data.input_len - 1;
             while (i >= input_data.cursor_pos) {
-                int8_t c_len = utf8_char_length(input_data.input[i]);
+                int8_t c_len = utf8_char_len(input_data.input[i]);
                 if (c_len <= 0)
                     c_len = previous_utf8_char_length(input_data.input, i);
                 i -= c_len;
