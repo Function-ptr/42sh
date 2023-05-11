@@ -10,7 +10,7 @@
 void append(node_t **head, char *data_a, char *data_b)
 {
     if (*head != NULL && get_from_str(*head, data_a) != NULL) return;
-    node_t *new_node = malloc(sizeof(node_t));
+    node_t *new_node = (node_t *) calloc(1, sizeof(node_t));
     node_t *last = *head;
 
     new_node->data_a = strdup(data_a);

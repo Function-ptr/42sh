@@ -35,7 +35,9 @@ void exec_alias(command_t *cmd, envdata_t *env)
 {
     node_t *current = env->aliases;
     while (current != NULL) {
-        replace(cmd->command, current->data_a, current->data_b);
+        if (cmd->command) {
+            replace(cmd->command, current->data_a, current->data_b);
+        }
         current = current->next;
     }
 }
