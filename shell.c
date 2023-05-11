@@ -131,7 +131,6 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             memcpy(input + cursor_position, buf, len);
                 buffer_length += len;
                 cursor_position += len;
-            //input[buffer_length - 1] = '\0';
 
             // Process the input buffer when the 'Enter' key is pressed
             operate_on_previous_command(input, env->history);
@@ -182,10 +181,9 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                 memcpy(input + cursor_position - (prev_len - 1), buf,
                        len);
                 // Clear the line to the right of the cursor
-                printf("\x1b[K");
-
                 // Print the updated buffer from the current cursor position
-                printf("%s", input + cursor_position - (prev_len - 1));
+                printf("\x1b[K%s", input + cursor_position - (prev_len - 1));
+
                 // Increment the buffer_length and cursor_position
                 buffer_length += len;
                 cursor_position += len;
@@ -199,10 +197,9 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                 memcpy(input + cursor_position - (prev_len - 1), buf,
                        len);
                 // Clear the line to the right of the cursor
-                printf("\x1b[K");
-
                 // Print the updated buffer from the current cursor position
-                printf("%s", input + cursor_position - (prev_len - 1));
+                printf("\x1b[K%s", input + cursor_position - (prev_len - 1));
+
                 // Increment the buffer_length and cursor_position
                 buffer_length += len;
                 cursor_position += len;
