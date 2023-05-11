@@ -35,7 +35,12 @@ void builtin_vars(command_t *command, variables_t *variables, bool *found,
     char *binname)
 {
     if (!strcmp(binname, "set")) {
-        add_var()
+        set_variable(command, variables);
+        *found = true;
+    }
+    if (!strcmp(binname, "unset")) {
+        unset_variable(command, variables);
+        *found = true;
     }
 }
 
@@ -56,6 +61,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     } if (strcmp(binname, "history") == 0) {
         show_history(env->history); found = true;
     }
+    builtin_vars(cmd, env->variables, &found, binname);
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b);
     return (status);

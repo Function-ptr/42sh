@@ -16,6 +16,7 @@
 */
 
 #include "built_in.h"
+#include "errors.h"
 #include "environment.h"
 
 bool is_empty(command_t *command, envvar_t **env)
@@ -68,7 +69,7 @@ void set_env(envvar_t **env, command_t *command, envdata_t *envdata)
     char *value = &cmd[setenv_command_len + var_name_len + value_index_offset];
     if (setenv_command_len + var_name_len + value_index_offset > cmdlen)
         value = "\0";
-    if (name_does_not_start_with_letter(variable_name[0])) return;
+    if (name_does_not_start_with_letter(variable_name[0], "setenv")) return;
     if (!my_str_isalphanum(variable_name)) {
         name_not_alphanumeric();
         return;

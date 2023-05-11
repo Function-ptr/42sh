@@ -49,8 +49,10 @@ void remove_var(variables_t *variables, char *name)
         if (!strcmp(variables->names[i], name)) {
             free(variables->names[i]);
             free(variables->values[i]);
-            variables->names[i] = NULL;
-            variables->values[i] = NULL;
+            memmove(variables->names + i, variables->names + i + 1,
+                sizeof(char*) * (variables->nb_variables - i - 1));
+            memmove(variables->values + i, variables->values + i + 1,
+                sizeof(char*) * (variables->nb_variables - i - 1));
             variables->nb_variables -= 1;
             return;
         }

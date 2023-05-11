@@ -29,7 +29,7 @@
     //////////////
 
     void name_not_alphanumeric(void);
-    bool name_does_not_start_with_letter(char c);
+    bool name_does_not_start_with_letter(char c, char *builtin);
     void ambigous_redirection(bool input);
     void missing_name_for_redirection(void);
     void null_command(void);
