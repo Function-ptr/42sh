@@ -192,3 +192,11 @@ TESTS=
   echo 'alias s k /bin'
   echo 's'
 [19-END]
+
+[20]
+NAME="Long command with multiple redirects and pipes"
+SETUP=""
+CLEAN="rm -f fic fic2"
+TESTS=
+  echo 'grep CDH < data | tr R T > fic ; cat fic | sed s/A// > fic2 ; cat fic2 | tr Z R'
+[20-END]
