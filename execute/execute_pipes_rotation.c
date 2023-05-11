@@ -54,30 +54,33 @@ void wait_and_free_command(command_t *command, pathdir_t **pathdirs,
     free(filename);
 }
 
-void open_pipe(command_t *command)
+int open_pipe(command_t *command)
 {
     int fds[2];
-    pipe(fds);
+    if (pipe(fds) == -1)
+        return 1;
     command->out_fd = fds[1];
     command->pipe_in_fd = fds[0];
+    return 0;
 }
 
 void process_command(int **data, command_t **commands, envdata_t *env,
     pid_t *first)
 {
-    int *i = data[0], *status = data[1], *exit_now = data[2];
+    int *i = data[0], *status = data[1], *exit_now = data[2], pipestat = 0;
     pid_t second;
     commands[*i + 1]->in_fd = commands[*i]->pipe_in_fd;
-    if (!commands[*i]->pipe_out)
-        return;
+    if (!commands[*i]->pipe_out) return;
     if (commands[*i + 1]->pipe_out)
-        open_pipe(commands[*i + 1]);
+        pipestat = open_pipe(commands[*i + 1]);
+    if (pipestat == -1) {
+        *status = -3;
+        return;
+    }
     *status = 0;
     *exit_now = 0;
     second = start_piped_command(commands[*i + 1], exit_now, env, status);
     cpid2 = second;
-    if (*first != -2)
-        wait_and_free_command(commands[*i], env->path_dirs, status, *first);
     free_command(commands[*i]);
     *first = second;
     cpid1 = cpid2;
@@ -91,13 +94,13 @@ int loop_over_pipes(command_t **commands, envdata_t *env, int **data)
 {
     int *i = data[0], nb_commands = *data[1], *exiting = data[2], status = 0;
     int exit_now = 0, *pos_status_exit[3] = {i, &status, &exit_now};
-    open_pipe(commands[*i]);
+    if (open_pipe(commands[*i])) return 1;
     pid_t first = start_piped_command(commands[*i], &exit_now, env, &status);
     cpid1 = first;
     if (first == -1) return (1);
     for (; *i < nb_commands - 1; *i += 1) {
         process_command(pos_status_exit, commands, env, &first);
-        if (status == 136) break;
+        if (status == 136 || status == -3) break;
         if (first == -1) {
             *i += 1;
             free_remaining_piped_commands(commands, nb_commands, i);
