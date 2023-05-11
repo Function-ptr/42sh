@@ -27,7 +27,7 @@ int show_alias(envdata_t *env)
 {
     node_t *temp = env->aliases;
     while (temp != NULL) {
-        printf("%s=%s\n", temp->data_a, temp->data_b);
+        printf("%s\t(= %s)\n", temp->data_a, temp->data_b);
         temp = temp->next;
     }
     return 0;
