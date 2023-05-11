@@ -73,27 +73,27 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
                 continue;
             } if (buf[2] == 'D' && cursor_position > 0) {
                 // Left arrow key
-                int prev_len = previous_utf8_char_length(input, cursor_position);
+                uint8_t prev_len = previous_utf8_char_length(input, cursor_position);
                 cursor_position -= prev_len == 1 ? 1 : prev_len;
                 printf("\x1b[D");
                 continue;
             } if (buf[2] == '3' && buf[3] == '~' && cursor_position < buffer_length) {
                 // Delete key
-                int len = utf8_char_length(input[cursor_position]);
+                uint8_t len = utf8_char_length(input[cursor_position]);
                 memmove(input + cursor_position, input + cursor_position + len,
                         (buffer_length - cursor_position) * sizeof(char));
-                for (int i = 0; i <= len; i++)
+                for (uint8_t i = 0; i <= len; i++)
                     input[buffer_length - i] = '\0';
                 buffer_length -= len;
                 printf("\x1B[P");
-                int c_len = utf8_char_length(input[cursor_position]);
+                uint8_t c_len = utf8_char_length(input[cursor_position]);
                 if (c_len > 1)
                     cursor_position += c_len - 1;
                 continue;
             } if (buf[2] == 'H' || (buf[2] == '1' && buf[3] == '~')) {
                 // Home key
                 while (cursor_position > 0) {
-                    int prev_len = previous_utf8_char_length(input, cursor_position);
+                    uint8_t prev_len = previous_utf8_char_length(input, cursor_position);
                     cursor_position -= prev_len == 1 ? 1 : prev_len;
                     printf("\x1b[D");
                 }
@@ -112,12 +112,12 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             if (cursor_position <= 0 || buffer_length <= 0 ||
                 cursor_position > buffer_length)
                 continue;
-            int len = previous_utf8_char_length(input, cursor_position -
+            uint8_t len = previous_utf8_char_length(input, cursor_position -
                 previous_utf8_char_length(input, cursor_position));
             if (cursor_position < buffer_length)
                 memmove(input + cursor_position - len,
                     input + cursor_position,(buffer_length - cursor_position));
-            for (int i = 0; i <= len; i++)
+            for (uint8_t i = 0; i <= len; i++)
                 input[buffer_length - i] = '\0';
             buffer_length -= len;
             cursor_position -= len;
@@ -125,7 +125,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
             continue;
         }
         if (strchr(buf, '\n')) {
-            int len = utf8_char_length(buf[0]);
+            uint8_t len = utf8_char_length(buf[0]);
                 if (len == 1 && read_len > 1)
                     len = read_len;
             memcpy(input + cursor_position, buf, len);
