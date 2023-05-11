@@ -58,6 +58,12 @@
         size_t current_pos; // 0 > LONG_MAX (positive offset)
     } history_t;
 
+    typedef struct {
+        char **names;
+        char **values;
+        size_t nb_variables;
+    } variables_t;
+
     typedef struct env_data {
         char is_fallback;
         envvar_t **env;
@@ -70,6 +76,7 @@
         char *hostname;
         size_t hostlen;
         history_t *history;
+        variables_t *variables;
     } envdata_t;
 
     typedef struct command {

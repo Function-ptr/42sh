@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** chose_builtin.c
+** replace_variables.c
 ** File description:
-** chose builitin to run
+** Replaces variables names with their values in a command
 */
 /*
  __  __        _                            ___            ___
@@ -14,52 +14,9 @@
                               __/ |               ______
                              |___/               |______|
 */
+#include "parsing.h"
 
-#include "built_in.h"
 
-void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
-{
-    if (strcmp(binname, "exit") == 0) {
-        *status = exit_with_status(cmd); *found = true;
-    } if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd); *found = true;
-    } if (!*found)
-        fprintf(stderr, "%s: Command not found.\n", binname);
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
-}
-
-void builtin_vars(command_t *command, variables_t *variables, bool *found,
-    char *binname)
-{
-    if (!strcmp(binname, "set")) {
-        add_var()
-    }
-}
-
-int builtin_funcs(command_t *cmd, envdata_t *env)
-{
-    char *input = cmd->command, *b = strdup(input);
-    char *binname = get_binary_name(b);
-    int status = 0;
-    bool found = false;
-    if (strcmp(binname, "cd") == 0) {
-        status = change_dir(env, input); found = true;
-    } if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, cmd); found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, cmd, env); found = true;
-    } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input, env); found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); found = true;
-    }
-    builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b);
-    return (status);
-}
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⢟⣽⠿⠯⠛⡸⢹⠀⢹⠒⣊⡡⠜⠓⠢⣄⠀⠀⠀⠀

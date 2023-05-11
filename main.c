@@ -7,6 +7,7 @@
 
 #include "shell.h"
 #include "history.h"
+#include "environment.h"
 
 int main(int ac, char **av, char **env)
 {
@@ -20,6 +21,7 @@ int main(int ac, char **av, char **env)
     if (environment == NULL)
         return (84);
     init_history(environment);
+    environment->variables = init_variables();
     int status = shell(environment);
     clear_environment(environment);
     return (status);

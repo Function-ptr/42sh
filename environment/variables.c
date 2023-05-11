@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** chose_builtin.c
+** variables.c
 ** File description:
-** chose builitin to run
+** Variables
 */
 /*
  __  __        _                            ___            ___
@@ -14,51 +14,57 @@
                               __/ |               ______
                              |___/               |______|
 */
+#include "environment.h"
 
-#include "built_in.h"
-
-void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
+void show_vars(variables_t *variables)
 {
-    if (strcmp(binname, "exit") == 0) {
-        *status = exit_with_status(cmd); *found = true;
-    } if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd); *found = true;
-    } if (!*found)
-        fprintf(stderr, "%s: Command not found.\n", binname);
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
+    for (size_t i = 0; i < variables->nb_variables; i++)
+        printf("%s\t%s\n", variables->names[i], variables->values[i]);
 }
 
-void builtin_vars(command_t *command, variables_t *variables, bool *found,
-    char *binname)
+void add_var(variables_t *vars, char *name, char *value)
 {
-    if (!strcmp(binname, "set")) {
-        add_var()
+    if (!(*name) && !(*value)) {
+        show_vars(vars);
+        return;
+    }
+    for (size_t i = 0; i < vars->nb_variables; i++) {
+        if (!strcmp(vars->names[i], name)) {
+            free(vars->values[i]);
+            vars->values[i] = strdup(value);
+        }
+    }
+    vars->names = reallocarray(vars->names, vars->nb_variables + 1,
+        sizeof(char*));
+    vars->values = reallocarray(vars->values, vars->nb_variables + 1,
+        sizeof(char*));
+    vars->names[vars->nb_variables] = strdup(name);
+    vars->values[vars->nb_variables] = strdup(value);
+    vars->nb_variables += 1;
+}
+
+void remove_var(variables_t *variables, char *name)
+{
+    for (size_t i = 0; i < variables->nb_variables; i++) {
+        if (!strcmp(variables->names[i], name)) {
+            free(variables->names[i]);
+            free(variables->values[i]);
+            variables->names[i] = NULL;
+            variables->values[i] = NULL;
+            variables->nb_variables -= 1;
+            return;
+        }
     }
 }
 
-int builtin_funcs(command_t *cmd, envdata_t *env)
+char *get_var_value(variables_t *variables, char *name)
 {
-    char *input = cmd->command, *b = strdup(input);
-    char *binname = get_binary_name(b);
-    int status = 0;
-    bool found = false;
-    if (strcmp(binname, "cd") == 0) {
-        status = change_dir(env, input); found = true;
-    } if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, cmd); found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, cmd, env); found = true;
-    } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input, env); found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); found = true;
+    for (size_t i = 0; i < variables->nb_variables; i++) {
+        if (!strcmp(variables->names[i], name)) {
+            return variables->values[i];
+        }
     }
-    builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b);
-    return (status);
+    return NULL;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

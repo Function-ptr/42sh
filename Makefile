@@ -15,6 +15,7 @@ SRCS = 	main.c	\
 	built-in/echo.c	\
 	built-in/exit.c	\
 	built-in/setenv.c	\
+	built-in/set_unset_var.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
 	execute/check_program_exit_status.c	\
@@ -36,6 +37,7 @@ SRCS = 	main.c	\
 	parse/parse_single_command.c	\
 	parse/quotes.c	\
 	parse/remove_spaces_in_command.c	\
+	parse/replace_variables.c	\
 	parse/separate_args.c	\
 	parse/smart_strtok.c	\
 	errors/execution_errors.c	\
@@ -49,6 +51,8 @@ SRCS = 	main.c	\
 	environment/initialize_fallback_environment.c	\
 	environment/linked_lists_management.c	\
 	environment/path.c	\
+	environment/variables.c	\
+	environment/variables_management.c	\
 	history/get_file_nb_lines.c	\
 	history/get_from_history.c	\
 	history/history.c	\
@@ -64,6 +68,7 @@ OBJS = 	obj/main.o	\
 	obj/built-in-echo.o	\
 	obj/built-in-exit.o	\
 	obj/built-in-setenv.o	\
+	obj/built-in-set_unset_var.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
 	obj/execute-check_program_exit_status.o	\
@@ -85,6 +90,7 @@ OBJS = 	obj/main.o	\
 	obj/parse-parse_single_command.o	\
 	obj/parse-quotes.o	\
 	obj/parse-remove_spaces_in_command.o	\
+	obj/parse-replace_variables.o	\
 	obj/parse-separate_args.o	\
 	obj/parse-smart_strtok.o	\
 	obj/errors-execution_errors.o	\
@@ -98,6 +104,8 @@ OBJS = 	obj/main.o	\
 	obj/environment-initialize_fallback_environment.o	\
 	obj/environment-linked_lists_management.o	\
 	obj/environment-path.o	\
+	obj/environment-variables.o	\
+	obj/environment-variables_management.o	\
 	obj/history-get_file_nb_lines.o	\
 	obj/history-get_from_history.o	\
 	obj/history-history.o	\
