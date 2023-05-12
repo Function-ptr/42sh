@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** initialize_environment.c
+** execute_parentheses.c
 ** File description:
-** initialize the environment under normal conditions
+** execute parentheses
 */
 /*
  __  __        _                            ___            ___
@@ -14,47 +14,37 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "environment.h"
+#include "execute.h"
 
-void create_path(envdata_t *envdata)
+void run_forked_parentheses(command_t *command, envdata_t *env)
 {
-    envdata->path = get_path_variable(envdata->env);
-    envdata->path_dirs = get_path_directories(&(envdata->path[5]));
-    reverse_path_directories(envdata->path_dirs);
+    if (command->out_fd != STDOUT_FILENO)
+        dup2(command->out_fd, STDOUT_FILENO);
+    if (command->in_fd != STDIN_FILENO)
+        dup2(command->in_fd, STDIN_FILENO);
+    *(strchr(command->command, '(')) = ' ';
+    *(strrchr(command->command, ')')) = ' ';
+    char *new = calloc(strlen(command->command) + 2, sizeof(char));
+    strcpy(new, command->command);
+    new[strlen(new)] = '\n';
+    int exiting = 0;
+    int status = run_user_input(new, env, &exiting);
+    free(new);
+    exit(status);
 }
 
-void create_prompt_variables(envdata_t *envdata)
+int run_parentheses_command(command_t *command, envdata_t *env)
 {
-    envdata->hostname = "";
-    if (get_environment_variable(envdata->env, "HOSTNAME") != NULL)
-        envdata->hostname = &(get_environment_variable(envdata->env,
-    "HOSTNAME")[9]);
-    envdata->user = "";
-    if (get_environment_variable(envdata->env, "USER"))
-        envdata->user = &(get_environment_variable(envdata->env, "USER")[5]);
-    for (envdata->userlen = 0; (envdata->user)[envdata->userlen] != 0;
-    envdata->userlen++);
-    for (envdata->hostlen = 0; (envdata->hostname)[envdata->hostlen] != 0;
-    envdata->hostlen++);
-}
-
-envdata_t *initialize_envdata(char **env)
-{
-    envdata_t *envdata = malloc(sizeof(envdata_t));
-    envdata->env = malloc(sizeof(envvar_t*) + 1);
-    *(envdata->env) = NULL;
-    duplicate_environment(env, envdata->env);
-    create_path(envdata);
-    envdata->cwd = calloc(300, sizeof(char));
-    create_prompt_variables(envdata);
-    if (getcwd(envdata->cwd, 300) == NULL)
-        strcpy(envdata->cwd, "/home");
-    envdata->prevcwd = calloc(300, sizeof(char));
-    strcpy(envdata->prevcwd, envdata->cwd);
-    reverse_environment_variables(envdata->env);
-    envdata->is_fallback = 0;
-    envdata->status = 0;
-    return (envdata);
+    pid_t pid = fork();
+    if (pid == 0)
+        run_forked_parentheses(command, env);
+    int status;
+    waitpid(pid, &status, WUNTRACED);
+    if (command->out_fd != STDOUT_FILENO)
+        close(command->out_fd);
+    if (command->in_fd != STDIN_FILENO)
+        close(command->in_fd);
+    return status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

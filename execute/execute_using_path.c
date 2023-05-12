@@ -40,6 +40,11 @@ char *get_command_in_path(char *command, pathdir_t **path_dirs)
         free(cmd);
         return (0);
     }
+    if (path_dirs == NULL) {
+        fprintf(stderr, "%s: Command not found.\n", cmd);
+        free(cmd);
+        return (NULL);
+    }
     pathdir_t *dir = *path_dirs;
     char *result = is_command_in_path(dir, cmd);
     if (result == NULL)

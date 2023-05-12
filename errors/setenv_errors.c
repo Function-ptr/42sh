@@ -16,17 +16,17 @@
 */
 #include "errors.h"
 
-void name_not_alphanumeric(void)
+void name_not_alphanumeric(char *builtin)
 {
-    fprintf(stderr, "setenv: Variable name must contain ");
+    fprintf(stderr, "%s: Variable name must contain ", builtin);
     fprintf(stderr, "alphanumeric characters.\n");
 }
 
-bool name_does_not_start_with_letter(char c)
+bool name_does_not_start_with_letter(char c, char *builtin)
 {
     if (c == '\0' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
         return (false);
-    fprintf(stderr, "setenv: Variable name must begin with a letter.\n");
+    fprintf(stderr, "%s: Variable name must begin with a letter.\n", builtin);
     return true;
 }
 /*

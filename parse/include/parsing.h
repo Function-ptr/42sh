@@ -31,12 +31,12 @@
     ///////////////
 
     command_t **cut_input_to_commands(char *input);
-    command_t *parse_single_command(char *comm, command_t *prev, char next_sep,
-        int **data);
-    void detect_redirections(command_t *command, char *comm, char next_sep,
+    command_t *parse_single_command(char *comm, command_t *prev,
+    char next_sep[2], int **statuses);
+    void detect_redirections(command_t *command, char *comm, char next_sep[2],
         int *status);
     int get_redirections_file_descriptors(command_t *command, char *comm);
-    char *remove_spaces_in_command(char *comm, char sep, bool pipe_in,
+    char *remove_spaces_in_command(char *comm, char sep[2], bool pipe_in,
         int *status);
     bool parse_and_load_redirections(command_t *command);
     void get_word_wait_input(command_t *cmd);
@@ -55,6 +55,9 @@
     char *word_array_to_command(char **word_array, int *pos);
     char *my_strrchr_escape(char *, char);
     bool process_quotes(char**);
+    int separate_command_with_parentheses(int nb_cmds, char *input,
+        command_t **commands);
+    void replace_variables(char **cmd, envdata_t *env);
 
     /////////////
     /// Utils ///

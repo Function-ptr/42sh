@@ -123,3 +123,90 @@ TESTS=
   echo 'ls -l'
   echo 'exit 45|cat /etc/resolv.conf'
 [12-END]
+
+[13]
+NAME="Conditional separators &&"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'ls && setenv TESTVAR it_works'
+  echo 'cd / && ls'
+  echo 'pwd && echo Current path'
+  echo 'echo test && pwd'
+  echo 'cat sometext.txt && pwd'
+[13-END]
+
+[14]
+NAME="Conditional separators ||"
+SETUP="/usr/bin/env > .lstenv ; while read varenv ; do unset $varenv ; done < <(/bin/cat .lstenv | /usr/bin/cut -f1 -d=) ; export PATH=/bin:/usr/bin"
+CLEAN="while read varenv ; do export "$varenv" 2>/dev/null ; done  < <(/bin/cat .lstenv) ; /bin/rm -f .lstenv"
+TESTS=
+  echo 'ls || /usr/bin/ls'
+  echo 'cd / || pwd'
+  echo 'echo OK || echo Unable to delete directory'
+  echo 'cat sometext.txt || echo File not found'
+[14-END]
+
+[15]
+NAME="Parentheses"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'echo test && (env | grep PATH)'
+  echo '(env | grep HOME) && echo yay'
+  echo 'cd /etc; (cd / && ls); ls'
+  echo '(ls && cd /random) || pwd'
+[15-END]
+
+[16]
+NAME="&& et || : Advanced"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'ls / && echo displayOK || echo error4'
+  echo 'ls /azerty && echo displayOK1 || error5'
+[16-END]
+
+[17]
+NAME="Advanced Redirection : Same file"
+SETUP="cp data foo"
+CLEAN=""
+TESTS=
+  echo 'cat foo >> foo'
+[17-END]
+
+[18]
+NAME="Advanced pipe 2"
+SETUP="export TERM=xterm ; PATH='/bin:/usr/bin'; ulimit -n 21"
+CLEAN=""
+TESTS=
+  echo 'cat data | grep A | grep B | grep C | tr X Y | tr A Z | tr X E | tr P O | tr R T | tr T G | tr G H | tr J K | tr W Q | tr X F | tr G B'
+[18-END]
+
+[19]
+NAME="Alias of alias"
+SETUP="export TERM=xterm ; PATH='/bin:/usr/bin'"
+CLEAN=""
+TESTS=
+  echo 'alias k file /tmp'
+  echo 'alias s k /bin'
+  echo 's'
+[19-END]
+
+[20]
+NAME="Long command with multiple redirects and pipes"
+SETUP=""
+CLEAN="rm -f fic fic2"
+TESTS=
+  echo 'grep CDH < data | tr R T > fic ; cat fic | sed s/A// > fic2 ; cat fic2 | tr Z R'
+[20-END]
+
+[21]
+NAME="Basic variables"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'set TEST1=LOL; set TEST2=MDR; set | grep TEST; unset TEST1; set | grep TEST'
+  echo 'set TEST21=LOL; set | grep TEST; set TEST21=PTDR; set | grep TEST'
+  echo 'set TEST31=LOL; set TEST32=MDR; set TEST31=PTDR; set | grep TEST; unset TEST32'
+[21-END]

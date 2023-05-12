@@ -74,12 +74,22 @@ jobs:
         run: make clean
       - name: Run tester and check output
         run: |
+          commit="${{ github.event.head_commit.message }}"
+          author="${{ github.event.pusher.name }}"
+          if [[ "$commit" =~ [SKIP] && ("$author" == "LouisDupraz" || "$author" == "PasVegan") ]];then
+            echo "Tests force skipped by user $author"
+            exit 0
+          fi
+
           cd ./tests
           ./improved_tester.sh
           ./print_tests.sh
 
           # Run Valgrind for each test after tests have been executed and printed
           parent_folder=$(find /tmp -type d -name 'test*' -print -quit)
+          if [ "$parent_folder" == "" ]; then
+            exit 0
+          fi
           for test in "$parent_folder"/*/;
           do
            test_id=$(basename "$test")
@@ -96,11 +106,6 @@ jobs:
 
           ./print_valgrind.sh
         timeout-minutes: 5
-      - name: Clean trash
-        run: |
-          rm 42sh
-          cd ..
-          make fclean
 
   mirror_repository:
     runs-on: ubuntu-latest

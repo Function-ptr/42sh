@@ -11,6 +11,7 @@
     #include "types.h"
     #include <stdio.h>
     #include <unistd.h>
+    #include <signal.h>
     #include <stdlib.h>
     #include <termios.h>
 
@@ -32,6 +33,8 @@
     envdata_t *initialize_fallback_environment(void);
     void init_history(envdata_t *environment);
     void clear_environment(envdata_t *envdata);
+    void sighandler(int sig);
 
-
+extern pid_t cpid1;
+extern pid_t cpid2;
 #endif //MINISHELL1_MINISHELL_H

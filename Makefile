@@ -9,17 +9,20 @@ SOURCES = . built-in execute parse errors environment history line_edition
 
 SRCS = 	main.c	\
 	shell.c	\
+	sighandler.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
 	built-in/command_is_a_builtin.c	\
 	built-in/echo.c	\
 	built-in/exit.c	\
 	built-in/setenv.c	\
+	built-in/set_unset_var.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
 	execute/check_program_exit_status.c	\
 	execute/detect_command_type.c	\
 	execute/execute_binary_file.c	\
+	execute/execute_parentheses.c	\
 	execute/execute_pipes_rotation.c	\
 	execute/execute_using_path.c	\
 	execute/run_user_input.c	\
@@ -29,11 +32,13 @@ SRCS = 	main.c	\
 	parse/get_binary_name.c	\
 	parse/handle_redirections.c	\
 	parse/inhibitors.c	\
+	parse/line_with_parentheses.c	\
 	parse/load_redirections_for_command.c	\
 	parse/my_strchr_escape.c	\
 	parse/parse_single_command.c	\
 	parse/quotes.c	\
 	parse/remove_spaces_in_command.c	\
+	parse/replace_variables.c	\
 	parse/separate_args.c	\
 	parse/smart_strtok.c	\
 	errors/execution_errors.c	\
@@ -47,6 +52,8 @@ SRCS = 	main.c	\
 	environment/initialize_fallback_environment.c	\
 	environment/linked_lists_management.c	\
 	environment/path.c	\
+	environment/variables.c	\
+	environment/variables_management.c	\
 	history/get_file_nb_lines.c	\
 	history/get_from_history.c	\
 	history/history.c	\
@@ -64,17 +71,20 @@ SRCS = 	main.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
+	obj/sighandler.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
 	obj/built-in-command_is_a_builtin.o	\
 	obj/built-in-echo.o	\
 	obj/built-in-exit.o	\
 	obj/built-in-setenv.o	\
+	obj/built-in-set_unset_var.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
 	obj/execute-check_program_exit_status.o	\
 	obj/execute-detect_command_type.o	\
 	obj/execute-execute_binary_file.o	\
+	obj/execute-execute_parentheses.o	\
 	obj/execute-execute_pipes_rotation.o	\
 	obj/execute-execute_using_path.o	\
 	obj/execute-run_user_input.o	\
@@ -84,11 +94,13 @@ OBJS = 	obj/main.o	\
 	obj/parse-get_binary_name.o	\
 	obj/parse-handle_redirections.o	\
 	obj/parse-inhibitors.o	\
+	obj/parse-line_with_parentheses.o	\
 	obj/parse-load_redirections_for_command.o	\
 	obj/parse-my_strchr_escape.o	\
 	obj/parse-parse_single_command.o	\
 	obj/parse-quotes.o	\
 	obj/parse-remove_spaces_in_command.o	\
+	obj/parse-replace_variables.o	\
 	obj/parse-separate_args.o	\
 	obj/parse-smart_strtok.o	\
 	obj/errors-execution_errors.o	\
@@ -102,6 +114,8 @@ OBJS = 	obj/main.o	\
 	obj/environment-initialize_fallback_environment.o	\
 	obj/environment-linked_lists_management.o	\
 	obj/environment-path.o	\
+	obj/environment-variables.o	\
+	obj/environment-variables_management.o	\
 	obj/history-get_file_nb_lines.o	\
 	obj/history-get_from_history.o	\
 	obj/history-history.o	\

@@ -33,6 +33,7 @@ envdata_t *initialize_fallback_environment(void)
     envdata->user = NULL;
     envdata->hostlen = 0;
     envdata->userlen = 0;
+    envdata->status = 0;
     return (envdata);
 }
 /*

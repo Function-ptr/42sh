@@ -16,13 +16,13 @@
 */
 #include "parsing.h"
 
-void detect_redirections(command_t *command, char *comm, char next_sep,
+void detect_redirections(command_t *command, char *comm, char next_sep[2],
     int *status)
 {
     char *redirection_out = my_strchr_escape(comm, '>');
-    char *redirection_out_append = my_strchr_escape(comm, '>');
+    char *redirection_out_append = my_strrchr_escape(comm, '>');
     char *redirection_in = my_strchr_escape(comm, '<');
-    char *redirection_in_word = my_strchr_escape(comm, '<');
+    char *redirection_in_word = my_strrchr_escape(comm, '<');
 
     command->redirect_in = (redirection_in != NULL);
     command->redirect_in_word_wait = (redirection_in &&
@@ -32,7 +32,6 @@ void detect_redirections(command_t *command, char *comm, char next_sep,
         redirection_out_append == redirection_out + 1);
 
     command->awaited_word = NULL;
-    command->command = comm;
     command->command = remove_spaces_in_command(command->command,
         next_sep, command->pipe_in, status);
 }

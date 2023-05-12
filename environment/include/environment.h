@@ -20,6 +20,7 @@
 
     #include "types.h"
     #include <stdlib.h>
+    #include <stdio.h>
     #include <string.h>
     #include <unistd.h>
 
@@ -59,6 +60,18 @@
 
     void clear_path_directories(pathdir_t **list);
     void add_path_directory(pathdir_t **pathdirs, char *dir, int len);
+
+    /////////////////
+    /// Variables ///
+    /////////////////
+
+    void add_var(variables_t *vars, char *name, char *value,
+        command_t *command);
+    void remove_var(variables_t *variables, char *name);
+    void show_vars(variables_t *variables, command_t *command);
+    char *get_var_value(variables_t *variables, char *name);
+    variables_t *init_variables(void);
+    void clean_variables(variables_t *variables);
 
 #endif //INC_42SH_ENVIRONMENT_H
 
