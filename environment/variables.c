@@ -32,6 +32,7 @@ void add_var(variables_t *vars, char *name, char *value)
         if (!strcmp(vars->names[i], name)) {
             free(vars->values[i]);
             vars->values[i] = strdup(value);
+            return;
         }
     }
     vars->names = reallocarray(vars->names, vars->nb_variables + 1,
