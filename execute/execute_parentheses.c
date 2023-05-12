@@ -28,7 +28,7 @@ void run_forked_parentheses(command_t *command, envdata_t *env)
     strcpy(new, command->command);
     new[strlen(new)] = '\n';
     int exiting = 0;
-    int status = run_user_input(new, env, &exiting);
+    int status = run_user_input(new, env, (bool*)&exiting);
     free(new);
     exit(status);
 }

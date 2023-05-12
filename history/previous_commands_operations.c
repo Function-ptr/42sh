@@ -87,7 +87,7 @@ void operate_on_previous_command(char *input, history_t *history)
         return;
     }
     if ((input)[1] != ':') {
-        if ((input)[1] != '!') operate_on_line_offset(input, history);
+        if ((input)[1] != '!') operate_on_line_offset(&input, history);
         else {
             free(input);
             input = history_get_line_from_offset(history, 1);
@@ -98,9 +98,9 @@ void operate_on_previous_command(char *input, history_t *history)
     }
     if ((strchr(input, '*') || strchr(input, '-')) &&
         (input)[2] != '^' && (input)[2] != '$')
-        operate_on_arg_range(input, history);
+        operate_on_arg_range(&input, history);
     else
-        operate_on_single_arg(input, history);
+        operate_on_single_arg(&input, history);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
