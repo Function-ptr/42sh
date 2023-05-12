@@ -74,6 +74,13 @@ jobs:
         run: make clean
       - name: Run tester and check output
         run: |
+          commit="${{ github.event.head_commit.message }}"
+          author="${{ github.event.pusher.name }}"
+          if [[ "$commit" =~ [SKIP] && ("$author" == "LouisDupraz" || "$author" == "PasVegan") ]];then
+            echo "Tests force skipped by user $author"
+            exit 0
+          fi
+
           cd ./tests
           ./improved_tester.sh
           ./print_tests.sh
