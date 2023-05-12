@@ -33,9 +33,9 @@ int shell(envdata_t *env)
             continue;
         }
         add_line_to_history(env->history, input);
+        run_precmd(env);
         status = run_user_input(input, env, &exiting);
         free(input);
-        if (exiting)
-            return (status);
+        if (exiting) return (status);
     }
 }
