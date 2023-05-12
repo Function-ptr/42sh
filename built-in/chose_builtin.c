@@ -16,6 +16,7 @@
 */
 
 #include "built_in.h"
+#include "parsing.h"
 
 void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 {
@@ -46,7 +47,9 @@ void builtin_vars(command_t *command, variables_t *variables, bool *found,
 
 int builtin_funcs(command_t *cmd, envdata_t *env)
 {
-    char *input = cmd->command, *b = strdup(input);
+    char *clean_cmd = strdup_without_backslash(cmd->command);
+    free(cmd->command);
+    char *input = cmd->command = clean_cmd, *b = strdup(input);
     char *binname = get_binary_name(b);
     int status = 0;
     bool found = false;
@@ -63,8 +66,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     }
     builtin_vars(cmd, env->variables, &found, binname);
     builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b);
-    return (status);
+    free(b); return (status);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
