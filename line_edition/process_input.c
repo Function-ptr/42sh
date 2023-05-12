@@ -17,55 +17,7 @@
 
 #include "line_edition.h"
 
-void process_input(char *buffer, int *pos)
-{
-    int c;
-    int buf_len = strlen(buffer);
-    while ((c = read_key()) != '\r') {
-        switch (c) {
-            case KEY_ARROW_LEFT:
-                if (*pos > 0) {
-                    printf("\x1b[1D");
-                    fflush(stdout);
-                    (*pos)--;
-                }
-                break;
-            case KEY_ARROW_RIGHT:
-                if (*pos < buf_len) {
-                    printf("\x1b[1C");
-                    fflush(stdout);
-                    (*pos)++;
-                }
-                break;
-            case 127:  // Backspace
-                if (*pos > 0) {
-                    memmove(&buffer[*pos - 1], &buffer[*pos], buf_len - *pos + 1);
-                    buf_len--;
-                    printf("\x1b[1D\x1b[K");
-                    fflush(stdout);
-                    printf("%s", &buffer[*pos - 1]);
-                    fflush(stdout);
-                    printf("\x1b[%dD", buf_len - *pos + 1);
-                    fflush(stdout);
-                    (*pos)--;
-                }
-                break;
-            default:
-                memmove(&buffer[*pos + 1], &buffer[*pos], buf_len - *pos + 1);
-                buffer[*pos] = c;
-                buf_len++;
-                printf("\x1b[K");
-                fflush(stdout);
-                printf("%s", &buffer[*pos]);
-                fflush(stdout);
-                printf("\x1b[%dD", buf_len - *pos - 1);
-                fflush(stdout);
-                (*pos)++;
-                break;
-        }
-    }
-    buffer[buf_len] = '\0'; // Ensure the buffer is null-terminated
-}
+
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄

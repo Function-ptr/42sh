@@ -38,9 +38,9 @@ uint8_t write_prompt(envdata_t *env)
 int8_t utf8_char_len(uint8_t byte)
 {
     return (byte & 0x80) == 0x00 ? 1 :
-           (byte & 0xE0) == 0xC0 ? 2 :
-           (byte & 0xF0) == 0xE0 ? 3 :
-           (byte & 0xF8) == 0xF0 ? 4 : -1;
+        (byte & 0xE0) == 0xC0 ? 2 :
+        (byte & 0xF0) == 0xE0 ? 3 :
+        (byte & 0xF8) == 0xF0 ? 4 : -1;
 }
 
 uint8_t previous_utf8_char_length(const char* input, uint16_t cursor_position)
@@ -168,68 +168,66 @@ void process_enter_key(ShellContext *context, InputBuffer *input_data)
     write_prompt(context->env);
 }
 
-void process_regular_key(InputBuffer *input_data)
+bool add_key_at_end(InputBuffer *input_data, int8_t new_char_len)
 {
-    if (input_data->input_len + input_data->read_len > sizeof(input_data->input))
-        return;
-    int8_t len = utf8_char_len(input_data->read[0]);
-    if (len == 1 && input_data->read_len > 1)
-        len = input_data->read_len;
     if (input_data->cursor_pos >= input_data->input_len) {
-        memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
-        input_data->input_len += len;
-        input_data->cursor_pos += len;
+        memcpy(input_data->input + input_data->cursor_pos,
+            input_data->read, new_char_len);
+        input_data->input_len += new_char_len;
+        input_data->cursor_pos += new_char_len;
 
-        // Add a null terminator
         input_data->input[input_data->input_len] = '\0';
         if (input_data->is_tty)
-            printf("%.*s", len, input_data->read);
-        return;
+            printf("%.*s", new_char_len, input_data->read);
+        return true;
     }
-    int8_t prev_len = utf8_char_len(
-        input_data->input[input_data->cursor_pos]);
-    if (prev_len <= 0)
-        prev_len = previous_utf8_char_length(input_data->input,
-            input_data->cursor_pos);
-    // Move the characters to the right of the cursor
-    if (prev_len > 1 && len > 1) {
-        memmove(input_data->input + input_data->cursor_pos + len - 1,
-                input_data->input + input_data->cursor_pos - (prev_len - 1),
-                (input_data->input_len - input_data->cursor_pos) +
-                (prev_len - 1));
-        // Insert the new character
-        memcpy(input_data->input + input_data->cursor_pos - (prev_len - 1), input_data->read,
-               len);
-        // Clear the line to the right of the cursor
-        // Print the updated buffer from the current cursor position
-        printf("\x1b[K%s", input_data->input + input_data->cursor_pos - (prev_len - 1));
+    return false;
+}
 
-        // Increment the input_data.input_len and input_data.cursor_pos
-        input_data->input_len += len;
-        input_data->cursor_pos += len;
-    } else {
-        uint8_t offset = prev_len > 1 ? 0 : len;
-        memmove(input_data->input + input_data->cursor_pos + offset,
-                input_data->input + input_data->cursor_pos - (prev_len - 1),
-                (input_data->input_len - input_data->cursor_pos) + (prev_len
-                - 1));
-        // Insert the new character
-        memcpy(input_data->input + input_data->cursor_pos - (prev_len - 1), input_data->read,
-               len);
-        // Clear the line to the right of the cursor
-        // Print the updated buffer from the current cursor position
-        printf("\x1b[K%s", input_data->input + input_data->cursor_pos - (prev_len - 1));
+bool insert_new_utf8_before_current_utf8(InputBuffer *input_data,
+    int8_t new_char_len, int8_t current_char_len)
+{
+    if (current_char_len > 1 && new_char_len > 1) {
+        memmove(input_data->input + input_data->cursor_pos + new_char_len - 1,
+            input_data->input + input_data->cursor_pos - (current_char_len - 1),
+            (input_data->input_len - input_data->cursor_pos) +
+                                                    (current_char_len - 1));
 
-        // Increment the input_data.input_len and input_data.cursor_pos
-        input_data->input_len += len;
-        input_data->cursor_pos += len;
+        memcpy(
+        input_data->input + input_data->cursor_pos - (current_char_len - 1),
+        input_data->read, new_char_len);
+
+        printf("\x1b[K%s",
+        input_data->input + input_data->cursor_pos - (current_char_len - 1));
+
+        input_data->input_len += new_char_len;
+        input_data->cursor_pos += new_char_len;
+        return true;
     }
+    return false;
+}
 
-    // Add a null terminator
-    input_data->input[input_data->input_len] = '\0';
+void insert_new_char_before_current_char(InputBuffer *input_data,
+    int8_t new_char_len, int8_t current_char_len)
+{
+    uint8_t offset = current_char_len > 1 ? 0 : new_char_len;
 
-    // Calculate the display width difference between the current cursor position
-    // and the end of the buffer
+    memmove(input_data->input + input_data->cursor_pos + offset,
+    input_data->input + input_data->cursor_pos - (current_char_len - 1),
+    (input_data->input_len - input_data->cursor_pos) + (current_char_len - 1));
+
+    memcpy(input_data->input + input_data->cursor_pos - (current_char_len - 1),
+        input_data->read, new_char_len);
+
+    printf("\x1b[K%s",
+        input_data->input + input_data->cursor_pos - (current_char_len - 1));
+
+    input_data->input_len += new_char_len;
+    input_data->cursor_pos += new_char_len;
+}
+
+void compute_and_move_cursor(InputBuffer *input_data)
+{
     uint16_t i;
     i = input_data->input_len - 1;
     while (i >= input_data->cursor_pos) {
@@ -239,6 +237,30 @@ void process_regular_key(InputBuffer *input_data)
         i -= c_len;
         printf("\x1b[D");
     }
+}
+
+void process_regular_key(InputBuffer *input_data)
+{
+    if (input_data->input_len + input_data->read_len >
+    sizeof(input_data->input))
+        return;
+    int8_t new_char_len = utf8_char_len(input_data->read[0]);
+    if (new_char_len == 1 && input_data->read_len > 1)
+        new_char_len = input_data->read_len;
+    if (add_key_at_end(input_data, new_char_len)) return;
+    int8_t current_char_len = utf8_char_len(
+        input_data->input[input_data->cursor_pos]);
+    if (current_char_len <= 0)
+        current_char_len = previous_utf8_char_length(input_data->input,
+                                        input_data->cursor_pos);
+    if (!insert_new_utf8_before_current_utf8(input_data, new_char_len,
+    current_char_len))
+        insert_new_char_before_current_char(input_data, new_char_len,
+                                                            current_char_len);
+
+    input_data->input[input_data->input_len] = '\0';
+
+    compute_and_move_cursor(input_data);
 }
 
 void process_key(ShellContext *context, InputBuffer *input_data)
@@ -263,7 +285,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
     ShellContext context = {env, 0, false};
     InputBuffer input_data = {{0}, 0, 0, {0}, 0, false};
     setlocale(LC_ALL, "");
-    
+
     if (isatty(0)) {
         configure_terminal(new_term, old_term);
         write_prompt(env);
