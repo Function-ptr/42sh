@@ -16,16 +16,18 @@
 */
 #include "environment.h"
 
-void show_vars(variables_t *variables)
+void show_vars(variables_t *variables, command_t *command)
 {
-    for (size_t i = 0; i < variables->nb_variables; i++)
-        printf("%s\t%s\n", variables->names[i], variables->values[i]);
+    for (size_t i = 0; i < variables->nb_variables; i++) {
+        dprintf(command->out_fd, "%s\t%s\n", variables->names[i],
+            variables->values[i]);
+    }
 }
 
-void add_var(variables_t *vars, char *name, char *value)
+void add_var(variables_t *vars, char *name, char *value, command_t *command)
 {
     if (!(*name) && !(*value)) {
-        show_vars(vars);
+        show_vars(vars, command);
         return;
     }
     for (size_t i = 0; i < vars->nb_variables; i++) {
@@ -63,9 +65,8 @@ void remove_var(variables_t *variables, char *name)
 char *get_var_value(variables_t *variables, char *name)
 {
     for (size_t i = 0; i < variables->nb_variables; i++) {
-        if (!strcmp(variables->names[i], name)) {
+        if (!strcmp(variables->names[i], name))
             return variables->values[i];
-        }
     }
     return NULL;
 }

@@ -207,5 +207,6 @@ SETUP=""
 CLEAN=""
 TESTS=
   echo 'set TEST1=LOL; set TEST2=MDR; set | grep TEST; unset TEST1; set | grep TEST'
-  echo 'set TEST1=LOL; set TEST2=MDR; set TEST1=PTDR; set | grep TEST; unset TEST1; set | grep TEST'
+  echo 'set TEST21=LOL; set | grep TEST; set TEST21=PTDR; set | grep TEST'
+  echo 'set TEST31=LOL; set TEST32=MDR; set TEST31=PTDR; set | grep TEST; unset TEST32'
 [21-END]
