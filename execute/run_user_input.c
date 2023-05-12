@@ -34,24 +34,24 @@ int run_command(command_t *command, int *exiting, envdata_t *env)
 int execution_loop(command_t **commands, int nb_commands, int *exiting,
     envdata_t *env)
 {
-    int status = 0, i = 0;
-    int *data[3] = {&i, &nb_commands, exiting};
+    int status = 0, i = 0, *data[3] = {&i, &nb_commands, exiting};
     conditional_separation prev_cond = None;
     for (; i < nb_commands && status != -1; i++) {
+        replace_variables(&(commands[i]->command), env);
         if (i > 0 && ((prev_cond == AND && status) ||
             (prev_cond == OR && !status))) {
-            status = 1;
+            env->status = status = 1;
             prev_cond = commands[i]->condition;
             free_command(commands[i]);
             continue;
-        }
-        if (status == 136) break;
+        } if (status == 136) break;
         status = 0;
         prev_cond = commands[i]->condition;
         if (!commands[i]->pipe_out)
             status = run_command(commands[i], exiting, env);
         else
             status = loop_over_pipes(commands, env, data);
+        env->status = status;
     }
     return status;
 }

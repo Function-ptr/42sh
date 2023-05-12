@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** initialize_environment.c
+** variables.c
 ** File description:
-** initialize the environment under normal conditions
+** Variables
 */
 /*
  __  __        _                            ___            ___
@@ -15,46 +15,63 @@
                              |___/               |______|
 */
 #include "environment.h"
+#include "errors.h"
+#include "built_in.h"
 
-void create_path(envdata_t *envdata)
+void show_vars(variables_t *variables, command_t *command)
 {
-    envdata->path = get_path_variable(envdata->env);
-    envdata->path_dirs = get_path_directories(&(envdata->path[5]));
-    reverse_path_directories(envdata->path_dirs);
+    for (size_t i = 0; i < variables->nb_variables; i++) {
+        dprintf(command->out_fd, "%s\t%s\n", variables->names[i],
+            variables->values[i]);
+    }
 }
 
-void create_prompt_variables(envdata_t *envdata)
+void add_var(variables_t *vars, char *name, char *value, command_t *command)
 {
-    envdata->hostname = "";
-    if (get_environment_variable(envdata->env, "HOSTNAME") != NULL)
-        envdata->hostname = &(get_environment_variable(envdata->env,
-    "HOSTNAME")[9]);
-    envdata->user = "";
-    if (get_environment_variable(envdata->env, "USER"))
-        envdata->user = &(get_environment_variable(envdata->env, "USER")[5]);
-    for (envdata->userlen = 0; (envdata->user)[envdata->userlen] != 0;
-    envdata->userlen++);
-    for (envdata->hostlen = 0; (envdata->hostname)[envdata->hostlen] != 0;
-    envdata->hostlen++);
+    if (!(*name) && !(*value)) {
+        show_vars(vars, command);
+        return;
+    } if (!my_str_isalphanum(name)) {
+        name_not_alphanumeric("set");
+        return;
+    } for (size_t i = 0; i < vars->nb_variables; i++)
+        if (!strcmp(vars->names[i], name)) {
+            free(vars->values[i]);
+            vars->values[i] = strdup(value);
+            return;
+        }
+    vars->names = reallocarray(vars->names, vars->nb_variables + 1,
+        sizeof(char*));
+    vars->values = reallocarray(vars->values, vars->nb_variables + 1,
+        sizeof(char*));
+    vars->names[vars->nb_variables] = strdup(name);
+    vars->values[vars->nb_variables] = strdup(value);
+    vars->nb_variables += 1;
 }
 
-envdata_t *initialize_envdata(char **env)
+void remove_var(variables_t *variables, char *name)
 {
-    envdata_t *envdata = malloc(sizeof(envdata_t));
-    envdata->env = malloc(sizeof(envvar_t*) + 1);
-    *(envdata->env) = NULL;
-    duplicate_environment(env, envdata->env);
-    create_path(envdata);
-    envdata->cwd = calloc(300, sizeof(char));
-    create_prompt_variables(envdata);
-    if (getcwd(envdata->cwd, 300) == NULL)
-        strcpy(envdata->cwd, "/home");
-    envdata->prevcwd = calloc(300, sizeof(char));
-    strcpy(envdata->prevcwd, envdata->cwd);
-    reverse_environment_variables(envdata->env);
-    envdata->is_fallback = 0;
-    envdata->status = 0;
-    return (envdata);
+    for (size_t i = 0; i < variables->nb_variables; i++) {
+        if (!strcmp(variables->names[i], name)) {
+            free(variables->names[i]);
+            free(variables->values[i]);
+            memmove(variables->names + i, variables->names + i + 1,
+                sizeof(char*) * (variables->nb_variables - i - 1));
+            memmove(variables->values + i, variables->values + i + 1,
+                sizeof(char*) * (variables->nb_variables - i - 1));
+            variables->nb_variables -= 1;
+            return;
+        }
+    }
+}
+
+char *get_var_value(variables_t *variables, char *name)
+{
+    for (size_t i = 0; i < variables->nb_variables; i++) {
+        if (!strcmp(variables->names[i], name))
+            return variables->values[i];
+    }
+    return NULL;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

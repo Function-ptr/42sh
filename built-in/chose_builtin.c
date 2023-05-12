@@ -31,6 +31,19 @@ void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
         close(cmd->in_fd);
 }
 
+void builtin_vars(command_t *command, variables_t *variables, bool *found,
+    char *binname)
+{
+    if (!strcmp(binname, "set")) {
+        set_variable(command, variables);
+        *found = true;
+    }
+    if (!strcmp(binname, "unset")) {
+        unset_variable(command, variables);
+        *found = true;
+    }
+}
+
 int builtin_funcs(command_t *cmd, envdata_t *env)
 {
     char *input = cmd->command, *b = strdup(input);
@@ -48,6 +61,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     } if (strcmp(binname, "history") == 0) {
         show_history(env->history); found = true;
     }
+    builtin_vars(cmd, env->variables, &found, binname);
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b);
     return (status);

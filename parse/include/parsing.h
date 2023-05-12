@@ -57,6 +57,7 @@
     bool process_quotes(char**);
     int separate_command_with_parentheses(int nb_cmds, char *input,
         command_t **commands);
+    void replace_variables(char **cmd, envdata_t *env);
 
     /////////////
     /// Utils ///

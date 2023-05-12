@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** initialize_environment.c
+** replace_variables.c
 ** File description:
-** initialize the environment under normal conditions
+** Replaces variables names with their values in a command
 */
 /*
  __  __        _                            ___            ___
@@ -14,47 +14,72 @@
                               __/ |               ______
                              |___/               |______|
 */
+#include "parsing.h"
 #include "environment.h"
+#include <string.h>
+#include <stdio.h>
 
-void create_path(envdata_t *envdata)
+char *get_variable_name_in_command(char *dollar)
 {
-    envdata->path = get_path_variable(envdata->env);
-    envdata->path_dirs = get_path_directories(&(envdata->path[5]));
-    reverse_path_directories(envdata->path_dirs);
+    char *next = strchr(dollar, ' ');
+    if (!next)
+        return strdup(dollar + 1);
+    char *name = strndup(dollar + 1, next - dollar);
+    name[next - dollar - 1] = 0;
+    return name;
 }
 
-void create_prompt_variables(envdata_t *envdata)
+char *replace_variable_with_value(char *dollar, char *value, char *varname,
+    char *command)
 {
-    envdata->hostname = "";
-    if (get_environment_variable(envdata->env, "HOSTNAME") != NULL)
-        envdata->hostname = &(get_environment_variable(envdata->env,
-    "HOSTNAME")[9]);
-    envdata->user = "";
-    if (get_environment_variable(envdata->env, "USER"))
-        envdata->user = &(get_environment_variable(envdata->env, "USER")[5]);
-    for (envdata->userlen = 0; (envdata->user)[envdata->userlen] != 0;
-    envdata->userlen++);
-    for (envdata->hostlen = 0; (envdata->hostname)[envdata->hostlen] != 0;
-    envdata->hostlen++);
+    size_t valuelen = strlen(value), namelen = strlen(varname);
+    size_t lenend = strlen(dollar), offset = valuelen - namelen;
+    size_t len = strlen(command), pos = dollar - command;
+    char *backup = strdup(command);
+    char *new = reallocarray(command, len + offset + 1, sizeof(char));
+    if (!new)
+        return NULL;
+    new[len + offset] = 0;
+    strncpy(new + pos, value, valuelen);
+    memmove(new + pos + valuelen, backup + pos + namelen + 1, lenend -
+    namelen);
+    free(backup);
+    return new;
 }
 
-envdata_t *initialize_envdata(char **env)
+char *get_special_variables(envdata_t *env, char *varname)
 {
-    envdata_t *envdata = malloc(sizeof(envdata_t));
-    envdata->env = malloc(sizeof(envvar_t*) + 1);
-    *(envdata->env) = NULL;
-    duplicate_environment(env, envdata->env);
-    create_path(envdata);
-    envdata->cwd = calloc(300, sizeof(char));
-    create_prompt_variables(envdata);
-    if (getcwd(envdata->cwd, 300) == NULL)
-        strcpy(envdata->cwd, "/home");
-    envdata->prevcwd = calloc(300, sizeof(char));
-    strcpy(envdata->prevcwd, envdata->cwd);
-    reverse_environment_variables(envdata->env);
-    envdata->is_fallback = 0;
-    envdata->status = 0;
-    return (envdata);
+    if (!strcmp(varname, "?")) {
+        char *str = calloc(10, sizeof(char));
+        sprintf(str, "%d", env->status);
+        return str;
+    } if (!strcmp(varname, "cwd"))
+        return env->cwd;
+    return NULL;
+}
+
+void replace_variables(char **cmd, envdata_t *env)
+{
+    char *command = *cmd, *dollar = strchr(command, '$');
+    while (dollar) {
+        size_t pos = dollar - command;
+        char *varname = get_variable_name_in_command(dollar);
+        char *var = get_environment_variable(env->env, varname);
+        if (var == NULL) var = get_var_value(env->variables, varname);
+        else
+            var += strlen(varname) + 1;
+        if (var == NULL) var = get_special_variables(env, varname);
+        else
+            var = strdup(var);
+        if (var != NULL) {
+            *cmd = replace_variable_with_value(dollar, var, varname, command);
+            command = *cmd;
+            dollar = command + pos;
+            free(var);
+        }
+        free(varname);
+        dollar = strchr(dollar + 1, '$');
+    }
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

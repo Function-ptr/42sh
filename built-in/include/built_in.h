@@ -38,6 +38,8 @@
     int echo(command_t *command);
     bool is_a_builtin(char *binary);
     void show_history(history_t *history);
+    void set_variable(command_t *command, variables_t *variables);
+    void unset_variable(command_t *command, variables_t *variables);
 
     /////////////
     /// Utils ///
@@ -51,8 +53,6 @@
     int compare_variable_name(char *var, char *name);
     void set_value(envvar_t *var, char *varname, char *value);
     char *get_variable_name(char *args);
-    bool name_does_not_start_with_letter(char c);
-    void name_not_alphanumeric(void);
     int my_str_isalphanum(char *str);
 
 
