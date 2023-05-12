@@ -25,7 +25,7 @@ void dump_session_to_file(history_t *history)
         fprintf(stderr, "history: Unable to save history\n");
         return;
     }
-    for (size_t i = 0; i < history->len_session_history; i++) {
+    for (int i = 0; i < history->len_session_history; i++) {
         time_t date = history->session_history[i].time;
         char *line = history->session_history[i].line;
         size_t linelen = strlen(line);
@@ -43,7 +43,7 @@ void free_history(history_t *history)
         return;
     dump_session_to_file(history);
     free(history->filename);
-    for (size_t i = 0; i < history->len_session_history; i++)
+    for (int i = 0; i < history->len_session_history; i++)
         free(history->session_history[i].line);
     free(history->session_history);
     close(history->history_fd);

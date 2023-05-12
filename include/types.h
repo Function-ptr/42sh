@@ -51,11 +51,11 @@
 
     typedef struct {
         char *filename;
-        int history_fd;
         history_entry_t *session_history;
-        size_t len_session_history;
-        size_t len_file;
-        size_t current_pos; // 0 > LONG_MAX (positive offset)
+        int history_fd;
+        int len_session_history;
+        int len_file;
+        int current_pos; // 0 > LONG_MAX (positive offset)
     } history_t;
 
     typedef struct {

@@ -18,9 +18,9 @@
 #include "parsing.h"
 #include "my.h"
 
-size_t get_offset_strstr(char *input, history_t *history, size_t lenh)
+int get_offset_strstr(char *input, history_t *history, int lenh)
 {
-    for (size_t i = 1; i < lenh; i++) {
+    for (int i = 1; i < lenh; i++) {
         char *s = history_get_line_from_offset(history, i);
         if (s == NULL)
             return -1;
@@ -32,21 +32,21 @@ size_t get_offset_strstr(char *input, history_t *history, size_t lenh)
     return -1;
 }
 
-size_t get_offset_from_str(char *input, history_t *history)
+int get_offset_from_str(char *input, history_t *history)
 {
-    size_t lenh = history->len_session_history + history->len_file;
+    int lenh = history->len_session_history + history->len_file;
     if (input[1] == '?') {
         char *str;
         if (strchr(input, '?') != strrchr(input, '?'))
             str = strndup(input + 2, strrchr(input, '?') - strchr(input, '?'));
         else
             str = strdup(input + 2);
-        size_t o = get_offset_strstr(str, history, lenh);
+        int o = get_offset_strstr(str, history, lenh);
         free(str);
         return o;
     }
-    size_t len = strlen(input + 1);
-    for (size_t i = 1; i < lenh; i++) {
+    int len = (int)strlen(input + 1);
+    for (int i = 1; i < lenh; i++) {
         char *s = history_get_line_from_offset(history, i);
         if (s == NULL) return -1;
         int r = strncmp(s, input + 1, len - 1);
@@ -58,18 +58,18 @@ size_t get_offset_from_str(char *input, history_t *history)
 
 void operate_on_line_offset(char **input, history_t *history)
 {
-    size_t offset = -1, s = history->len_session_history + history->len_file;
+    int offset = -1, s = history->len_session_history + history->len_file;
     if (isnum((*input)[1])) {
-        size_t val = strtol(*input + 1, NULL, 10);
+        int val = (int)strtol(*input + 1, NULL, 10);
         if (val > history->len_session_history + history->len_file) {
-            fprintf(stderr, "%li: Event not found\n", val);
+            fprintf(stderr, "%i: Event not found\n", val);
             return;
         }
         offset = s - val;
     } if ((*input)[1] == '-' && isnum((*input)[2])) {
-        offset = strtol(*input + 2, NULL, 10);
+        offset = (int)strtol(*input + 2, NULL, 10);
         if (offset > history->len_session_history + history->len_file) {
-            fprintf(stderr, "%li: Event not found\n", offset);
+            fprintf(stderr, "%i: Event not found\n", offset);
             return;
         }
     }

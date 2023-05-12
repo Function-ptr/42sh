@@ -30,7 +30,7 @@ void show_file_history(history_t *history)
 {
     FILE *f = fdopen(history->history_fd, "r");
     if (f == NULL) return;
-    for (size_t i = 0; i < history->len_file; i++) {
+    for (int i = 0; i < history->len_file; i++) {
         char *buf = NULL;
         size_t s = 0;
         time_t time;
@@ -42,7 +42,7 @@ void show_file_history(history_t *history)
         char *line = strdup(buf + (strlen(buf) - get_line_len(buf)));
         char *strdate = ctime(&time), *ret = strchr(strdate, '\n');
         *ret = 0;
-        printf("%li\t%s\t%s", i + 1, strdate, line);
+        printf("%i\t%s\t%s", i + 1, strdate, line);
         free(buf);
         free(line);
     }
@@ -61,11 +61,11 @@ void show_history(history_t *history)
         show_file_history(history);
     history->history_fd = open(history->filename, O_CREAT | O_APPEND |
         O_RDONLY, S_IRUSR | S_IWUSR);
-    for (size_t i = 0; i < history->len_session_history; i++) {
+    for (int i = 0; i < history->len_session_history; i++) {
         char *strdate = ctime(&(history->session_history[i]).time);
         char *ret = strchr(strdate, '\n');
         *ret = 0;
-        printf("%li\t%s\t%s", i + 1 + history->len_file, strdate,
+        printf("%i\t%s\t%s", i + 1 + history->len_file, strdate,
             history->session_history[i].line);
     }
 }
