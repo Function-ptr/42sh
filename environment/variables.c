@@ -15,6 +15,8 @@
                              |___/               |______|
 */
 #include "environment.h"
+#include "errors.h"
+#include "built_in.h"
 
 void show_vars(variables_t *variables, command_t *command)
 {
@@ -29,14 +31,15 @@ void add_var(variables_t *vars, char *name, char *value, command_t *command)
     if (!(*name) && !(*value)) {
         show_vars(vars, command);
         return;
-    }
-    for (size_t i = 0; i < vars->nb_variables; i++) {
+    } if (!my_str_isalphanum(name)) {
+        name_not_alphanumeric();
+        return;
+    } for (size_t i = 0; i < vars->nb_variables; i++)
         if (!strcmp(vars->names[i], name)) {
             free(vars->values[i]);
             vars->values[i] = strdup(value);
             return;
         }
-    }
     vars->names = reallocarray(vars->names, vars->nb_variables + 1,
         sizeof(char*));
     vars->values = reallocarray(vars->values, vars->nb_variables + 1,
