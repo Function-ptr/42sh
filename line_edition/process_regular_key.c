@@ -91,9 +91,7 @@ static void compute_and_move_cursor(InputBuffer *input_data)
 
 void process_regular_key(InputBuffer *input_data)
 {
-    if (input_data->input_len + input_data->read_len >
-    sizeof(input_data->input) || iscntrl(input_data->read[0]) ||
-    !is_valid_utf8(input_data->read))
+    if (iscntrl(input_data->read[0]) || !is_valid_utf8(input_data->read))
         return;
     int8_t new_char_len = utf8_char_len(input_data->read[0]);
     if (new_char_len == 1 && input_data->read_len > 1)

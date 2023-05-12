@@ -30,11 +30,11 @@
     typedef struct {
         envdata_t *env;
         uint8_t status;
-        bool exiting;
+        int exiting;
     } ShellContext;
 
     typedef struct {
-        char input[4096];
+        char *input;
         uint16_t input_len;
         uint16_t cursor_pos;
         char read[4];
@@ -55,10 +55,10 @@
     void process_regular_key(InputBuffer *input_data);
     void operate_on_previous_command(char *input, history_t *history);
     void add_line_to_history(history_t *history, char *line);
-    int run_user_input(char *input, envdata_t *env, bool *exiting);
+    int run_user_input(char *input, envdata_t *env, int *exiting);
     uint8_t write_prompt(envdata_t *env);
     bool is_valid_utf8(const char *s);
-    void handle_ctrl_d(ShellContext *context, InputBuffer *input_data);
+    void handle_ctrl_d(ShellContext *context);
 
 #endif //INC_42SH_LINE_EDITION_H
 

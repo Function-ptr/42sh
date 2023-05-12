@@ -28,7 +28,7 @@
     /////////////
 
     void add_line_to_history(history_t *history, char *line);
-    int run_user_input(char *input, envdata_t *env, bool *exiting);
+    int run_user_input(char *input, envdata_t *env, int *exiting);
     envdata_t *initialize_envdata(char **env);
     envdata_t *initialize_fallback_environment(void);
     void init_history(envdata_t *environment);

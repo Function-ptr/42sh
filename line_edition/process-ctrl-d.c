@@ -18,7 +18,7 @@
 
 char *get_var_value(variables_t *variables, char *name);
 
-void handle_ctrl_d(ShellContext *context, InputBuffer *input_data)
+void handle_ctrl_d(ShellContext *context)
 {
     envdata_t *envdata = context->env;
     char *ignoreof = get_var_value(envdata->variables, "ignoreof");

@@ -33,7 +33,7 @@ void process_enter_key(ShellContext *context, InputBuffer *input_data)
                         &context->exiting);
     if (!input_data->is_tty) context->exiting = true;
     if (context->exiting) return;
-    memset(input_data->input, 0, sizeof(input_data->input));
+    memset(input_data->input, 0, strlen(input_data->input));
     input_data->input_len = input_data->cursor_pos = 0;
     write_prompt(context->env);
 }
