@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** line_edition.h
+** process_arrow_keys.c
 ** File description:
-** line_edition header file for 42sh
+** process arrow keys
 */
 /*
  _____               __      __
@@ -15,50 +15,29 @@
                                       |___/
 */
 
-#ifndef INC_42SH_LINE_EDITION_H
-    #define INC_42SH_LINE_EDITION_H
+#include "line_edition.h"
 
-    #include <termios.h>
-    #include <unistd.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdint.h>
-    #include <stdbool.h>
-    #include "types.h"
-
-    typedef struct {
-        envdata_t *env;
-        uint8_t status;
-        bool exiting;
-    } ShellContext;
-
-    typedef struct {
-        char input[4096];
-        uint16_t input_len;
-        uint16_t cursor_pos;
-        char read[4];
-        uint8_t read_len;
-        bool is_tty;
-    } InputBuffer;
-
-    void configure_terminal(struct termios *new_term, struct termios *old_term);
-    void restore_terminal(struct termios *old_term);
-    int8_t utf8_char_len(uint8_t byte);
-    uint8_t previous_utf8_char_length(const char* input,
-        uint16_t cursor_position);
-    bool process_arrow_keys(InputBuffer *input_data);
-    void process_backspace_key(InputBuffer *input_data);
-    bool process_delete_key(InputBuffer *input_data);
-    void process_enter_key(ShellContext *context, InputBuffer *input_data);
-    bool process_home_end_keys(InputBuffer *input_data);
-    void process_regular_key(InputBuffer *input_data);
-    void operate_on_previous_command(char *input, history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    int run_user_input(char *input, envdata_t *env, bool *exiting);
-    uint8_t write_prompt(envdata_t *env);
-
-#endif //INC_42SH_LINE_EDITION_H
+bool process_arrow_keys(InputBuffer *input_data)
+{
+    if (input_data->read[2] == 'C') {
+        if (input_data->cursor_pos >= input_data->input_len) return true;
+        input_data->cursor_pos += utf8_char_len
+            (input_data->input[input_data->cursor_pos + 1]);
+        printf("\x1b[C");
+        return true;
+    }
+    if (input_data->read[2] == 'D') {
+        if (input_data->cursor_pos <= 0) return true;
+        uint8_t prev_len = previous_utf8_char_length(input_data->input,
+            input_data->cursor_pos);
+        if (prev_len > input_data->cursor_pos)
+            return true;
+        input_data->cursor_pos -= prev_len == 1 ? 1 : prev_len;
+        printf("\x1b[D");
+        return true;
+    }
+    return false;
+}
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄

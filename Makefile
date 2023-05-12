@@ -54,8 +54,13 @@ SRCS = 	main.c	\
 	history/previous_commands_operations.c	\
 	history/show_history.c	\
 	line_edition/configure_terminal.c	\
-	line_edition/process_input.c	\
-	line_edition/read_keys.c	\
+	line_edition/line_edition_utils.c	\
+	line_edition/process_arrow_keys.c	\
+	line_edition/process_backspace_key.c	\
+	line_edition/process_delete_key.c	\
+	line_edition/process_enter_key.c	\
+	line_edition/process_home_end_keys.c	\
+	line_edition/process_regular_key.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
@@ -104,8 +109,13 @@ OBJS = 	obj/main.o	\
 	obj/history-previous_commands_operations.o	\
 	obj/history-show_history.o	\
 	obj/line_edition-configure_terminal.o	\
-	obj/line_edition-process_input.o	\
-	obj/line_edition-read_keys.o	\
+	obj/line_edition-line_edition_utils.o	\
+	obj/line_edition-process_arrow_keys.o	\
+	obj/line_edition-process_backspace_key.o	\
+	obj/line_edition-process_delete_key.o	\
+	obj/line_edition-process_enter_key.o	\
+	obj/line_edition-process_home_end_keys.o	\
+	obj/line_edition-process_regular_key.o	\
 
 OBJ_DIR = obj
 

@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** read_keys.c
+** process_delete_key.c
 ** File description:
-** read_keys file for 42sh
+** process delete key
 */
 /*
  _____               __      __
@@ -17,40 +17,25 @@
 
 #include "line_edition.h"
 
-long read_single_char(char *c)
+bool process_delete_key(InputBuffer *input_data)
 {
-    return read(STDIN_FILENO, c, 1);
-}
-
-int handle_escape_sequence(void)
-{
-    char seq[3];
-
-    if (read_single_char(&seq[0]) != 1 || read_single_char(&seq[1]) != 1) {
-        return '\x1b';
+    if (input_data->read[2] == '3' && input_data->read[3] == '~') {
+        if (input_data->cursor_pos >= input_data->input_len) return true;
+        int8_t len = utf8_char_len(input_data->input[input_data->cursor_pos]);
+        memmove(input_data->input + input_data->cursor_pos,
+                input_data->input + input_data->cursor_pos + len,
+                input_data->input_len - input_data->cursor_pos);
+        for (uint8_t i = 0; i <= len; i++)
+            input_data->input[input_data->input_len - i] = '\0';
+        input_data->input_len -= len;
+        printf("\x1B[P");
+        int8_t c_len = utf8_char_len(
+            input_data->input[input_data->cursor_pos]);
+        if (c_len > 1)
+            input_data->cursor_pos += c_len - 1;
+        return true;
     }
-
-    if (seq[0] == '[') {
-        switch (seq[1]) {
-            case 'A': return KEY_ARROW_UP;
-            case 'B': return KEY_ARROW_DOWN;
-            case 'C': return KEY_ARROW_RIGHT;
-            case 'D': return KEY_ARROW_LEFT;
-        }
-    }
-
-    return '\x1b';
-}
-
-int read_key(void)
-{
-    char c;
-    while (read_single_char(&c) != 1) {
-        if (errno == EAGAIN || errno == EINTR) continue;
-        exit(1);
-    }
-
-    return (c == '\x1b') ? handle_escape_sequence() : c;
+    return false;
 }
 
 /*

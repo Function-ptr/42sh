@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** line_edition.h
+** line_edition_utils.c
 ** File description:
-** line_edition header file for 42sh
+** line edition utilities functions
 */
 /*
  _____               __      __
@@ -15,50 +15,29 @@
                                       |___/
 */
 
-#ifndef INC_42SH_LINE_EDITION_H
-    #define INC_42SH_LINE_EDITION_H
+#include "line_edition.h"
 
-    #include <termios.h>
-    #include <unistd.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdint.h>
-    #include <stdbool.h>
-    #include "types.h"
+int8_t utf8_char_len(uint8_t byte)
+{
+    return (byte & 0x80) == 0x00 ? 1 :
+        (byte & 0xE0) == 0xC0 ? 2 :
+        (byte & 0xF0) == 0xE0 ? 3 :
+        (byte & 0xF8) == 0xF0 ? 4 : -1;
+}
 
-    typedef struct {
-        envdata_t *env;
-        uint8_t status;
-        bool exiting;
-    } ShellContext;
+uint8_t previous_utf8_char_length(const char* input, uint16_t cursor_position)
+{
+    uint8_t len = 1;
 
-    typedef struct {
-        char input[4096];
-        uint16_t input_len;
-        uint16_t cursor_pos;
-        char read[4];
-        uint8_t read_len;
-        bool is_tty;
-    } InputBuffer;
-
-    void configure_terminal(struct termios *new_term, struct termios *old_term);
-    void restore_terminal(struct termios *old_term);
-    int8_t utf8_char_len(uint8_t byte);
-    uint8_t previous_utf8_char_length(const char* input,
-        uint16_t cursor_position);
-    bool process_arrow_keys(InputBuffer *input_data);
-    void process_backspace_key(InputBuffer *input_data);
-    bool process_delete_key(InputBuffer *input_data);
-    void process_enter_key(ShellContext *context, InputBuffer *input_data);
-    bool process_home_end_keys(InputBuffer *input_data);
-    void process_regular_key(InputBuffer *input_data);
-    void operate_on_previous_command(char *input, history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    int run_user_input(char *input, envdata_t *env, bool *exiting);
-    uint8_t write_prompt(envdata_t *env);
-
-#endif //INC_42SH_LINE_EDITION_H
+    for (uint8_t i = 0; i < 3 && (input[cursor_position] & 0xC0) == 0x80; ++i) {
+        len++;
+        if (cursor_position > 0)
+            cursor_position--;
+        else
+            break;
+    }
+    return len;
+}
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄

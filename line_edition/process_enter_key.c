@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** line_edition.h
+** process_enter_key.c
 ** File description:
-** line_edition header file for 42sh
+** process enter key for command execution
 */
 /*
  _____               __      __
@@ -15,50 +15,28 @@
                                       |___/
 */
 
-#ifndef INC_42SH_LINE_EDITION_H
-    #define INC_42SH_LINE_EDITION_H
+#include "line_edition.h"
 
-    #include <termios.h>
-    #include <unistd.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdint.h>
-    #include <stdbool.h>
-    #include "types.h"
-
-    typedef struct {
-        envdata_t *env;
-        uint8_t status;
-        bool exiting;
-    } ShellContext;
-
-    typedef struct {
-        char input[4096];
-        uint16_t input_len;
-        uint16_t cursor_pos;
-        char read[4];
-        uint8_t read_len;
-        bool is_tty;
-    } InputBuffer;
-
-    void configure_terminal(struct termios *new_term, struct termios *old_term);
-    void restore_terminal(struct termios *old_term);
-    int8_t utf8_char_len(uint8_t byte);
-    uint8_t previous_utf8_char_length(const char* input,
-        uint16_t cursor_position);
-    bool process_arrow_keys(InputBuffer *input_data);
-    void process_backspace_key(InputBuffer *input_data);
-    bool process_delete_key(InputBuffer *input_data);
-    void process_enter_key(ShellContext *context, InputBuffer *input_data);
-    bool process_home_end_keys(InputBuffer *input_data);
-    void process_regular_key(InputBuffer *input_data);
-    void operate_on_previous_command(char *input, history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    int run_user_input(char *input, envdata_t *env, bool *exiting);
-    uint8_t write_prompt(envdata_t *env);
-
-#endif //INC_42SH_LINE_EDITION_H
+void process_enter_key(ShellContext *context, InputBuffer *input_data)
+{
+    int8_t len = utf8_char_len(input_data->read[0]);
+    if (len == 1 && input_data->read_len > 1)
+        len = input_data->read_len;
+    memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
+    input_data->input_len += len;
+    input_data->cursor_pos += len;
+    operate_on_previous_command(input_data->input, context->env->history);
+    if (input_data->input[0] == '!') return;
+    add_line_to_history(context->env->history, input_data->input);
+    if (input_data->is_tty) printf("\n");
+    context->status = run_user_input(input_data->input, context->env,
+                        &context->exiting);
+    if (!input_data->is_tty) context->exiting = true;
+    if (context->exiting) return;
+    memset(input_data->input, 0, sizeof(input_data->input));
+    input_data->input_len = input_data->cursor_pos = 0;
+    write_prompt(context->env);
+}
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄

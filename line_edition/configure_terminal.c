@@ -15,7 +15,6 @@
                                       |___/
 */
 
-
 #include "line_edition.h"
 
 void restore_terminal(struct termios *old_term)

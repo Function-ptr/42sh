@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** line_edition.h
+** process_input.c
 ** File description:
-** line_edition header file for 42sh
+** process_input file for 42sh
 */
 /*
  _____               __      __
@@ -15,50 +15,102 @@
                                       |___/
 */
 
-#ifndef INC_42SH_LINE_EDITION_H
-    #define INC_42SH_LINE_EDITION_H
+#include "line_edition.h"
 
-    #include <termios.h>
-    #include <unistd.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdint.h>
-    #include <stdbool.h>
-    #include "types.h"
+static bool add_key_at_end(InputBuffer *input_data, int8_t new_char_len)
+{
+    if (input_data->cursor_pos >= input_data->input_len) {
+        memcpy(input_data->input + input_data->cursor_pos,
+            input_data->read, new_char_len);
+        input_data->input_len += new_char_len;
+        input_data->cursor_pos += new_char_len;
 
-    typedef struct {
-        envdata_t *env;
-        uint8_t status;
-        bool exiting;
-    } ShellContext;
+        input_data->input[input_data->input_len] = '\0';
+        if (input_data->is_tty)
+            printf("%.*s", new_char_len, input_data->read);
+        return true;
+    }
+    return false;
+}
 
-    typedef struct {
-        char input[4096];
-        uint16_t input_len;
-        uint16_t cursor_pos;
-        char read[4];
-        uint8_t read_len;
-        bool is_tty;
-    } InputBuffer;
+static bool insert_new_utf8_before_current_utf8(InputBuffer *input_data,
+    int8_t new_char_len, int8_t current_char_len)
+{
+    if (current_char_len > 1 && new_char_len > 1) {
+        memmove(input_data->input + input_data->cursor_pos + new_char_len - 1,
+            input_data->input + input_data->cursor_pos - (current_char_len - 1),
+            (input_data->input_len - input_data->cursor_pos) +
+                                                    (current_char_len - 1));
 
-    void configure_terminal(struct termios *new_term, struct termios *old_term);
-    void restore_terminal(struct termios *old_term);
-    int8_t utf8_char_len(uint8_t byte);
-    uint8_t previous_utf8_char_length(const char* input,
-        uint16_t cursor_position);
-    bool process_arrow_keys(InputBuffer *input_data);
-    void process_backspace_key(InputBuffer *input_data);
-    bool process_delete_key(InputBuffer *input_data);
-    void process_enter_key(ShellContext *context, InputBuffer *input_data);
-    bool process_home_end_keys(InputBuffer *input_data);
-    void process_regular_key(InputBuffer *input_data);
-    void operate_on_previous_command(char *input, history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    int run_user_input(char *input, envdata_t *env, bool *exiting);
-    uint8_t write_prompt(envdata_t *env);
+        memcpy(
+        input_data->input + input_data->cursor_pos - (current_char_len - 1),
+        input_data->read, new_char_len);
 
-#endif //INC_42SH_LINE_EDITION_H
+        printf("\x1b[K%s",
+        input_data->input + input_data->cursor_pos - (current_char_len - 1));
+
+        input_data->input_len += new_char_len;
+        input_data->cursor_pos += new_char_len;
+        return true;
+    }
+    return false;
+}
+
+static void insert_new_char_before_current_char(InputBuffer *input_data,
+    int8_t new_char_len, int8_t current_char_len)
+{
+    uint8_t offset = current_char_len > 1 ? 0 : new_char_len;
+
+    memmove(input_data->input + input_data->cursor_pos + offset,
+    input_data->input + input_data->cursor_pos - (current_char_len - 1),
+    (input_data->input_len - input_data->cursor_pos) + (current_char_len - 1));
+
+    memcpy(input_data->input + input_data->cursor_pos - (current_char_len - 1),
+        input_data->read, new_char_len);
+
+    printf("\x1b[K%s",
+        input_data->input + input_data->cursor_pos - (current_char_len - 1));
+
+    input_data->input_len += new_char_len;
+    input_data->cursor_pos += new_char_len;
+}
+
+static void compute_and_move_cursor(InputBuffer *input_data)
+{
+    uint16_t i;
+    i = input_data->input_len - 1;
+    while (i >= input_data->cursor_pos) {
+        int8_t c_len = utf8_char_len(input_data->input[i]);
+        if (c_len <= 0)
+            c_len = previous_utf8_char_length(input_data->input, i);
+        i -= c_len;
+        printf("\x1b[D");
+    }
+}
+
+void process_regular_key(InputBuffer *input_data)
+{
+    if (input_data->input_len + input_data->read_len >
+    sizeof(input_data->input))
+        return;
+    int8_t new_char_len = utf8_char_len(input_data->read[0]);
+    if (new_char_len == 1 && input_data->read_len > 1)
+        new_char_len = input_data->read_len;
+    if (add_key_at_end(input_data, new_char_len)) return;
+    int8_t current_char_len = utf8_char_len(
+        input_data->input[input_data->cursor_pos]);
+    if (current_char_len <= 0)
+        current_char_len = previous_utf8_char_length(input_data->input,
+                                        input_data->cursor_pos);
+    if (!insert_new_utf8_before_current_utf8(input_data, new_char_len,
+    current_char_len))
+        insert_new_char_before_current_char(input_data, new_char_len,
+                                                            current_char_len);
+
+    input_data->input[input_data->input_len] = '\0';
+
+    compute_and_move_cursor(input_data);
+}
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄
