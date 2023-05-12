@@ -23,11 +23,11 @@ char *get_regex(char *src, char *exp)
     return res;
 }
 
-int show_alias(envdata_t *env)
+int show_alias(command_t *cmd, envdata_t *env)
 {
     node_t *temp = env->aliases;
     while (temp != NULL) {
-        printf("%s\t(= %s)\n", temp->data_a, temp->data_b);
+        dprintf(cmd->out_fd, "%s\t(= %s)\n", temp->data_a, temp->data_b);
         temp = temp->next;
     }
     return 0;
@@ -35,7 +35,7 @@ int show_alias(envdata_t *env)
 
 int alias(command_t *cmd, envdata_t *env)
 {
-    if (cmd->command[5] == '\0') return show_alias(env);
+    if (cmd->command[5] == '\0') return show_alias(cmd, env);
     char *command = strdup_without_backslash(cmd->command);
     char *data_a = get_regex(cmd->command,
     "alias[[:space:]]*['\"]?([^=[:space:]\'\"]+)['\"]?");
