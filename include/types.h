@@ -64,6 +64,12 @@
         size_t nb_variables;
     } variables_t;
 
+    typedef struct {
+        char **alias;
+        char **content;
+        int nb_aliases;
+    } aliases_t;
+
     typedef struct env_data {
         envvar_t **env;
         char *path;
@@ -76,6 +82,7 @@
         size_t hostlen;
         history_t *history;
         variables_t *variables;
+        aliases_t *aliases;
         int status;
         char is_fallback;
     } envdata_t;

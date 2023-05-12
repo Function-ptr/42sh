@@ -45,6 +45,8 @@ SRCS = 	main.c	\
 	errors/parsing_error.c	\
 	errors/redirection_errors.c	\
 	errors/setenv_errors.c	\
+	environment/aliases.c	\
+	environment/aliases_management.c	\
 	environment/environment.c	\
 	environment/environment_variables.c	\
 	environment/getter.c	\
@@ -99,6 +101,8 @@ OBJS = 	obj/main.o	\
 	obj/errors-parsing_error.o	\
 	obj/errors-redirection_errors.o	\
 	obj/errors-setenv_errors.o	\
+	obj/environment-aliases.o	\
+	obj/environment-aliases_management.o	\
 	obj/environment-environment.o	\
 	obj/environment-environment_variables.o	\
 	obj/environment-getter.o	\
