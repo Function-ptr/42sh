@@ -158,26 +158,55 @@ TESTS=
   echo '(ls && cd /random) || pwd'
 [15-END]
 
-[40]
+[16]
 NAME="&& et || : Advanced"
 SETUP=""
 CLEAN=""
 TESTS=
   echo 'ls / && echo displayOK || echo error4'
   echo 'ls /azerty && echo displayOK1 || error5'
-[40-END]
+[16-END]
 
-[41]
+[17]
 NAME="Advanced Redirection : Same file"
 SETUP="cp data foo"
 CLEAN=""
 TESTS=
   echo 'cat foo >> foo'
-[41-END]
+[17-END]
 
-[42]
-NAME="Advanced Pipes"
-SETUP="PATH=/bin:/usr/bin; ulimit -n 10"
+[18]
+NAME="Advanced pipe 2"
+SETUP="export TERM=xterm ; PATH='/bin:/usr/bin'; ulimit -n 21"
+CLEAN=""
 TESTS=
-  echo 'cat data | grep A | grep B | grep C'
-[42-END]
+  echo 'cat data | grep A | grep B | grep C | tr X Y | tr A Z | tr X E | tr P O | tr R T | tr T G | tr G H | tr J K | tr W Q | tr X F | tr G B'
+[18-END]
+
+[19]
+NAME="Alias of alias"
+SETUP="export TERM=xterm ; PATH='/bin:/usr/bin'"
+CLEAN=""
+TESTS=
+  echo 'alias k file /tmp'
+  echo 'alias s k /bin'
+  echo 's'
+[19-END]
+
+[20]
+NAME="Long command with multiple redirects and pipes"
+SETUP=""
+CLEAN="rm -f fic fic2"
+TESTS=
+  echo 'grep CDH < data | tr R T > fic ; cat fic | sed s/A// > fic2 ; cat fic2 | tr Z R'
+[20-END]
+
+[21]
+NAME="Basic variables"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'set TESTVAR=TESTVALUE; set; echo hello, $TESTVAR'
+  echo 'set TEST1=LOL; set TEST2=MDR; set; unset TEST1; set'
+  echo 'set TEST1=LOL; set TEST2=MDR $TEST1; set; echo $TEST1 $TEST2'
+[21-END]

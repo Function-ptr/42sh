@@ -33,10 +33,11 @@ int detect_command_type_and_run(command_t *command, int *exiting,
     if (path != NULL) {
         pid_t program_pid = fork_and_run(path, command, env->env);
         cpid1 = program_pid;
-        status = monitor_program(program_pid, path); cpid1 = -1;
+        status = monitor_program(program_pid, path);
+        cpid1 = -1;
     } else
         status = 1;
-    if (status & 0x8FFFFFFF) status = 1;
+    if ((status >> 8) % 2) status = 1;
     free(bname);
     return (status);
 }
