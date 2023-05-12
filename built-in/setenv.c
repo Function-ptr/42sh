@@ -71,7 +71,7 @@ void set_env(envvar_t **env, command_t *command, envdata_t *envdata)
         value = "\0";
     if (name_does_not_start_with_letter(variable_name[0], "setenv")) return;
     if (!my_str_isalphanum(variable_name)) {
-        name_not_alphanumeric();
+        name_not_alphanumeric("setenv");
         return;
     }
     envvar_t *var = *env;

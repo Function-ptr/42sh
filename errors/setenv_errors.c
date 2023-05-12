@@ -16,9 +16,9 @@
 */
 #include "errors.h"
 
-void name_not_alphanumeric(void)
+void name_not_alphanumeric(char *builtin)
 {
-    fprintf(stderr, "setenv: Variable name must contain ");
+    fprintf(stderr, "%s: Variable name must contain ", builtin);
     fprintf(stderr, "alphanumeric characters.\n");
 }
 

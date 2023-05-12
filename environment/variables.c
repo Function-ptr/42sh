@@ -32,7 +32,7 @@ void add_var(variables_t *vars, char *name, char *value, command_t *command)
         show_vars(vars, command);
         return;
     } if (!my_str_isalphanum(name)) {
-        name_not_alphanumeric();
+        name_not_alphanumeric("set");
         return;
     } for (size_t i = 0; i < vars->nb_variables; i++)
         if (!strcmp(vars->names[i], name)) {
