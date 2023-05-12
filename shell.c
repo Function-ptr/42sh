@@ -30,6 +30,8 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         process_backspace_key(input_data);
         return;
     }
+    if (input_data->read[0] == 4)
+        handle_ctrl_d(context, input_data);
     if (strchr(input_data->read, '\n'))
         process_enter_key(context, input_data);
     else

@@ -58,6 +58,7 @@
     int run_user_input(char *input, envdata_t *env, bool *exiting);
     uint8_t write_prompt(envdata_t *env);
     bool is_valid_utf8(const char *s);
+    void handle_ctrl_d(ShellContext *context, InputBuffer *input_data);
 
 #endif //INC_42SH_LINE_EDITION_H
 
