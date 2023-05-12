@@ -39,6 +39,23 @@ uint8_t previous_utf8_char_length(const char* input, uint16_t cursor_position)
     return len;
 }
 
+bool is_valid_utf8(const char *s)
+{
+    uint8_t bytes_in_char = 0;
+    unsigned char byte = (unsigned char)s[0];
+    if (byte < 0x80) bytes_in_char = 1;
+    if (byte >= 0x80 && byte < 0xC2) return false;
+    if (byte >= 0xC2 && byte < 0xE0) bytes_in_char = 2;
+    if (byte >= 0xE0 && byte < 0xF0) bytes_in_char = 3;
+    if (byte >= 0xF0 && byte < 0xF5) bytes_in_char = 4;
+    if (byte >= 0xF5) return false;
+    for (uint8_t i = 1; i < bytes_in_char; ++i)
+        if ((s[i] & 0xC0) != 0x80)
+            return false;
+    return true;
+}
+
+
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄
 ─█────█─█──█────█────█────█─█──█

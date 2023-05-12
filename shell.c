@@ -24,6 +24,7 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         if (process_arrow_keys(input_data)) return;
         if (process_delete_key(input_data)) return;
         if (process_home_end_keys(input_data)) return;
+        return;
     }
     if (input_data->read[0] == 0x7f) {
         process_backspace_key(input_data);

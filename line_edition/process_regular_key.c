@@ -16,6 +16,7 @@
 */
 
 #include "line_edition.h"
+#include <ctype.h>
 
 static bool add_key_at_end(InputBuffer *input_data, int8_t new_char_len)
 {
@@ -91,24 +92,24 @@ static void compute_and_move_cursor(InputBuffer *input_data)
 void process_regular_key(InputBuffer *input_data)
 {
     if (input_data->input_len + input_data->read_len >
-    sizeof(input_data->input))
+    sizeof(input_data->input) || iscntrl(input_data->read[0]) ||
+    !is_valid_utf8(input_data->read))
         return;
     int8_t new_char_len = utf8_char_len(input_data->read[0]);
     if (new_char_len == 1 && input_data->read_len > 1)
         new_char_len = input_data->read_len;
-    if (add_key_at_end(input_data, new_char_len)) return;
+    if (add_key_at_end(input_data, new_char_len))
+        return;
     int8_t current_char_len = utf8_char_len(
         input_data->input[input_data->cursor_pos]);
     if (current_char_len <= 0)
         current_char_len = previous_utf8_char_length(input_data->input,
-                                        input_data->cursor_pos);
+            input_data->cursor_pos);
     if (!insert_new_utf8_before_current_utf8(input_data, new_char_len,
     current_char_len))
         insert_new_char_before_current_char(input_data, new_char_len,
-                                                            current_char_len);
-
+            current_char_len);
     input_data->input[input_data->input_len] = '\0';
-
     compute_and_move_cursor(input_data);
 }
 

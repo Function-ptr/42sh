@@ -57,6 +57,7 @@
     void add_line_to_history(history_t *history, char *line);
     int run_user_input(char *input, envdata_t *env, bool *exiting);
     uint8_t write_prompt(envdata_t *env);
+    bool is_valid_utf8(const char *s);
 
 #endif //INC_42SH_LINE_EDITION_H
 
