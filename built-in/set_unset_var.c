@@ -43,7 +43,8 @@ char *get_variable_value(char *eqpos)
         valstart++;
         vallen -= 2;
     }
-    strncpy(value, valstart, vallen - 1);
+    bool skipchar = valstart[vallen - 1] == '\'' || valstart[vallen - 1] == '"';
+    strncpy(value, valstart, vallen - skipchar);
     return (value);
 }
 
