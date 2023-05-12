@@ -12,6 +12,7 @@ SRCS = 	main.c	\
 	alias/exec_alias.c	\
 	alias/init_alias.c	\
 	built-in/alias.c	\
+	sighandler.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
 	built-in/command_is_a_builtin.c	\
@@ -64,6 +65,7 @@ OBJS = 	obj/main.o	\
 	obj/alias-exec_alias.o	\
 	obj/alias-init_alias.o	\
 	obj/built-in-alias.o	\
+	obj/sighandler.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
 	obj/built-in-command_is_a_builtin.o	\
