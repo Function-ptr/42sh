@@ -39,8 +39,7 @@ int detect_command_type_and_run(command_t *command, int *exiting,
     } else
         status = 1;
     if ((status >> 8) % 2) status = 1;
-    free(bname);
-    return (status);
+    free(bname); return (status);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
