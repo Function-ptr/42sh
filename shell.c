@@ -161,14 +161,84 @@ void process_enter_key(ShellContext *context, InputBuffer *input_data)
     if (input_data->is_tty) printf("\n");
     context->status = run_user_input(input_data->input, context->env,
                         &context->exiting);
-    if (context->exiting || !input_data->is_tty) return;
+    if (!input_data->is_tty) context->exiting = true;
+    if (context->exiting) return;
     memset(input_data->input, 0, sizeof(input_data->input));
     input_data->input_len = input_data->cursor_pos = 0;
     write_prompt(context->env);
 }
 
-bool process_regular_key(ShellContext *context, InputBuffer *input_data) {
-    // Handle regular key here
+void process_regular_key(InputBuffer *input_data)
+{
+    if (input_data->input_len + input_data->read_len > sizeof(input_data->input))
+        return;
+    int8_t len = utf8_char_len(input_data->read[0]);
+    if (len == 1 && input_data->read_len > 1)
+        len = input_data->read_len;
+    if (input_data->cursor_pos >= input_data->input_len) {
+        memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
+        input_data->input_len += len;
+        input_data->cursor_pos += len;
+
+        // Add a null terminator
+        input_data->input[input_data->input_len] = '\0';
+        if (input_data->is_tty)
+            printf("%.*s", len, input_data->read);
+        return;
+    }
+    int8_t prev_len = utf8_char_len(
+        input_data->input[input_data->cursor_pos]);
+    if (prev_len <= 0)
+        prev_len = previous_utf8_char_length(input_data->input,
+            input_data->cursor_pos);
+    // Move the characters to the right of the cursor
+    if (prev_len > 1 && len > 1) {
+        memmove(input_data->input + input_data->cursor_pos + len - 1,
+                input_data->input + input_data->cursor_pos - (prev_len - 1),
+                (input_data->input_len - input_data->cursor_pos) +
+                (prev_len - 1));
+        // Insert the new character
+        memcpy(input_data->input + input_data->cursor_pos - (prev_len - 1), input_data->read,
+               len);
+        // Clear the line to the right of the cursor
+        // Print the updated buffer from the current cursor position
+        printf("\x1b[K%s", input_data->input + input_data->cursor_pos - (prev_len - 1));
+
+        // Increment the input_data.input_len and input_data.cursor_pos
+        input_data->input_len += len;
+        input_data->cursor_pos += len;
+    } else {
+        uint8_t offset = prev_len > 1 ? 0 : len;
+        memmove(input_data->input + input_data->cursor_pos + offset,
+                input_data->input + input_data->cursor_pos - (prev_len - 1),
+                (input_data->input_len - input_data->cursor_pos) + (prev_len
+                - 1));
+        // Insert the new character
+        memcpy(input_data->input + input_data->cursor_pos - (prev_len - 1), input_data->read,
+               len);
+        // Clear the line to the right of the cursor
+        // Print the updated buffer from the current cursor position
+        printf("\x1b[K%s", input_data->input + input_data->cursor_pos - (prev_len - 1));
+
+        // Increment the input_data.input_len and input_data.cursor_pos
+        input_data->input_len += len;
+        input_data->cursor_pos += len;
+    }
+
+    // Add a null terminator
+    input_data->input[input_data->input_len] = '\0';
+
+    // Calculate the display width difference between the current cursor position
+    // and the end of the buffer
+    uint16_t i;
+    i = input_data->input_len - 1;
+    while (i >= input_data->cursor_pos) {
+        int8_t c_len = utf8_char_len(input_data->input[i]);
+        if (c_len <= 0)
+            c_len = previous_utf8_char_length(input_data->input, i);
+        i -= c_len;
+        printf("\x1b[D");
+    }
 }
 
 void process_key(ShellContext *context, InputBuffer *input_data)
@@ -182,123 +252,29 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         process_backspace_key(input_data);
         return;
     }
-    if (strchr(input_data->read, '\n')) {
-
-    } else {
-    }
+    if (strchr(input_data->read, '\n'))
+        process_enter_key(context, input_data);
+    else
+        process_regular_key(input_data);
 }
 
 int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
     ShellContext context = {env, 0, false};
-    InputBuffer input_data = {{0}, 0, 0, {0}, false};
-    setlocale(LC_ALL, ""); // Set the locale to the user's default locale
+    InputBuffer input_data = {{0}, 0, 0, {0}, 0, false};
+    setlocale(LC_ALL, "");
     
     if (isatty(0)) {
         configure_terminal(new_term, old_term);
         write_prompt(env);
         input_data.is_tty = true;
     }
-    while (1) {
+    while (!context.exiting) {
+        input_data.read_len = read(STDIN_FILENO, input_data.read, 4);
+        process_key(&context, &input_data);
         fflush(stdout);
         memset(input_data.read, 0, 4);
-        input_data.read_len = read(STDIN_FILENO, input_data.read, 4);
-        if (strchr(input_data.read, '\n')) {
-            int8_t len = utf8_char_len(input_data.read[0]);
-                if (len == 1 && input_data.read_len > 1)
-                    len = input_data.read_len;
-            memcpy(input_data.input + input_data.cursor_pos, input_data.read, len);
-                input_data.input_len += len;
-                input_data.cursor_pos += len;
-
-            // Process the input buffer when the 'Enter' key is pressed
-            operate_on_previous_command(input_data.input, env->history);
-            if (input_data.input[0] == '!') {
-                continue;
-            }
-            add_line_to_history(env->history, input_data.input);
-
-            if (input_data.is_tty)
-                printf("\n");
-            context.status = run_user_input(input_data.input, env, &context.exiting);
-            if (context.exiting || !input_data.is_tty)
-                return (context.status);
-
-            // Clear the input buffer and reset the buffer length and cursor position
-            memset(input_data.input, 0, sizeof(input_data.input));
-            input_data.input_len = input_data.cursor_pos = 0;
-            write_prompt(env);
-            continue;
-        } else {
-            if (input_data.input_len + input_data.read_len > sizeof(input_data.input))
-                continue;
-            int8_t len = utf8_char_len(input_data.read[0]);
-            if (len == 1 && input_data.read_len > 1)
-                len = input_data.read_len;
-            if (input_data.cursor_pos >= input_data.input_len) {
-                memcpy(input_data.input + input_data.cursor_pos, input_data.read, len);
-                input_data.input_len += len;
-                input_data.cursor_pos += len;
-
-                // Add a null terminator
-                input_data.input[input_data.input_len] = '\0';
-                if (input_data.is_tty)
-                    printf("%.*s", len, input_data.read);
-                continue;
-            }
-            int8_t prev_len = utf8_char_len(
-                input_data.input[input_data.cursor_pos]);
-            if (prev_len <= 0)
-                prev_len = previous_utf8_char_length(input_data.input,
-                    input_data.cursor_pos);
-            // Move the characters to the right of the cursor
-            if (prev_len > 1 && len > 1) {
-                memmove(input_data.input + input_data.cursor_pos + len - 1,
-                        input_data.input + input_data.cursor_pos - (prev_len - 1),
-                        (input_data.input_len - input_data.cursor_pos) +
-                        (prev_len - 1));
-                // Insert the new character
-                memcpy(input_data.input + input_data.cursor_pos - (prev_len - 1), input_data.read,
-                       len);
-                // Clear the line to the right of the cursor
-                // Print the updated buffer from the current cursor position
-                printf("\x1b[K%s", input_data.input + input_data.cursor_pos - (prev_len - 1));
-
-                // Increment the input_data.input_len and input_data.cursor_pos
-                input_data.input_len += len;
-                input_data.cursor_pos += len;
-            } else {
-                uint8_t offset = prev_len > 1 ? 0 : len;
-                memmove(input_data.input + input_data.cursor_pos + offset,
-                        input_data.input + input_data.cursor_pos - (prev_len - 1),
-                        (input_data.input_len - input_data.cursor_pos) + (prev_len
-                        - 1));
-                // Insert the new character
-                memcpy(input_data.input + input_data.cursor_pos - (prev_len - 1), input_data.read,
-                       len);
-                // Clear the line to the right of the cursor
-                // Print the updated buffer from the current cursor position
-                printf("\x1b[K%s", input_data.input + input_data.cursor_pos - (prev_len - 1));
-
-                // Increment the input_data.input_len and input_data.cursor_pos
-                input_data.input_len += len;
-                input_data.cursor_pos += len;
-            }
-
-            // Add a null terminator
-            input_data.input[input_data.input_len] = '\0';
-
-            // Calculate the display width difference between the current cursor position
-            // and the end of the buffer
-            uint16_t i;
-            i = input_data.input_len - 1;
-            while (i >= input_data.cursor_pos) {
-                int8_t c_len = utf8_char_len(input_data.input[i]);
-                if (c_len <= 0)
-                    c_len = previous_utf8_char_length(input_data.input, i);
-                i -= c_len;
-                printf("\x1b[D");
-            }
-        }
     }
+
+    return context.status;
 }
