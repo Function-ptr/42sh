@@ -65,7 +65,6 @@
     } variables_t;
 
     typedef struct env_data {
-        char is_fallback;
         envvar_t **env;
         char *path;
         pathdir_t **path_dirs;
@@ -77,6 +76,8 @@
         size_t hostlen;
         history_t *history;
         variables_t *variables;
+        int status;
+        char is_fallback;
     } envdata_t;
 
     typedef struct command {

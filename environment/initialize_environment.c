@@ -53,6 +53,7 @@ envdata_t *initialize_envdata(char **env)
     strcpy(envdata->prevcwd, envdata->cwd);
     reverse_environment_variables(envdata->env);
     envdata->is_fallback = 0;
+    envdata->status = 0;
     return (envdata);
 }
 /*
