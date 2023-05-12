@@ -24,10 +24,9 @@ void set_variable(command_t *command, variables_t *variables)
         add_var(variables, "", "");
         return;
     }
-    char *datapos = command->command + 4, *eqpos = strchr(datapos, '=');
-    if (name_does_not_start_with_letter(*datapos, "set")) {
+    if (name_does_not_start_with_letter(command->command[4], "set"))
         return;
-    }
+    char *datapos = strdup(command->command + 4), *eqpos = strchr(datapos, '=');
     if (!eqpos) {
         add_var(variables, datapos, "");
         return;
@@ -36,10 +35,9 @@ void set_variable(command_t *command, variables_t *variables)
     name[eqpos - datapos] = 0;
     for (int i = eqpos - datapos - 2; i >= 0 && name[i] == ' '; i++)
         name[i] = 0;
-    char *value = strdup(eqpos + (eqpos[1] == ' ' ? 2 : 1));
+    char *value = strdup(strtok(eqpos + (eqpos[1] == ' ' ? 2 : 1), " "));
     add_var(variables, name, value);
-    free(name);
-    free(value);
+    free(name); free(value); free(datapos);
 }
 
 void unset_variable(command_t *command, variables_t *variables)
