@@ -207,6 +207,6 @@ SETUP=""
 CLEAN=""
 TESTS=
   echo 'set TESTVAR=TESTVALUE; set | grep TEST; echo hello, $TESTVAR'
-  echo 'set TEST1=LOL; set TEST2=MDR; set; unset TEST1; set | grep TEST'
+  echo 'set TEST1=LOL; set TEST2=MDR; set | grep TEST; unset TEST1; set | grep TEST'
   echo 'set TEST1=LOL; set TEST2=MDR $TEST1; set | grep TEST; echo $TEST1 $TEST2'
 [21-END]
