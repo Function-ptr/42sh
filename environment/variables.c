@@ -31,7 +31,7 @@ void add_var(variables_t *vars, char *name, char *value, command_t *command)
     if (!(*name) && !(*value)) {
         show_vars(vars, command);
         return;
-    } if (!my_str_isalphanum(name)) {
+    } if (!my_str_isalphanum(name) && name[strlen(name) - 1] != ' ') {
         name_not_alphanumeric("set");
         return;
     } for (size_t i = 0; i < vars->nb_variables; i++)

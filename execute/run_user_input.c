@@ -61,8 +61,13 @@ void run_precmd(envdata_t *env)
 {
     char *cmd = get_var_value(env->variables, "precmd");
     if (!cmd) return;
+    size_t size = strlen(cmd);
+    char *allocd_cmd = calloc(size + 2, sizeof(char));
+    strcpy(allocd_cmd, cmd);
+    allocd_cmd[size] = '\n';
     int exiting = 0;
-    run_user_input(cmd, env, &exiting);
+    run_user_input(allocd_cmd, env, &exiting);
+    free(allocd_cmd);
 }
 
 int run_user_input(char *input, envdata_t *env, int *exiting)
