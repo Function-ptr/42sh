@@ -4,8 +4,22 @@
 ** File description:
 ** cd command for minishell
 */
-
+#include "environment.h"
 #include "built_in.h"
+#include "execute.h"
+
+void run_cwdcmd(envdata_t *env)
+{
+    char *cmd = get_var_value(env->variables, "cwdcmd");
+    if (!cmd) return;
+    size_t size = strlen(cmd);
+    char *allocd_cmd = calloc(size + 2, sizeof(char));
+    strcpy(allocd_cmd, cmd);
+    allocd_cmd[size] = '\n';
+    int exiting = 0;
+    run_user_input(allocd_cmd, env, &exiting);
+    free(allocd_cmd);
+}
 
 int change_dir(envdata_t *env, char *input)
 {
@@ -15,8 +29,8 @@ int change_dir(envdata_t *env, char *input)
         go_home = true;
     } else
         ndir = &input[3];
-    if (!go_home && (input[2] == '-' || input[3] == '-'))
-        ndir = env->prevcwd;
+    if (!go_home && (input[2] == '-' || input[3] == '-')) ndir = env->prevcwd;
+    run_cwdcmd(env);
     if (chdir(ndir) == -1) {
         int err = errno;
         fprintf(stderr, "%s: %s.\n", ndir, strerror(err));
@@ -25,7 +39,6 @@ int change_dir(envdata_t *env, char *input)
     memset(env->prevcwd, 0,300);
     strcpy(env->prevcwd, env->cwd);
     memset(env->cwd, 0, 300);
-    if (getcwd(env->cwd, 300) == NULL)
-        exit_with_error(env);
+    if (getcwd(env->cwd, 300) == NULL) exit_with_error(env);
     set_environment_variable(env->env, "PWD", env->cwd); return (0);
 }

@@ -16,6 +16,7 @@
 */
 #include "execute.h"
 #include "parsing.h"
+#include "environment.h"
 
 int run_command(command_t *command, int *exiting, envdata_t *env)
 {
@@ -54,6 +55,19 @@ int execution_loop(command_t **commands, int nb_commands, int *exiting,
         env->status = status;
     }
     return status;
+}
+
+void run_precmd(envdata_t *env)
+{
+    char *cmd = get_var_value(env->variables, "precmd");
+    if (!cmd) return;
+    size_t size = strlen(cmd);
+    char *allocd_cmd = calloc(size + 2, sizeof(char));
+    strcpy(allocd_cmd, cmd);
+    allocd_cmd[size] = '\n';
+    int exiting = 0;
+    run_user_input(allocd_cmd, env, &exiting);
+    free(allocd_cmd);
 }
 
 int run_user_input(char *input, envdata_t *env, int *exiting)
