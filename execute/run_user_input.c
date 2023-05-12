@@ -56,7 +56,7 @@ int execution_loop(command_t **commands, int nb_commands, int *exiting,
     return status;
 }
 
-int run_user_input(char *input, envdata_t *env, int *exiting)
+int run_user_input(char *input, envdata_t *env, bool *exiting)
 {
     char *res = strdup(input);
     if (process_quotes(&res)) return -1;
@@ -64,7 +64,7 @@ int run_user_input(char *input, envdata_t *env, int *exiting)
     int nb_commands = 0;
     if (commands == NULL) return 0;
     for (; commands[nb_commands] != NULL; nb_commands++);
-    int status = execution_loop(commands, nb_commands, exiting, env);
+    int status = execution_loop(commands, nb_commands, (int*)exiting, env);
     free(commands);
     free(res);
     return (status);
