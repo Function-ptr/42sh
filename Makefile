@@ -20,6 +20,7 @@ SRCS = 	main.c	\
 	built-in/set_unset_var.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
+	built-in/where.c	\
 	built-in/which.c	\
 	execute/check_program_exit_status.c	\
 	execute/detect_command_type.c	\
@@ -79,6 +80,7 @@ OBJS = 	obj/main.o	\
 	obj/built-in-set_unset_var.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
+	obj/built-in-where.o	\
 	obj/built-in-which.o	\
 	obj/execute-check_program_exit_status.o	\
 	obj/execute-detect_command_type.o	\

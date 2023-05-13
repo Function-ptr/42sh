@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** chose_builtin.c
+** where.c
 ** File description:
-** chose builitin to run
+** where command
 */
 /*
  __  __        _                            ___            ___
@@ -14,66 +14,61 @@
                               __/ |               ______
                              |___/               |______|
 */
-
 #include "built_in.h"
-#include "parsing.h"
+#include "my.h"
+#include "execute.h"
 
-void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
+int get_where_path(char *cmd, int outfd, pathdir_t **pathdirs)
 {
-    if (strcmp(binname, "exit") == 0) {
-        *status = exit_with_status(cmd); *found = true;
-    } if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd); *found = true;
-    } if (!*found)
-        fprintf(stderr, "%s: Command not found.\n", binname);
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
+    pathdir_t *tmp = *pathdirs;
+    uint32_t cmdlen = (uint32_t)strlen(cmd), found = 1;
+    for (; tmp; tmp = tmp->next) {
+        uint32_t dirlen = (uint32_t)strlen(tmp->dir);
+        char *path = calloc(dirlen + cmdlen + 2, sizeof(char));
+        strcpy(path, tmp->dir);
+        *(path + dirlen) = '/';
+        strcpy(path + dirlen + 1, cmd);
+        if (!access(path, F_OK))
+            printf("%s\n", path);
+        free(path);
+        found = 0;
+    }
+    return found;
 }
 
-void builtin_vars(command_t *command, envdata_t *env, bool *found,
-    char *binname)
+int get_where_pos(char *cmd, envdata_t *env, int outfd)
 {
-    if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unset")) {
-        unset_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unalias")) {
-        unalias(command, env->aliases); *found = true;
-    } if (!strcmp(binname, "alias")) {
-        alias(command, env->aliases); *found = true;
-    } if (!strcmp(binname, "moai")) {
-        moai(command); *found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); *found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, command, env); *found = true;
+    int status = 1;
+    for (uint32_t i = 0; i < env->aliases->nb_aliases; i++)
+        if (!strcmp(env->aliases->alias[i], cmd)) {
+            dprintf(outfd, "%s is aliased to %s\n", cmd,
+                env->aliases->content[i]);
+            status = 0;
+        }
+    if (is_a_builtin(cmd)) {
+        dprintf(outfd, "%s is a shell built-in\n", cmd);
+        status = 0;
     }
+    status = get_where_path(cmd, outfd, env->path_dirs) ? status : 0;
+    return status;
 }
 
-int builtin_funcs(command_t *cmd, envdata_t *env)
+int where(command_t *command, envdata_t *env)
 {
-    char *clean_cmd = strdup_without_backslash(cmd->command);
-    free(cmd->command);
-    char *input = cmd->command = clean_cmd, *b = strdup(input);
-    char *binname = get_binary_name(b);
-    int status = 0;
-    bool found = false;
-    if (strcmp(binname, "cd") == 0) {
-        status = change_dir(env, input); found = true;
-    } if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, cmd); found = true;
-    } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input, env); found = true;
-    } if (!strcmp(binname, "which")) {
-        status = which(cmd, env); found = true;
-    } if (!strcmp(binname, "where")) {
-        status = where(cmd, env); found = true;
+    char **argv = my_str_to_word_array(command->command, " \t");
+    int32_t status = 0, len = my_char_arraylen(argv);
+    free(argv[0]);
+    for (int32_t i = 1; i < len; i++) {
+        int32_t cmdstatus = get_where_pos(argv[i], env, command->out_fd);
+        status = (cmdstatus) ? 1 : status;
+        free(argv[i]);
     }
-    builtin_vars(cmd, env, &found, binname);
-    builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b); return (status);
+    free(argv);
+    if (len == 1) {
+        fprintf(stderr, "which: Too few arguments.\n");
+        return 1;
+    }
+    return status ? 1 : 0;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

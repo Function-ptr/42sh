@@ -82,6 +82,7 @@
         aliases_t *aliases;
         uint8_t status;
         uint8_t is_fallback;
+        uint8_t starship_prompt;
     } envdata_t;
 
     typedef struct command {

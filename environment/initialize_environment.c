@@ -38,6 +38,7 @@ envdata_t *initialize_envdata(char **env)
     reverse_environment_variables(envdata->env);
     envdata->is_fallback = 0;
     envdata->status = 0;
+    envdata->starship_prompt = 0;
     return (envdata);
 }
 /*
