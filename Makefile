@@ -15,8 +15,8 @@ SRCS = 	main.c	\
 	built-in/command_is_a_builtin.c	\
 	built-in/echo.c	\
 	built-in/exit.c	\
-	built-in/setenv.c	\
 	built-in/set_unset_var.c	\
+	built-in/setenv.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
 	execute/check_program_exit_status.c	\
@@ -64,7 +64,7 @@ SRCS = 	main.c	\
 	line_edition/line_edition_utils.c	\
 	line_edition/process_arrow_keys.c	\
 	line_edition/process_backspace_key.c	\
-	line_edition/process-ctrl-d.c	\
+	line_edition/process_ctrl_d.c	\
 	line_edition/process_delete_key.c	\
 	line_edition/process_enter_key.c	\
 	line_edition/process_home_end_keys.c	\
@@ -78,8 +78,8 @@ OBJS = 	obj/main.o	\
 	obj/built-in-command_is_a_builtin.o	\
 	obj/built-in-echo.o	\
 	obj/built-in-exit.o	\
-	obj/built-in-setenv.o	\
 	obj/built-in-set_unset_var.o	\
+	obj/built-in-setenv.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
 	obj/execute-check_program_exit_status.o	\
@@ -127,7 +127,7 @@ OBJS = 	obj/main.o	\
 	obj/line_edition-line_edition_utils.o	\
 	obj/line_edition-process_arrow_keys.o	\
 	obj/line_edition-process_backspace_key.o	\
-	obj/line_edition-process-ctrl-d.o	\
+	obj/line_edition-process_ctrl_d.o	\
 	obj/line_edition-process_delete_key.o	\
 	obj/line_edition-process_enter_key.o	\
 	obj/line_edition-process_home_end_keys.o	\
@@ -141,7 +141,7 @@ OPTI = -O3 -Ofast \
 -ftree-vectorize \
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \
 -march=native -mtune=native -fopenmp -mavx2 \
--ffast-math -mfpmath=sse \
+-lm -ffast-math -mfpmath=sse \
 -flto
 
 # 	Optimization flags:
@@ -198,7 +198,7 @@ HEADER = 	-I./include/	\
 CFLAGS += -Wall -Werror -Wextra -fsanitize=undefined,address $(OPTI) \
 	$(LIB) $(HEADER)
 
-DEBUGFLAGS += -Wall -Werror -Wextra  -lm \
+DEBUGFLAGS += -Wall -Werror -Wextra -fsanitize=undefined,address \
 	$(LIB) $(HEADER) -ggdb
 
 all: $(NAME)
