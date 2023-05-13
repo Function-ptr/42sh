@@ -7,21 +7,23 @@
 
 #include "shell.h"
 #include "history.h"
+#include "prompt.h"
 
 int write_prompt(envdata_t *env)
 {
     char *user = get_environment_variable(env->env, "USER");
     char *host = get_environment_variable(env->env, "HOSTNAME");
     if (env->is_fallback) {
-        printf("> ");
-        return 1;
+        printf("\033[0m\033[93;1;5m> \033[0m"); return 1;
     }
+    char *stat_icon = WIFSIGNALED(env->status) && env->status != 1 ? "⚡" :
+            (env->status ? "×" : "λ");
     if (user && host)
-        printf("<%s@%s %s >$ ", user + 5, host + 9, env->cwd);
+        printf(STDPROMPT, user + 5, host + 9, env->cwd, stat_icon);
     if (user && !host)
-        printf("<%s %s >$ ", user + 5, env->cwd);
+        printf(ONEVALPROMPT, user + 5, env->cwd, stat_icon);
     if (!user && host)
-        printf("<%s %s >$ ", host + 9, env->cwd);
+        printf(ONEVALPROMPT, host + 9, env->cwd, stat_icon);
     return (1);
 }
 
