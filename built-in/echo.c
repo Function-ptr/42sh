@@ -6,6 +6,7 @@
 */
 
 #include "built_in.h"
+#include "prompt.h"
 
 int echo(command_t *command)
 {
@@ -26,5 +27,11 @@ int echo(command_t *command)
         i++;
     }
     dprintf(command->out_fd, "\n");
+    return 0;
+}
+
+int moai(command_t *command)
+{
+    dprintf(command->out_fd, MOAI);
     return 0;
 }

@@ -77,15 +77,12 @@
         pathdir_t **path_dirs;
         char *cwd;
         char *prevcwd;
-        char *user;
-        size_t userlen;
-        char *hostname;
-        size_t hostlen;
         history_t *history;
         variables_t *variables;
         aliases_t *aliases;
         uint8_t status;
         uint8_t is_fallback;
+        uint8_t starship_prompt;
     } envdata_t;
 
     typedef struct command {

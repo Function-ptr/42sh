@@ -29,10 +29,6 @@ envdata_t *initialize_fallback_environment(void)
         exit_with_error(envdata);
     envdata->prevcwd = calloc(300, sizeof(char));
     strcpy(envdata->prevcwd, envdata->cwd);
-    envdata->hostname = NULL;
-    envdata->user = NULL;
-    envdata->hostlen = 0;
-    envdata->userlen = 0;
     envdata->status = 0;
     return (envdata);
 }

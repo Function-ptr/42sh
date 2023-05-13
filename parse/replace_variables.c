@@ -42,8 +42,10 @@ char *replace_variable_with_value(char *dollar, char *value, char *varname,
     bool has_brackets = dollar[1] == '{';
     char *backup = strdup(command);
     char *new = reallocarray(command, len + offset + 1, sizeof(char));
-    if (!new)
+    if (!new) {
+        free(backup);
         return NULL;
+    }
     new[len + offset] = 0;
     strncpy(new + pos, value, valuelen);
     memmove(new + pos + valuelen,

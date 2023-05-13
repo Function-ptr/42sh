@@ -32,21 +32,32 @@ void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
         close(cmd->in_fd);
 }
 
-void builtin_vars(command_t *command, envdata_t *env, bool *found,
+void builtins_env(command_t *command, envdata_t *env, bool *found,
     char *binname)
 {
     if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables);
-        *found = true;
+        set_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unset")) {
-        unset_variable(command, env->variables);
-        *found = true;
+        unset_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unalias")) {
-        unalias(command, env->aliases);
-        *found = true;
+        unalias(command, env->aliases); *found = true;
     } if (!strcmp(binname, "alias")) {
-        alias(command, env->aliases);
-        *found = true;
+        alias(command, env->aliases); *found = true;
+    } if (!strcmp(binname, "moai")) {
+        moai(command); *found = true;
+    } if (strcmp(binname, "history") == 0) {
+        show_history(env->history); *found = true;
+    } if (strcmp(binname, "setenv") == 0) {
+        set_env(env->env, command, env); *found = true;
+    }
+}
+
+void builtins_env_bis(command_t *command, envdata_t *env, bool *found,
+    char *binname)
+{
+    if (!strcmp(binname, "prompt_on")) env->starship_prompt = *found = true;
+    if (!strcmp(binname, "prompt_off")) {
+        env->starship_prompt = false; *found = true;
     }
 }
 
@@ -62,14 +73,14 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         status = change_dir(env, input); found = true;
     } if (strcmp(binname, "env") == 0) {
         show_environment(env->env, cmd); found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, cmd, env); found = true;
     } if (strcmp(binname, "unsetenv") == 0) {
         unset_env(env->env, input, env); found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); found = true;
-    }
-    builtin_vars(cmd, env, &found, binname);
+    } if (!strcmp(binname, "which")) {
+        status = which(cmd, env); found = true;
+    } if (!strcmp(binname, "where")) {
+        status = where(cmd, env); found = true;
+    } builtins_env(cmd, env, &found, binname);
+    builtins_env_bis(cmd, env, &found, binname);
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b); return (status);
 }

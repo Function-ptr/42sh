@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** replace_aliases.c
+** which.c
 ** File description:
-** replace aliases with their content
+** Which command
 */
 /*
  __  __        _                            ___            ___
@@ -14,73 +14,47 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "parsing.h"
 #include "built_in.h"
+#include "my.h"
+#include "execute.h"
 
-uint32_t get_alias_index(char *binname, aliases_t *aliases, bool *found)
+int get_which_pos(char *cmd, envdata_t *env, int outfd)
 {
-    *found = false;
-    for (uint32_t i = 0; i < aliases->nb_aliases; i++) {
-        if (!strcmp(binname, aliases->alias[i])) {
-            *found = true;
-            return i;
+    for (uint32_t i = 0; i < env->aliases->nb_aliases; i++)
+        if (!strcmp(env->aliases->alias[i], cmd)) {
+            dprintf(outfd, "%s: \t aliased to %s\n", cmd,
+                env->aliases->content[i]);
+            return 0;
         }
+    if (is_a_builtin(cmd)) {
+        dprintf(outfd, "%s: shell built-in command.\n", cmd);
+        return 0;
     }
+    char *path = get_binary_filename(cmd, env->path_dirs);
+    if (!path)
+        return 1;
+    dprintf(outfd, "%s\n", path);
     return 0;
 }
 
-char *replace_alias_with_content(char *content, char *binname,
-    char *command)
+int which(command_t *command, envdata_t *env)
 {
-    size_t valuelen = strlen(content), namelen = strlen(binname);
-    size_t offset = valuelen - namelen, len = strlen(command);
-    char *backup = strdup(command);
-    char *new = reallocarray(command, len + offset + 1, sizeof(char));
-    if (!new) {
-        free(backup);
-        return NULL;
+    char **argv = my_str_to_word_array(command->command, " \t");
+    int32_t status = 0, len = my_char_arraylen(argv);
+    free(argv[0]);
+    for (int32_t i = 1; i < len; i++) {
+        int32_t cmdstatus = get_which_pos(argv[i], env, command->out_fd);
+        status = (cmdstatus) ? 1 : status;
+        free(argv[i]);
     }
-    new[len + offset] = 0;
-    strncpy(new, content, valuelen);
-    memmove(new + valuelen, backup + namelen, len - namelen);
-    free(backup);
-    return new;
+    free(argv);
+    if (len == 1) {
+        fprintf(stderr, "which: Too few arguments.\n");
+        return 1;
+    }
+    return status ? 1 : 0;
 }
 
-bool replace_alias(char **cmd, aliases_t *aliases)
-{
-    char *dup = strdup(*cmd), *binname = get_binary_name(dup);
-    bool replaced = false, foundalias = false;
-    uint32_t aliasindex = get_alias_index(binname, aliases, &foundalias);
-    uint32_t firstindex = aliasindex;
-    while (foundalias) {
-        if (replaced && aliasindex == firstindex) {
-            fprintf(stderr, "Alias loop.\n");
-            free(dup);
-            return true;
-        }
-        *cmd = replace_alias_with_content(aliases->content[aliasindex], binname,
-            *cmd);
-        replaced = true;
-        free(dup);
-        dup = strdup(*cmd);
-        binname = get_binary_name(dup);
-        aliasindex = get_alias_index(binname, aliases, &foundalias);
-    }
-    free(dup);
-    return false;
-}
-
-bool replace_all_aliases(command_t **commands, aliases_t *aliases)
-{
-    uint32_t nb_commands = 0;
-    for (; commands[nb_commands] != NULL; nb_commands++);
-    for (uint32_t i = 0; i < nb_commands; i++) {
-        if (replace_alias(&(commands[i]->command), aliases))
-            return true;
-    }
-    return false;
-}
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⢟⣽⠿⠯⠛⡸⢹⠀⢹⠒⣊⡡⠜⠓⠢⣄⠀⠀⠀⠀
