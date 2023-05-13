@@ -40,6 +40,8 @@
     void show_history(history_t *history);
     void set_variable(command_t *command, variables_t *variables);
     void unset_variable(command_t *command, variables_t *variables);
+    void unalias(command_t *command, aliases_t *aliases);
+    void alias(command_t *command, aliases_t *aliases);
 
     /////////////
     /// Utils ///

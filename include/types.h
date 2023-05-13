@@ -19,6 +19,7 @@
     #define INC_42SH_TYPES_H
 
     #include <stdbool.h>
+    #include <stdint.h>
 
     typedef unsigned long size_t;
 
@@ -53,16 +54,22 @@
         char *filename;
         int history_fd;
         history_entry_t *session_history;
-        size_t len_session_history;
-        size_t len_file;
-        size_t current_pos; // 0 > LONG_MAX (positive offset)
+        uint32_t len_session_history;
+        uint32_t len_file;
+        uint32_t current_pos; // 0 > LONG_MAX (positive offset)
     } history_t;
 
     typedef struct {
         char **names;
         char **values;
-        size_t nb_variables;
+        uint32_t nb_variables;
     } variables_t;
+
+    typedef struct {
+        char **alias;
+        char **content;
+        uint32_t nb_aliases;
+    } aliases_t;
 
     typedef struct env_data {
         envvar_t **env;
@@ -76,8 +83,9 @@
         size_t hostlen;
         history_t *history;
         variables_t *variables;
-        int status;
-        char is_fallback;
+        aliases_t *aliases;
+        uint8_t status;
+        uint8_t is_fallback;
     } envdata_t;
 
     typedef struct command {

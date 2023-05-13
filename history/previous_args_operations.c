@@ -19,11 +19,11 @@
 #include "parsing.h"
 #include "my.h"
 
-long get_arg(char **input, size_t argslen)
+long get_arg(char **input, int32_t argslen)
 {
-    long arg;
+    int32_t arg;
     if ((*input)[2] != '*' && (*input)[2] != '$' && (*input)[2] != '^')
-        arg = strtol(*input + 2, NULL, 10);
+        arg = (int32_t)strtol(*input + 2, NULL, 10);
     else
         arg = (*input)[2] == '$' ? argslen - 1 :
             ((*input)[2] == '^' ? 1 : -1);
@@ -34,7 +34,7 @@ void operate_on_single_arg(char **input, history_t *history)
 {
     char *line = history_get_line_from_offset(history, 1);
     char **args = separate_args(line);
-    size_t argslen = my_char_arraylen(args);
+    int32_t argslen = my_char_arraylen(args);
     long arg = get_arg(input, argslen);
     free(line);
     if (arg >= argslen) {
@@ -54,8 +54,7 @@ void operate_on_single_arg(char **input, history_t *history)
     free(args);
 }
 
-void get_arg_range(char **input, history_t *history, int *limits,
-    size_t argslen)
+void get_arg_range(char **input, int *limits, int32_t argslen)
 {
     char *sep = strchr(*input, '-'), *sepdup = sep;
     if (sep == NULL && (*input)[2] == '*') {
@@ -73,13 +72,13 @@ void get_arg_range(char **input, history_t *history, int *limits,
         limits[0] = strtol(*input + 2, NULL, 10);
         limits[1] = argslen - 1;
         return;
-    }
-    limits[0] = *input + 2 != sep ? strtol(*input + 2, &sepdup, 10) : 0;
-    limits[1] = *(sep + 1) != '\n' ? strtol(sep + 1, NULL, 10) : argslen - 2;
+    } limits[0] = *input + 2 != sep ? (int)strtol(*input + 2, &sepdup, 10) : 0;
+    limits[1] = *(sep + 1) != '\n' ? (int)strtol(sep + 1, NULL, 10)
+            : argslen - 2;
 }
 
 void process_new_input_range(char **input, int limits[2], char **args,
-    size_t argslen)
+    int32_t argslen)
 {
     free(*input);
     char *selargs[limits[1] - limits[0] + 2];
@@ -98,9 +97,9 @@ void operate_on_arg_range(char **input, history_t *history)
 {
     char *line = history_get_line_from_offset(history, 1);
     char **args = separate_args(line);
-    size_t argslen = my_char_arraylen(args);
+    int32_t argslen = my_char_arraylen(args);
     int limits[2] = {0, 0};
-    get_arg_range(input, history, limits, argslen);
+    get_arg_range(input, limits, argslen);
     if (limits[0] < 0 || limits[1] < 0) {
         if ((*input)[2] != '*')
             fprintf(stderr, "Bad ! arg selector.\n");

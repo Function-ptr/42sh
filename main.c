@@ -11,7 +11,7 @@
 
 pid_t cpid1, cpid2;
 
-int main(int ac, char **av, char **env)
+int main(int ac, __attribute__((unused)) char **av, char **env)
 {
     if (env == NULL || ac != 1)
         return (84);
@@ -26,6 +26,7 @@ int main(int ac, char **av, char **env)
     signal(SIGINT, sighandler);
     init_history(environment);
     environment->variables = init_variables();
+    environment->aliases = init_aliases();
     int status = shell(environment);
     clear_environment(environment);
     return (status);

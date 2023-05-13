@@ -43,6 +43,7 @@ void clear_environment(envdata_t *envdata)
     free(envdata->prevcwd);
     free_history(envdata->history);
     clean_variables(envdata->variables);
+    clean_aliases(envdata->aliases);
     free(envdata);
 }
 /*
