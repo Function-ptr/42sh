@@ -8,7 +8,6 @@
 #include "shell.h"
 #include "history.h"
 #include "line_edition.h"
-#include <math.h>
 
 uint8_t write_prompt(envdata_t *env)
 {
