@@ -23,21 +23,6 @@ void create_path(envdata_t *envdata)
     reverse_path_directories(envdata->path_dirs);
 }
 
-void create_prompt_variables(envdata_t *envdata)
-{
-    envdata->hostname = "";
-    if (get_environment_variable(envdata->env, "HOSTNAME") != NULL)
-        envdata->hostname = &(get_environment_variable(envdata->env,
-    "HOSTNAME")[9]);
-    envdata->user = "";
-    if (get_environment_variable(envdata->env, "USER"))
-        envdata->user = &(get_environment_variable(envdata->env, "USER")[5]);
-    for (envdata->userlen = 0; (envdata->user)[envdata->userlen] != 0;
-    envdata->userlen++);
-    for (envdata->hostlen = 0; (envdata->hostname)[envdata->hostlen] != 0;
-    envdata->hostlen++);
-}
-
 envdata_t *initialize_envdata(char **env)
 {
     envdata_t *envdata = malloc(sizeof(envdata_t));
@@ -46,7 +31,6 @@ envdata_t *initialize_envdata(char **env)
     duplicate_environment(env, envdata->env);
     create_path(envdata);
     envdata->cwd = calloc(300, sizeof(char));
-    create_prompt_variables(envdata);
     if (getcwd(envdata->cwd, 300) == NULL)
         strcpy(envdata->cwd, "/home");
     envdata->prevcwd = calloc(300, sizeof(char));

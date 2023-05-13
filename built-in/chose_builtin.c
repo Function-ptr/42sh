@@ -36,17 +36,15 @@ void builtin_vars(command_t *command, envdata_t *env, bool *found,
     char *binname)
 {
     if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables);
-        *found = true;
+        set_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unset")) {
-        unset_variable(command, env->variables);
-        *found = true;
+        unset_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unalias")) {
-        unalias(command, env->aliases);
-        *found = true;
+        unalias(command, env->aliases); *found = true;
     } if (!strcmp(binname, "alias")) {
-        alias(command, env->aliases);
-        *found = true;
+        alias(command, env->aliases); *found = true;
+    } if (!strcmp(binname, "moai")) {
+        moai(command); *found = true;
     }
 }
 
