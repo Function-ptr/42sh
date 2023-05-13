@@ -17,13 +17,16 @@ int write_prompt(envdata_t *env)
         printf("\033[0m\033[93;1;5m> \033[0m"); return 1;
     }
     char *stat_icon = WIFSIGNALED(env->status) && env->status != 1 ? "⚡" :
-            (env->status ? "×" : "λ");
+        (env->status ? "×" : "λ");
     if (user && host)
-        printf(STDPROMPT, user + 5, host + 9, env->cwd, stat_icon);
+        printf(env->starship_prompt ? STDPROMPT : NNSTDPROMPT, user + 5,
+            host + 9, env->cwd, stat_icon);
     if (user && !host)
-        printf(ONEVALPROMPT, user + 5, env->cwd, stat_icon);
+        printf(env->starship_prompt ? ONEVALPROMPT : NNOVPROMPT,
+            user + 5, env->cwd, stat_icon);
     if (!user && host)
-        printf(ONEVALPROMPT, host + 9, env->cwd, stat_icon);
+        printf(env->starship_prompt ? ONEVALPROMPT : NNOVPROMPT, host + 9,
+            env->cwd, stat_icon);
     return (1);
 }
 
