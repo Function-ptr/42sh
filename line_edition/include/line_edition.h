@@ -63,6 +63,7 @@
     void handle_ctrl_d(ShellContext *context);
     bool process_key_arrow_up(InputBuffer *input_data, history_t *history);
     void realloc_input(InputBuffer *input_data);
+    bool process_key_arrow_down(InputBuffer *input_data);
 
 static inline float fastlog2 (float x)
 {

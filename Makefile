@@ -68,7 +68,7 @@ SRCS = 	main.c	\
 	line_edition/process_delete_key.c	\
 	line_edition/process_enter_key.c	\
 	line_edition/process_home_end_keys.c	\
-	line_edition/process_key_arrow_up.c	\
+	line_edition/process_key_arrow_up_down.c	\
 	line_edition/process_regular_key.c	\
 
 OBJS = 	obj/main.o	\
@@ -132,7 +132,7 @@ OBJS = 	obj/main.o	\
 	obj/line_edition-process_delete_key.o	\
 	obj/line_edition-process_enter_key.o	\
 	obj/line_edition-process_home_end_keys.o	\
-	obj/line_edition-process_key_arrow_up.o	\
+	obj/line_edition-process_key_arrow_up_down.o	\
 	obj/line_edition-process_regular_key.o	\
 
 OBJ_DIR = obj

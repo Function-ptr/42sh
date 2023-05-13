@@ -20,9 +20,9 @@
 
 static char* load_check_history(InputBuffer *input_data, history_t *history)
 {
-    input_data->input_dup = input_data->input_dup ?
-        strdup(input_data->input) : (input_data->input_len ?
-        strdup(input_data->input) : calloc(1, 1));
+    if (input_data->history_offset <= 1)
+        input_data->input_dup = input_data->input_len == 0 ? calloc(1, 1) :
+            strdup(input_data->input);
 
     char *history_line = history_get_line_from_offset(history,
         input_data->history_offset);
@@ -40,10 +40,13 @@ static void put_cursor_to_end_of_line(InputBuffer *input_data)
 {
     while (input_data->cursor_pos < input_data->input_len) {
         int8_t c_len = utf8_char_len(input_data->input[input_data->cursor_pos]);
+
         if (c_len <= 0)
             c_len = previous_utf8_char_length(input_data->input,
                 input_data->cursor_pos);
+
         input_data->cursor_pos += c_len;
+
         printf("\x1b[C");
     }
 }
@@ -52,17 +55,42 @@ bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
 {
     int history_len = history->len_file +
         history->len_session_history;
-    if (history_len <= 0) return true;
-    if (input_data->history_offset > history_len) return true;
+    if (history_len <= 0)
+        return true;
+    if (input_data->history_offset > history_len)
+        return true;
+
     char* history_line = load_check_history(input_data, history);
     put_cursor_to_end_of_line(input_data);
     if (input_data->cursor_pos > 0)
         printf("\x1b[%dD", input_data->cursor_pos);
+
     input_data->input = strcpy(input_data->input, history_line);
     input_data->input_len = input_data->cursor_pos = strlen(history_line);
     printf("\x1b[K%s", input_data->input);
+
     input_data->history_offset++;
     free(history_line);
+    return true;
+}
+
+bool process_key_arrow_down(InputBuffer *input_data)
+{
+    if (input_data->history_offset <= 1)
+        return true;
+    put_cursor_to_end_of_line(input_data);
+
+    if (input_data->cursor_pos > 0)
+        printf("\x1b[%dD", input_data->cursor_pos);
+
+    input_data->input = strcpy(input_data->input, input_data->input_dup);
+    input_data->input_len = input_data->cursor_pos =
+        strlen(input_data->input_dup);
+
+    printf("\x1b[K%s", input_data->input);
+
+    input_data->history_offset = 1;
+
     return true;
 }
 /*

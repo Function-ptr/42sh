@@ -39,6 +39,8 @@ bool process_arrow_keys(InputBuffer *input_data, ShellContext *context)
     }
     if (input_data->read[2] == 'A')
         return process_key_arrow_up(input_data, context->env->history);
+    if (input_data->read[2] == 'B')
+        return process_key_arrow_down(input_data);
     return false;
 }
 

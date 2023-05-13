@@ -54,6 +54,6 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         fflush(stdout);
         memset(input_data.read, 0, 5);
     }
-    free(input_data.input);
+    free(input_data.input); free(input_data.input_dup);
     return context.status;
 }
