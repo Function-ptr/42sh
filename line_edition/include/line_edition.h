@@ -37,7 +37,7 @@
         char *input;
         uint16_t input_len;
         uint16_t cursor_pos;
-        char read[4];
+        char read[5];
         uint8_t read_len;
         bool is_tty;
     } InputBuffer;

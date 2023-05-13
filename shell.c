@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** shell.c
 ** File description:
-** shell for minishell1
+** shell for 42sh
 */
 
 #include "shell.h"
@@ -21,11 +21,14 @@ uint8_t write_prompt(envdata_t *env)
 static void realloc_input(InputBuffer *input_data)
 {
     static uint8_t size_input = 10;
-    if (input_data->read_len + input_data->input_len >= powl(2, size_input)) {
-        input_data->input = realloc(input_data->input,
-            (size_t) powl(2, ++size_input));
+    size_t pow_size_input = 1 << size_input;
+
+    if (input_data->read_len + input_data->input_len >= pow_size_input) {
+        size_input++;
+        pow_size_input = 1 << size_input;
+        input_data->input = realloc(input_data->input, pow_size_input);
         memset(input_data->input + input_data->input_len, 0,
-               (size_t)powl(2,size_input ) / 2 + 1);
+        (pow_size_input / 2 + 1));
     }
 }
 
@@ -64,7 +67,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         input_data.read_len = read(STDIN_FILENO, input_data.read, 4);
         process_key(&context, &input_data);
         fflush(stdout);
-        memset(input_data.read, 0, 4);
+        memset(input_data.read, 0, 5);
     }
     free(input_data.input);
     return context.status;

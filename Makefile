@@ -141,7 +141,7 @@ OPTI = -O3 -Ofast \
 -ftree-vectorize \
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \
 -march=native -mtune=native -fopenmp -mavx2 \
--lm -ffast-math -mfpmath=sse \
+-ffast-math -mfpmath=sse \
 -flto
 
 # 	Optimization flags:
@@ -198,7 +198,7 @@ HEADER = 	-I./include/	\
 CFLAGS += -Wall -Werror -Wextra -fsanitize=undefined,address $(OPTI) \
 	$(LIB) $(HEADER)
 
-DEBUGFLAGS += -Wall -Werror -Wextra -fsanitize=undefined,address -lm \
+DEBUGFLAGS += -Wall -Werror -Wextra  -lm \
 	$(LIB) $(HEADER) -ggdb
 
 all: $(NAME)
