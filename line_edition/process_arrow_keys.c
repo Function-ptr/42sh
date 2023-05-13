@@ -37,31 +37,8 @@ bool process_arrow_keys(InputBuffer *input_data, ShellContext *context)
         printf("\x1b[D");
         return true;
     }
-    if (input_data->read[2] == 'A') {
-        if (context->env->history->len_file +
-        context->env->history->len_session_history <= 0)
-            return true;
-        static uint16_t current_history_offset = 1;
-        if (current_history_offset > context->env->history->len_file +
-        context->env->history->len_session_history)
-            return true;
-        input_data->input_dup = strdup(input_data->input);
-        if (!input_data->input_dup)
-            input_data->input_dup = input_data->input_len == 0 ? calloc(1, 1) :
-                strdup(input_data->input);
-        char *history_line = history_get_line_from_offset(context->env->history,
-            current_history_offset); history_line[strlen(history_line) - 1] = 0;
-        if ((int)fastlog2((float)strlen(history_line)) >=
-            (int)(fastlog2(input_data->input_len) + 0.5f))
-            realloc_input(input_data);
-        printf("\x1b[%dD\x1b[K", input_data->cursor_pos);
-        input_data->input = strdup(history_line);
-        input_data->input_len = strlen(history_line);
-        input_data->cursor_pos = input_data->input_len;
-        printf("%s", input_data->input);
-        current_history_offset++;
-        return true;
-    }
+    if (input_data->read[2] == 'A')
+        return process_key_arrow_up(input_data, context->env->history);
     return false;
 }
 

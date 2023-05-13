@@ -41,7 +41,7 @@ void process_key(ShellContext *context, InputBuffer *input_data)
 int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
     ShellContext context = {env, 0, false};
-    InputBuffer input_data = {malloc(1024), NULL,0, 0, {0}, 0, false};
+    InputBuffer input_data = {malloc(1024), NULL,0, 0, {0}, 0, 1,false};
     memset(input_data.input, 0, 1024);
     if (isatty(0)) {
         configure_terminal(new_term, old_term);

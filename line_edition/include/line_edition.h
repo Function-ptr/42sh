@@ -40,6 +40,7 @@
         uint16_t cursor_pos;
         char read[5];
         uint8_t read_len;
+        uint16_t history_offset;
         bool is_tty;
     } InputBuffer;
 
@@ -60,6 +61,8 @@
     uint8_t write_prompt(envdata_t *env);
     bool is_valid_utf8(const char *s);
     void handle_ctrl_d(ShellContext *context);
+    bool process_key_arrow_up(InputBuffer *input_data, history_t *history);
+    void realloc_input(InputBuffer *input_data);
 
     static inline float fastlog2 (float x)
     {
@@ -70,20 +73,6 @@
         return lv.f - 380.22544f
                   - 1.498030302f * mx.f
                   - 1.72587999f / (0.3520887068f + mx.f);
-    }
-
-    static inline void realloc_input(InputBuffer *input_data)
-    {
-        static uint8_t size_input = 10;
-        size_t pow_size_input = 1 << size_input;
-
-        if (input_data->read_len + input_data->input_len >= pow_size_input) {
-            size_input++;
-            pow_size_input = 1 << size_input;
-            input_data->input = realloc(input_data->input, pow_size_input);
-            memset(input_data->input + input_data->input_len, 0,
-            (pow_size_input / 2 + 1));
-        }
     }
 
 #endif //INC_42SH_LINE_EDITION_H

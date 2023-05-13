@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** line_edition_utils.c
+** process_key_arrow_up.c
 ** File description:
-** line edition utilities functions
+** process arrow keys up for history in line edition
 */
 /*
  _____               __      __
@@ -16,60 +16,55 @@
 */
 
 #include "line_edition.h"
+#include "history.h"
 
-void realloc_input(InputBuffer *input_data)
+static char* load_check_history(InputBuffer *input_data, history_t *history)
 {
-    static uint8_t size_input = 10;
-    size_t pow_size_input = 1 << size_input;
+    input_data->input_dup = input_data->input_dup ?
+        strdup(input_data->input) : (input_data->input_len ?
+        strdup(input_data->input) : calloc(1, 1));
 
-    if (input_data->read_len + input_data->input_len >= pow_size_input) {
-        size_input++;
-        pow_size_input = 1 << size_input;
-        input_data->input = realloc(input_data->input, pow_size_input);
-        memset(input_data->input + input_data->input_len, 0,
-        (pow_size_input / 2 + 1));
+    char *history_line = history_get_line_from_offset(history,
+        input_data->history_offset);
+
+    history_line[strlen(history_line) - 1] = 0;
+
+    if ((int)fastlog2((float)strlen(history_line)) >=
+    (int)(fastlog2(input_data->input_len) + 0.5))
+        realloc_input(input_data);
+
+    return history_line;
+}
+
+static void put_cursor_to_end_of_line(InputBuffer *input_data)
+{
+    while (input_data->cursor_pos < input_data->input_len) {
+        int8_t c_len = utf8_char_len(input_data->input[input_data->cursor_pos]);
+        if (c_len <= 0)
+            c_len = previous_utf8_char_length(input_data->input,
+                input_data->cursor_pos);
+        input_data->cursor_pos += c_len;
+        printf("\x1b[C");
     }
 }
 
-int8_t utf8_char_len(uint8_t byte)
+bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
 {
-    return (byte & 0x80) == 0x00 ? 1 :
-        (byte & 0xE0) == 0xC0 ? 2 :
-        (byte & 0xF0) == 0xE0 ? 3 :
-        (byte & 0xF8) == 0xF0 ? 4 : -1;
-}
-
-uint8_t previous_utf8_char_length(const char* input, uint16_t cursor_position)
-{
-    uint8_t len = 1;
-
-    for (uint8_t i = 0; i < 3 && (input[cursor_position] & 0xC0) == 0x80; ++i) {
-        len++;
-        if (cursor_position > 0)
-            cursor_position--;
-        else
-            break;
-    }
-    return len;
-}
-
-bool is_valid_utf8(const char *s)
-{
-    uint8_t bytes_in_char = 0;
-    unsigned char byte = (unsigned char)s[0];
-    if (byte < 0x80) bytes_in_char = 1;
-    if (byte >= 0x80 && byte < 0xC2) return false;
-    if (byte >= 0xC2 && byte < 0xE0) bytes_in_char = 2;
-    if (byte >= 0xE0 && byte < 0xF0) bytes_in_char = 3;
-    if (byte >= 0xF0 && byte < 0xF5) bytes_in_char = 4;
-    if (byte >= 0xF5) return false;
-    for (uint8_t i = 1; i < bytes_in_char; ++i)
-        if ((s[i] & 0xC0) != 0x80)
-            return false;
+    int history_len = history->len_file +
+        history->len_session_history;
+    if (history_len <= 0) return true;
+    if (input_data->history_offset > history_len) return true;
+    char* history_line = load_check_history(input_data, history);
+    put_cursor_to_end_of_line(input_data);
+    if (input_data->cursor_pos > 0)
+        printf("\x1b[%dD", input_data->cursor_pos);
+    input_data->input = strcpy(input_data->input, history_line);
+    input_data->input_len = input_data->cursor_pos = strlen(history_line);
+    printf("\x1b[K%s", input_data->input);
+    input_data->history_offset++;
+    free(history_line);
     return true;
 }
-
-
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄
 ─█────█─█──█────█────█────█─█──█
