@@ -47,16 +47,17 @@ bool process_arrow_keys(InputBuffer *input_data, ShellContext *context)
             return true;
         input_data->input_dup = strdup(input_data->input);
         if (!input_data->input_dup)
-            input_data->input_dup = strdup(input_data->input);
+            input_data->input_dup = input_data->input_len == 0 ? calloc(1, 1) :
+                strdup(input_data->input);
         char *history_line = history_get_line_from_offset(context->env->history,
             current_history_offset); history_line[strlen(history_line) - 1] = 0;
         if ((int)fastlog2((float)strlen(history_line)) >=
             (int)(fastlog2(input_data->input_len) + 0.5f))
             realloc_input(input_data);
-        printf("\x1b[%dD\x1b[K", input_data->input_len - 1);
+        printf("\x1b[%dD\x1b[K", input_data->cursor_pos);
         input_data->input = strdup(history_line);
-        input_data->input_len = strlen(history_line) + 1;
-        input_data->cursor_pos = input_data->input_len + 1;
+        input_data->input_len = strlen(history_line);
+        input_data->cursor_pos = input_data->input_len;
         printf("%s", input_data->input);
         current_history_offset++;
         return true;
