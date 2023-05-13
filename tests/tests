@@ -228,11 +228,8 @@ SETUP=""
 CLEAN=""
 TESTS=
   echo 'alias ls ls -H; which ls'
-where ls
   echo 'which python'
-where python
   echo 'which cd'
-where cd
   echo 'alias a b; alias b c; alias c a; which a'
 where a
 [23-END]
