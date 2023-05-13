@@ -32,7 +32,7 @@ void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
         close(cmd->in_fd);
 }
 
-void builtin_vars(command_t *command, envdata_t *env, bool *found,
+void builtins_env(command_t *command, envdata_t *env, bool *found,
     char *binname)
 {
     if (!strcmp(binname, "set")) {
@@ -49,6 +49,15 @@ void builtin_vars(command_t *command, envdata_t *env, bool *found,
         show_history(env->history); *found = true;
     } if (strcmp(binname, "setenv") == 0) {
         set_env(env->env, command, env); *found = true;
+    }
+}
+
+void builtins_env_bis(command_t *command, envdata_t *env, bool *found,
+    char *binname)
+{
+    if (!strcmp(binname, "prompt_on")) env->starship_prompt = *found = true;
+    if (!strcmp(binname, "prompt_off")) {
+        env->starship_prompt = false; *found = true;
     }
 }
 
@@ -70,8 +79,8 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
         status = which(cmd, env); found = true;
     } if (!strcmp(binname, "where")) {
         status = where(cmd, env); found = true;
-    }
-    builtin_vars(cmd, env, &found, binname);
+    } builtins_env(cmd, env, &found, binname);
+    builtins_env_bis(cmd, env, &found, binname);
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b); return (status);
 }
