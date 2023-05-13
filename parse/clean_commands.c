@@ -31,7 +31,7 @@ void free_commands(command_t **commands)
 {
     for (int i = 0; commands[i] != NULL; i++)
         free_command(commands[i]);
-    //free(commands);
+    free(commands);
 }
 
 /*

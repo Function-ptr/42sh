@@ -64,16 +64,17 @@
     bool process_key_arrow_up(InputBuffer *input_data, history_t *history);
     void realloc_input(InputBuffer *input_data);
 
-    static inline float fastlog2 (float x)
-    {
-        union {float f; uint32_t i;} xv = {x}, lv, mx;
-        mx.i = 0x3f000000u | (xv.i & 0x007FFFFFu);
-        lv.i = 0x43800000u | (xv.i >> 8u);
+static inline float fastlog2 (float x)
+{
+    union {float f; uint32_t i;} xv = {x}, lv, mx;
+    mx.i = 0x3f000000u | (xv.i & 0x007FFFFFu);
+    lv.i = 0x43800000u | (xv.i >> 8u);
 
-        return lv.f - 380.22544f
-                  - 1.498030302f * mx.f
-                  - 1.72587999f / (0.3520887068f + mx.f);
-    }
+    return lv.f - 380.22544f
+        - 1.498030302f * mx.f
+        - 1.72587999f / (0.3520887068f + mx.f);
+}
+
 
 #endif //INC_42SH_LINE_EDITION_H
 
