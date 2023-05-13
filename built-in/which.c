@@ -41,10 +41,13 @@ int which(command_t *command, envdata_t *env)
 {
     char **argv = my_str_to_word_array(command->command, " \t");
     int32_t status = 0, len = my_char_arraylen(argv);
+    free(argv[0]);
     for (int32_t i = 1; i < len; i++) {
         int32_t cmdstatus = get_which_pos(argv[i], env, command->out_fd);
         status = (cmdstatus) ? 1 : status;
+        free(argv[i]);
     }
+    free(argv);
     if (len == 1) {
         fprintf(stderr, "which: Too few arguments.\n");
         return 1;
