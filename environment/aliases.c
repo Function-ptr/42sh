@@ -20,8 +20,12 @@
 void show_aliases(aliases_t *aliases, command_t *command)
 {
     for (uint32_t i = 0; i < aliases->nb_aliases; i++) {
-        dprintf(command->out_fd, "%s\t%s\n", aliases->alias[i],
-            aliases->content[i]);
+        if (strchr(aliases->content[i], ' '))
+            dprintf(command->out_fd, "%s\t(%s)\n", aliases->alias[i],
+                aliases->content[i]);
+        else
+            dprintf(command->out_fd, "%s\t%s\n", aliases->alias[i],
+                aliases->content[i]);
     }
 }
 
