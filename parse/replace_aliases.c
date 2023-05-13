@@ -36,8 +36,10 @@ char *replace_alias_with_content(char *content, char *binname,
     size_t offset = valuelen - namelen, len = strlen(command);
     char *backup = strdup(command);
     char *new = reallocarray(command, len + offset + 1, sizeof(char));
-    if (!new)
+    if (!new) {
+        free(backup);
         return NULL;
+    }
     new[len + offset] = 0;
     strncpy(new, content, valuelen);
     memmove(new + valuelen, backup + namelen, len - namelen);
