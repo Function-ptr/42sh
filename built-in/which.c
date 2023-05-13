@@ -22,7 +22,7 @@ int get_which_pos(char *cmd, envdata_t *env, int outfd)
 {
     for (uint32_t i = 0; i < env->aliases->nb_aliases; i++)
         if (!strcmp(env->aliases->alias[i], cmd)) {
-            dprintf(outfd, "%s:\t aliased to %s\n", cmd,
+            dprintf(outfd, "%s: \t aliased to %s\n", cmd,
                 env->aliases->content[i]);
             return 0;
         }
