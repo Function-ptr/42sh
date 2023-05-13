@@ -29,7 +29,7 @@ int get_where_path(char *cmd, int outfd, pathdir_t **pathdirs)
         *(path + dirlen) = '/';
         strcpy(path + dirlen + 1, cmd);
         if (!access(path, F_OK))
-            printf("%s\n", path);
+            dprintf(outfd, "%s\n", path);
         free(path);
         found = 0;
     }

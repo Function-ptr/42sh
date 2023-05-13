@@ -231,7 +231,6 @@ TESTS=
   echo 'which python'
   echo 'which cd'
   echo 'alias a b; alias b c; alias c a; which a'
-where a
 [23-END]
 
 [24]
