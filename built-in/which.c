@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** chose_builtin.c
+** which.c
 ** File description:
-** chose builitin to run
+** Which command
 */
 /*
  __  __        _                            ___            ___
@@ -14,65 +14,46 @@
                               __/ |               ______
                              |___/               |______|
 */
-
 #include "built_in.h"
-#include "parsing.h"
+#include "my.h"
+#include "execute.h"
 
-void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
+int get_which_pos(char *cmd, envdata_t *env, int outfd)
 {
-    if (strcmp(binname, "exit") == 0) {
-        *status = exit_with_status(cmd); *found = true;
-    } if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd); *found = true;
-    } if (!*found)
-        fprintf(stderr, "%s: Command not found.\n", binname);
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
-}
-
-void builtin_vars(command_t *command, envdata_t *env, bool *found,
-    char *binname)
-{
-    if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unset")) {
-        unset_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unalias")) {
-        unalias(command, env->aliases); *found = true;
-    } if (!strcmp(binname, "alias")) {
-        alias(command, env->aliases); *found = true;
-    } if (!strcmp(binname, "moai")) {
-        moai(command); *found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); *found = true;
+    for (uint32_t i = 0; i < env->aliases->nb_aliases; i++)
+        if (!strcmp(env->aliases->alias[i], cmd)) {
+            dprintf(outfd, "%s:\t aliased to %s\n", cmd,
+                env->aliases->content[i]);
+            return 0;
+        }
+    if (is_a_builtin(cmd)) {
+        dprintf(outfd, "%s: shell built-in command.\n", cmd);
+        return 0;
     }
+    char *path = get_binary_filename(cmd, env->path_dirs);
+    if (!path) {
+        fprintf(stderr, "%s: Command not found.\n", cmd);
+        return 1;
+    }
+    dprintf(outfd, "%s\n", path);
+    return 0;
 }
 
-int builtin_funcs(command_t *cmd, envdata_t *env)
+int which(command_t *command, envdata_t *env)
 {
-    char *clean_cmd = strdup_without_backslash(cmd->command);
-    free(cmd->command);
-    char *input = cmd->command = clean_cmd, *b = strdup(input);
-    char *binname = get_binary_name(b);
-    int status = 0;
-    bool found = false;
-    if (strcmp(binname, "cd") == 0) {
-        status = change_dir(env, input); found = true;
-    } if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, cmd); found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, cmd, env); found = true;
-    } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input, env); found = true;
-    } if (!strcmp(binname, "which")) {
-        status = which(cmd, env); found = true;
+    char **argv = my_str_to_word_array(command->command, " \t");
+    int32_t status = 0, len = my_char_arraylen(argv);
+    for (int32_t i = 1; i < len; i++) {
+        int32_t cmdstatus = get_which_pos(argv[i], env, command->out_fd);
+        status = (cmdstatus) ? 1 : status;
     }
-    builtin_vars(cmd, env, &found, binname);
-    builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b); return (status);
+    if (len == 1) {
+        fprintf(stderr, "which: Too few arguments.\n");
+        return 1;
+    }
+    return status ? 1 : 0;
 }
+
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⢟⣽⠿⠯⠛⡸⢹⠀⢹⠒⣊⡡⠜⠓⠢⣄⠀⠀⠀⠀
