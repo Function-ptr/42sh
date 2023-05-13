@@ -31,10 +31,8 @@ int get_which_pos(char *cmd, envdata_t *env, int outfd)
         return 0;
     }
     char *path = get_binary_filename(cmd, env->path_dirs);
-    if (!path) {
-        fprintf(stderr, "%s: Command not found.\n", cmd);
+    if (!path)
         return 1;
-    }
     dprintf(outfd, "%s\n", path);
     return 0;
 }
