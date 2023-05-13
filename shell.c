@@ -17,25 +17,11 @@ uint8_t write_prompt(envdata_t *env)
     return 1;
 }
 
-static void realloc_input(InputBuffer *input_data)
-{
-    static uint8_t size_input = 10;
-    size_t pow_size_input = 1 << size_input;
-
-    if (input_data->read_len + input_data->input_len >= pow_size_input) {
-        size_input++;
-        pow_size_input = 1 << size_input;
-        input_data->input = realloc(input_data->input, pow_size_input);
-        memset(input_data->input + input_data->input_len, 0,
-        (pow_size_input / 2 + 1));
-    }
-}
-
 void process_key(ShellContext *context, InputBuffer *input_data)
 {
     realloc_input(input_data);
     if (input_data->read[0] == '\x1b' && input_data->read[1] == '[') {
-        if (process_arrow_keys(input_data)) return;
+        if (process_arrow_keys(input_data, context)) return;
         if (process_delete_key(input_data)) return;
         if (process_home_end_keys(input_data)) return;
         return;
@@ -55,7 +41,7 @@ void process_key(ShellContext *context, InputBuffer *input_data)
 int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
     ShellContext context = {env, 0, false};
-    InputBuffer input_data = {malloc(1024), 0, 0, {0}, 0, false};
+    InputBuffer input_data = {malloc(1024), NULL,0, 0, {0}, 0, false};
     memset(input_data.input, 0, 1024);
     if (isatty(0)) {
         configure_terminal(new_term, old_term);

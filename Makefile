@@ -195,10 +195,10 @@ HEADER = 	-I./include/	\
 	-I./environment/include	\
 	-I./line_edition/include	\
 
-CFLAGS += -Wall -Werror -Wextra -fsanitize=undefined,address $(OPTI) \
+CFLAGS += -Wall -Werror -Wextra $(OPTI) \
 	$(LIB) $(HEADER)
 
-DEBUGFLAGS += -Wall -Werror -Wextra -fsanitize=undefined,address \
+DEBUGFLAGS += -Wall -Werror -Wextra \
 	$(LIB) $(HEADER) -ggdb
 
 all: $(NAME)
