@@ -217,9 +217,9 @@ SETUP=""
 CLEAN=""
 TESTS=
   echo 'alias ll ls -l'
-  echo 'alias la ls -a; la / | grep usr'
-  echo 'alias'
-  echo 'alias nope; alias'
+  echo 'alias la ls -a; ll / | grep usr; unalias ll'
+  echo 'la /etc; unalias la; alias; alias dir ls -l; alias cls clear; alias; unalias dir'
+  echo 'unalias cls; alias nope; alias'
 [22-END]
 
 [23]
