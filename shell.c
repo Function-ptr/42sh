@@ -10,10 +10,18 @@
 
 int write_prompt(envdata_t *env)
 {
-    if (!env->is_fallback) {
-        printf("<%s@%s %s >$ ", env->user, env->hostname, env->cwd);
-    } else
+    char *user = get_environment_variable(env->env, "USER");
+    char *host = get_environment_variable(env->env, "HOSTNAME");
+    if (env->is_fallback) {
         printf("> ");
+        return 1;
+    }
+    if (user && host)
+        printf("<%s@%s %s >$ ", user + 5, host + 9, env->cwd);
+    if (user && !host)
+        printf("<%s %s >$ ", user + 5, env->cwd);
+    if (!user && host)
+        printf("<%s %s >$ ", host + 9, env->cwd);
     return (1);
 }
 
