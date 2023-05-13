@@ -10,6 +10,7 @@ SOURCES = . built-in execute parse errors environment history
 SRCS = 	main.c	\
 	shell.c	\
 	sighandler.c	\
+	built-in/alias_unalias.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
 	built-in/command_is_a_builtin.c	\
@@ -38,6 +39,7 @@ SRCS = 	main.c	\
 	parse/parse_single_command.c	\
 	parse/quotes.c	\
 	parse/remove_spaces_in_command.c	\
+	parse/replace_aliases.c	\
 	parse/replace_variables.c	\
 	parse/separate_args.c	\
 	parse/smart_strtok.c	\
@@ -66,6 +68,7 @@ SRCS = 	main.c	\
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
 	obj/sighandler.o	\
+	obj/built-in-alias_unalias.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
 	obj/built-in-command_is_a_builtin.o	\
@@ -94,6 +97,7 @@ OBJS = 	obj/main.o	\
 	obj/parse-parse_single_command.o	\
 	obj/parse-quotes.o	\
 	obj/parse-remove_spaces_in_command.o	\
+	obj/parse-replace_aliases.o	\
 	obj/parse-replace_variables.o	\
 	obj/parse-separate_args.o	\
 	obj/parse-smart_strtok.o	\

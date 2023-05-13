@@ -26,6 +26,7 @@ int main(int ac, __attribute__((unused)) char **av, char **env)
     signal(SIGINT, sighandler);
     init_history(environment);
     environment->variables = init_variables();
+    environment->aliases = init_aliases();
     int status = shell(environment);
     clear_environment(environment);
     return (status);

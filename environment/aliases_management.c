@@ -27,7 +27,7 @@ aliases_t *init_aliases(void)
 
 void clean_aliases(aliases_t *aliases)
 {
-    for (int i = 0; i < aliases->nb_aliases; i++) {
+    for (uint32_t i = 0; i < aliases->nb_aliases; i++) {
         free(aliases->alias[i]);
         free(aliases->content[i]);
     }

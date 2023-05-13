@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** environment.c
+** alias_unalias.c
 ** File description:
-** environment manipulation
+** Alias and unalias
 */
 /*
  __  __        _                            ___            ___
@@ -15,36 +15,33 @@
                              |___/               |______|
 */
 #include "environment.h"
+#include "built_in.h"
 
-char **get_environment(envvar_t **env)
+void alias(command_t *command, aliases_t *aliases)
 {
-    envvar_t *tmp = *env;
-    int len_environment = 0;
-    for (; tmp != NULL; tmp = tmp->next, len_environment++);
-    char **envtab = malloc(sizeof(char*) * (len_environment + 1));
-    tmp = *env;
-    for (int i = 0; i < len_environment && tmp != NULL; i++, tmp = tmp->next)
-        envtab[i] = tmp->var;
-    envtab[len_environment] = NULL;
-    return (envtab);
+    if (!is_argv_long_enough(command->command, 2)) {
+        add_alias(aliases, "", "", command);
+        return;
+    }
+    if (!is_argv_long_enough(command->command, 3))
+        return;
+    char *datapos = strdup(command->command + 6), *eqpos = strchr(datapos, ' ');
+    char *name = strndup(datapos, eqpos - datapos + 1), *s = strchr(name, ' ');
+    if (s)
+        *s = 0;
+    char *content = strdup(eqpos + 1);
+    add_alias(aliases, name, content, command);
+    free(name);
+    free(content);
+    free(datapos);
 }
 
-void duplicate_environment(char **env, envvar_t **list)
+void unalias(command_t *command, aliases_t *aliases)
 {
-    for (int i = 0; env[i] != NULL; i++)
-        add_environment_variable(list, env[i]);
-}
-
-void clear_environment(envdata_t *envdata)
-{
-    clear_path_directories(envdata->path_dirs);
-    clear_environment_variables(envdata->env);
-    free(envdata->cwd);
-    free(envdata->prevcwd);
-    free_history(envdata->history);
-    clean_variables(envdata->variables);
-    clean_aliases(envdata->aliases);
-    free(envdata);
+    if (!is_argv_long_enough(command->command, 2))
+        return;
+    char *alias = command->command + 8;
+    remove_alias(aliases, alias);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

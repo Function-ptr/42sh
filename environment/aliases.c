@@ -15,12 +15,50 @@
                              |___/               |______|
 */
 #include "environment.h"
+#include "errors.h"
 
 void show_aliases(aliases_t *aliases, command_t *command)
 {
-    for (int i = 0; i < aliases->nb_aliases; i++) {
+    for (uint32_t i = 0; i < aliases->nb_aliases; i++) {
         dprintf(command->out_fd, "%s\t%s\n", aliases->alias[i],
-                aliases->content[i]);
+            aliases->content[i]);
+    }
+}
+
+void add_alias(aliases_t *aliases, char *name, char *value, command_t *command)
+{
+    if (!(*name) && !(*value)) {
+        show_aliases(aliases, command);
+        return;
+    }
+    for (size_t i = 0; i < aliases->nb_aliases; i++)
+        if (!strcmp(aliases->alias[i], name)) {
+            free(aliases->content[i]);
+            aliases->content[i] = strdup(value);
+            return;
+        }
+    aliases->alias = reallocarray(aliases->alias, aliases->nb_aliases + 1,
+        sizeof(char*));
+    aliases->content = reallocarray(aliases->content, aliases->nb_aliases + 1,
+        sizeof(char*));
+    aliases->alias[aliases->nb_aliases] = strdup(name);
+    aliases->content[aliases->nb_aliases] = strdup(value);
+    aliases->nb_aliases += 1;
+}
+
+void remove_alias(aliases_t *aliases, char *alias)
+{
+    for (size_t i = 0; i < aliases->nb_aliases; i++) {
+        if (!strcmp(aliases->alias[i], alias)) {
+            free(aliases->alias[i]);
+            free(aliases->content[i]);
+            memmove(aliases->alias + i, aliases->alias + i + 1,
+                sizeof(char*) * (aliases->nb_aliases - i - 1));
+            memmove(aliases->content + i, aliases->content + i + 1,
+                sizeof(char*) * (aliases->nb_aliases - i - 1));
+            aliases->nb_aliases -= 1;
+            return;
+        }
     }
 }
 
