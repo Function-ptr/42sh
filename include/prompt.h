@@ -24,6 +24,8 @@
     #define ONEVALPROMPT "\033[0m\n \033[31;1m╭─%s\033[0m in "\
     "\033[35m\ue5ff %s\033[31;1m\n ╰─%s \033[0m"
 
+    #define NNSTDPROMPT "<"
+
 #endif //INC_42SH_PROMPT_H
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
