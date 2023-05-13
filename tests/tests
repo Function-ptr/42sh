@@ -211,7 +211,7 @@ TESTS=
   echo 'set TEST31=LOL; set TEST32=MDR; set TEST31=PTDR; set | grep TEST; unset TEST32'
 [21-END]
 
-[16]
+[22]
 NAME="Aliases"
 SETUP=""
 CLEAN=""
@@ -220,4 +220,4 @@ TESTS=
   echo 'alias ll ls -l; ll / | grep usr'
   echo 'alias; alias dir ls -l; alias cls clear; alias; unalias dir'
   echo 'alias nope; alias'
-[16-END]
+[22-END]
