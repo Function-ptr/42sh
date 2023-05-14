@@ -25,6 +25,7 @@ int get_where_path(char *cmd, int outfd, pathdir_t **pathdirs)
     for (; tmp; tmp = tmp->next) {
         uint32_t dirlen = (uint32_t)strlen(tmp->dir);
         char *path = calloc(dirlen + cmdlen + 2, sizeof(char));
+        if (!path) return 1;
         strcpy(path, tmp->dir);
         *(path + dirlen) = '/';
         strcpy(path + dirlen + 1, cmd);

@@ -37,6 +37,7 @@ char *get_variable_value(char *eqpos)
     int len = strlen(eqpos);
     int vallen = get_value_len(eqpos, len);
     char *value = calloc(vallen + 1, sizeof(char));
+    if (!value) return NULL;
     char *valstart = eqpos;
     if (*valstart == ' ') valstart++;
     if (*valstart == 39 || *valstart == '"') {
@@ -53,15 +54,17 @@ void set_variable(command_t *command, variables_t *variables)
     if (!is_argv_long_enough(command->command, 2)) {
         add_var(variables, "", "", command);
         return;
-    } if (name_does_not_start_with_letter(command->command[4], "set"))
-        return;
-    char *datapos = strdup(command->command + 4), *eqpos = strchr(datapos, '=');
+    } if (name_does_not_start_with_letter(command->command[4], "set")) return;
+    char *datapos = strdup(command->command + 4);
+    if (!datapos) return;
+    char *eqpos = strchr(datapos, '=');
     if (!eqpos) {
         add_var(variables, datapos, "", command);
         return;
-    }
-    char *name = strndup(datapos, eqpos - datapos + (*(eqpos - 1) != ' '));
-    name[eqpos - datapos] = 0;
+    } char *name = strndup(datapos, eqpos - datapos + (*(eqpos - 1) != ' '));
+    if (!name) {
+        free(datapos); return;
+    } name[eqpos - datapos] = 0;
     for (int i = eqpos - datapos - 1; i >= 0 && name[i] == ' '; i++)
         name[i] = 0;
     char *value = get_variable_value(eqpos + 1);
