@@ -47,6 +47,7 @@ void set_environment_variable(envvar_t **env, char *var, char *newvar)
     envvar_t *tmp = *env;
     int lensum = (int)(strlen(newvar) + strlen(var));
     char *new = calloc(lensum + 2, sizeof(char));
+    if (!new) return;
     strcpy(new, var);
     new[strlen(var)] = '=';
     strcat(new, newvar);

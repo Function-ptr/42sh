@@ -31,7 +31,7 @@ void show_aliases(aliases_t *aliases, command_t *command)
 
 void add_alias(aliases_t *aliases, char *name, char *value, command_t *command)
 {
-    if (!(*name) && !(*value)) {
+    if (!name || !value || (!(*name) && !(*value))) {
         show_aliases(aliases, command);
         return;
     }

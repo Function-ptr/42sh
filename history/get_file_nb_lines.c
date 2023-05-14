@@ -31,6 +31,7 @@ int get_file_nb_lines(char *filename)
     if (access(filename, F_OK))
         return 0;
     char *cmd = calloc(len + 16, sizeof(char));
+    if (!cmd) return 0;
     strcpy(cmd, "/usr/bin/wc -l ");
     strcpy(cmd + 15, filename);
     FILE *fp = popen(cmd, "r");
