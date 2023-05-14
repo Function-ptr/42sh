@@ -24,9 +24,12 @@ void run_forked_parentheses(command_t *command, envdata_t *env)
         dup2(command->out_fd, STDOUT_FILENO);
     if (command->in_fd != STDIN_FILENO)
         dup2(command->in_fd, STDIN_FILENO);
-    *(strchr(command->command, '(')) = ' ';
-    *(strrchr(command->command, ')')) = ' ';
+    char *firstsp = strchr(command->command, '(');
+    if (firstsp) *firstsp = ' ';
+    char *lastsp = strrchr(command->command, ')');
+    if (lastsp) *lastsp = ' ';
     char *new = calloc(strlen(command->command) + 2, sizeof(char));
+    if (!new) exit(1);
     strcpy(new, command->command);
     new[strlen(new)] = '\n';
     int exiting = 0;
