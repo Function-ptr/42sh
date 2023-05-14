@@ -44,7 +44,9 @@ char *search_in_dir(char *input, char *dir_path)
         }
     }
     closedir(dir);
-    return matched_name ? strdup(matched_name + strlen(input)) : NULL;
+    char *new = matched_name ? strdup(matched_name + strlen(input)) : NULL;
+    free(matched_name);
+    return new;
 }
 
 char *autocomplete_from_path(char *input, envdata_t *env)
