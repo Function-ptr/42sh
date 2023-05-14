@@ -19,18 +19,17 @@
 void detect_redirections(command_t *command, char *comm, char next_sep[2],
     int *status)
 {
+    if (!comm) return;
     char *redirection_out = my_strchr_escape(comm, '>');
     char *redirection_out_append = my_strrchr_escape(comm, '>');
     char *redirection_in = my_strchr_escape(comm, '<');
     char *redirection_in_word = my_strrchr_escape(comm, '<');
-
     command->redirect_in = (redirection_in != NULL);
     command->redirect_in_word_wait = (redirection_in &&
         redirection_in_word == redirection_in + 1);
     command->redirect_out = (redirection_out != NULL);
     command->redirect_out_append = (redirection_out &&
         redirection_out_append == redirection_out + 1);
-
     command->awaited_word = NULL;
     command->command = remove_spaces_in_command(command->command,
         next_sep, command->pipe_in, status);
@@ -55,34 +54,32 @@ char *get_redirection_filename(char *str, int *size)
 
 int open_output_file_descriptor(command_t *command, char *comm)
 {
+    if (!comm) return 1;
     char *redirection_out = strchr(comm, '>');
+    if (!redirection_out) return 1;
     char *redirection_out_append = strrchr(comm, '>');
     int size = 0;
     char *file = get_redirection_filename(redirection_out_append + 1, &size);
-
-    if (file == NULL) {
+    if (file == NULL)
         return 1;
-    }
-
     int open_flag = (command->redirect_out_append ? O_APPEND : O_TRUNC);
     command->out_fd = open(file, O_WRONLY | O_CREAT | open_flag,
         S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     free(file);
     memset(redirection_out, ' ', size + (command->redirect_out_append ? 2 : 1));
-
     return 0;
 }
 
 int open_input_file_descriptor(command_t *command, char *comm)
 {
     int size = 0;
+    if (!comm) return 1;
     char *redirection_in = strchr(comm, '<');
+    if (!redirection_in) return 1;
     char *redirection_in_word = strrchr(comm, '<');
     char *file = get_redirection_filename(redirection_in_word + 1, &size);
-
     if (file == NULL)
         return 1;
-
     if (command->redirect_in_word_wait) {
         command->in_fd = -69;
         command->awaited_word = file;
@@ -90,10 +87,8 @@ int open_input_file_descriptor(command_t *command, char *comm)
         command->in_fd = open(file, O_RDONLY);
         free(file);
     }
-
     memset(redirection_in, ' ',
         size + (command->redirect_in_word_wait ? 2 : 1));
-
     return 0;
 }
 

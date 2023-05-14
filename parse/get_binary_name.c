@@ -19,6 +19,7 @@
 char *get_binary_filename(char *command, pathdir_t **pathdirs)
 {
     char *cmd = strdup_without_backslash(command);
+    if (!cmd) return NULL;
     if (strchr(cmd, '/') != NULL) {
         if (!access(cmd, F_OK))
             return (cmd);

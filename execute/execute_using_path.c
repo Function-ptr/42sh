@@ -22,6 +22,7 @@ char *is_command_in_path(pathdir_t *dir, char *binary)
     for (; dir != NULL; dir = dir->next) {
         int dirlen = (int)strlen(dir->dir);
         char *filepath = malloc(sizeof(char) * (len_binary + dirlen + 4));
+        if (!filepath) return NULL;
         strcpy(filepath, dir->dir);
         filepath[dirlen] = '/';
         strcpy(&(filepath[dirlen + 1]), binary);
