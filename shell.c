@@ -38,6 +38,39 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         process_regular_key(input_data);
 }
 
+char *read_stdin(void)
+{
+    size_t size = 1024, read;
+    char *buffer = malloc(size);
+    if (!buffer) return buffer;
+    size_t total = 0;
+    while ((read = fread(buffer + total, 1, size - total, stdin)) > 0) {
+        total += read;
+        if (total == size) {
+            size *= 2;
+            buffer = realloc(buffer, size);
+        }
+    }
+    buffer[total] = '\0';
+    return buffer;
+}
+
+static void run_non_tty(ShellContext *context, InputBuffer *input_data)
+{
+    char *commands = strtok(read_stdin(), "\n");
+    while (commands) {
+        realloc_input(input_data);
+        input_data->input = strcpy(input_data->input,commands);
+        input_data->cursor_pos = input_data->input_len = strlen(commands);
+        input_data->read_len = 1;
+        memset(input_data->read, 0, 5);
+        input_data->read[0] = input_data->input[input_data->input_len - 1];
+        process_enter_key(context, input_data);
+        commands = strtok(NULL, "\n");
+    }
+    context->exiting = true;
+}
+
 int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
 {
     ShellContext context = {env, 0, false};
@@ -47,7 +80,8 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         configure_terminal(new_term, old_term);
         write_prompt(env);
         input_data.is_tty = true;
-    }
+    } else
+        run_non_tty(&context, &input_data);
     while (!context.exiting) {
         input_data.read_len = read(STDIN_FILENO, input_data.read, 4);
         process_key(&context, &input_data);
