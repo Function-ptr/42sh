@@ -17,6 +17,7 @@
 #include "environment.h"
 #include "built_in.h"
 #include "errors.h"
+#include "parsing.h"
 
 int get_value_len(char *eqpos, int len)
 {
@@ -25,7 +26,9 @@ int get_value_len(char *eqpos, int len)
     if (*pos == ' ') pos++;
     int i = 0;
     for (; i < len; i++) {
-        if (pos[i] == ' ' && !in_db_quotes && !in_sim_quote) break;
+        if (pos[i] == ' ' && i > 0 && pos[i - 1] != '\\' && !in_db_quotes &&
+        !in_sim_quote)
+            break;
         if (pos[i] == 39) in_sim_quote = !in_sim_quote;
         if (pos[i] == '"') in_db_quotes = !in_db_quotes;
     }
@@ -43,8 +46,10 @@ char *get_variable_value(char *eqpos)
         valstart++;
         vallen -= 2;
     }
+    char *nobackslash = strdup_without_backslash(valstart);
     bool skipchar = valstart[vallen - 1] == '\'' || valstart[vallen - 1] == '"';
-    strncpy(value, valstart, vallen - skipchar);
+    strncpy(value, nobackslash, vallen - skipchar);
+    free(nobackslash);
     return (value);
 }
 
@@ -53,8 +58,7 @@ void set_variable(command_t *command, variables_t *variables)
     if (!is_argv_long_enough(command->command, 2)) {
         add_var(variables, "", "", command);
         return;
-    } if (name_does_not_start_with_letter(command->command[4], "set"))
-        return;
+    } if (name_does_not_start_with_letter(command->command[4], "set")) return;
     char *datapos = strdup(command->command + 4), *eqpos = strchr(datapos, '=');
     if (!eqpos) {
         add_var(variables, datapos, "", command);
