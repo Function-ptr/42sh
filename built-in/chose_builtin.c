@@ -82,7 +82,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     free(cmd->command);
     char *input = cmd->command = clean_cmd, *b = strdup(input);
     char *binname = get_binary_name(b);
-    int status = 0; found = false;
+    int status = 0;
     if (strcmp(binname, "cd") == 0) {
         status = change_dir(env, input); found = true;
     } if (strcmp(binname, "unsetenv") == 0) {
