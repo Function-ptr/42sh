@@ -35,21 +35,21 @@ int get_offset_strstr(char *input, history_t *history, int lenh)
 int get_offset_from_str(char *input, history_t *history)
 {
     int lenh = history->len_session_history + history->len_file;
-    if (input[1] == '?') {
+    if (input[0] == '?') {
         char *str;
         if (strchr(input, '?') != strrchr(input, '?'))
-            str = strndup(input + 2, strrchr(input, '?') - strchr(input, '?'));
+            str = strndup(input + 1, strrchr(input, '?') - strchr(input, '?'));
         else
-            str = strdup(input + 2);
+            str = strdup(input + 1);
         int o = get_offset_strstr(str, history, lenh);
         free(str);
         return o;
     }
-    int len = (int)strlen(input + 1);
+    int len = (int)strlen(input);
     for (int i = 1; i < lenh; i++) {
         char *s = history_get_line_from_offset(history, i);
         if (s == NULL) return -1;
-        int r = strncmp(s, input + 1, len - 1);
+        int r = strncmp(s, input, len - 1);
         free(s);
         if (!r) return i;
     }
@@ -74,7 +74,7 @@ void operate_on_line_offset(char **input, history_t *history)
             return;
         }
     }
-    if (offset == -1) offset = get_offset_from_str(*input, history);
+    if (offset == -1) offset = get_offset_from_str(*input + 1, history);
     if (offset == -1) return;
     free(*input);
     *input = history_get_line_from_offset(history, offset);
