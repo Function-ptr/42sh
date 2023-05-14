@@ -30,7 +30,7 @@ void show_file_history(history_t *history)
 {
     FILE *f = fdopen(history->history_fd, "r");
     if (f == NULL) return;
-    for (int i = 0; i < history->len_file; i++) {
+    for (uint32_t i = 0; i < history->len_file; i++) {
         char *buf = NULL;
         size_t s = 0;
         time_t time;
@@ -61,7 +61,7 @@ void show_history(history_t *history)
         show_file_history(history);
     history->history_fd = open(history->filename, O_CREAT | O_APPEND |
         O_RDONLY, S_IRUSR | S_IWUSR);
-    for (int i = 0; i < history->len_session_history; i++) {
+    for (uint32_t i = 0; i < history->len_session_history; i++) {
         char *strdate = ctime(&(history->session_history[i]).time);
         char *ret = strchr(strdate, '\n');
         *ret = 0;

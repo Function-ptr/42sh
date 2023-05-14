@@ -52,7 +52,7 @@ void builtins_env(command_t *command, envdata_t *env, bool *found,
     }
 }
 
-void builtins_env_bis(command_t *command, envdata_t *env, bool *found,
+void builtins_env_bis(envdata_t *env, bool *found,
     char *binname)
 {
     if (!strcmp(binname, "prompt_on")) env->starship_prompt = *found = true;
@@ -80,7 +80,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     } if (!strcmp(binname, "where")) {
         status = where(cmd, env); found = true;
     } builtins_env(cmd, env, &found, binname);
-    builtins_env_bis(cmd, env, &found, binname);
+    builtins_env_bis(env, &found, binname);
     builtin_funcs_bis(binname, cmd, &found, &status);
     free(b); return (status);
 }

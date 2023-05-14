@@ -16,7 +16,7 @@
 */
 #include "history.h"
 
-char *history_file_get_line_from_offset(history_t *history, int offset)
+char *history_file_get_line_from_offset(history_t *history, uint32_t offset)
 {
     FILE *f = fdopen(history->history_fd, "r");
     if (!f)
@@ -40,9 +40,9 @@ char *history_file_get_line_from_offset(history_t *history, int offset)
     return (line);
 }
 
-char *history_session_get_line_from_offset(history_t *history, int offset)
+char *history_session_get_line_from_offset(history_t *history, uint32_t offset)
 {
-    int i = 1, j = history->len_session_history - 1;
+    uint32_t i = 1, j = history->len_session_history - 1;
     for (; i < offset; j--, i++);
     char *line = strdup(history->session_history[j].line);
     return (line);
@@ -64,7 +64,7 @@ char *process_file_line(char *line)
     return (l);
 }
 
-char *history_get_line_from_offset(history_t *history, int offset)
+char *history_get_line_from_offset(history_t *history, uint32_t offset)
 {
     if (history == NULL)
         return (NULL);

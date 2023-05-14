@@ -16,6 +16,7 @@
 */
 
 #include "line_edition.h"
+#include "shell.h"
 
 void process_enter_key(ShellContext *context, InputBuffer *input_data)
 {
@@ -25,6 +26,7 @@ void process_enter_key(ShellContext *context, InputBuffer *input_data)
     memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
     input_data->input_len += len;
     input_data->cursor_pos += len;
+    run_precmd(context->env);
     operate_on_previous_command(input_data->input, context->env->history);
     if (input_data->input[0] == '!') return;
     add_line_to_history(context->env->history, input_data->input);

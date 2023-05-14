@@ -31,12 +31,14 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         process_regular_key(input_data);
 }
 
-int write_prompt(envdata_t *env)
+void write_prompt(envdata_t *env)
 {
     char *user = get_environment_variable(env->env, "USER");
     char *host = get_environment_variable(env->env, "HOSTNAME");
     if (env->is_fallback) {
-        printf("\033[0m\033[93;1;5m> \033[0m"); return 1;
+        printf("\033[0m\033[93;1;5m> \033[0m");
+        fflush(stdout);
+        return;
     }
     char *stat_icon = WIFSIGNALED(env->status) && env->status != 1 ? "⚡" :
         (env->status ? "×" : "λ");
@@ -49,7 +51,7 @@ int write_prompt(envdata_t *env)
     if (!user && host)
         printf(env->starship_prompt ? ONEVALPROMPT : NNOVPROMPT, host + 9,
             env->cwd, stat_icon);
-    return (1);
+    fflush(stdout);
 }
 
 char *read_stdin(void)

@@ -58,7 +58,7 @@
     void operate_on_previous_command(char *input, history_t *history);
     void add_line_to_history(history_t *history, char *line);
     int run_user_input(char *input, envdata_t *env, int *exiting);
-    uint8_t write_prompt(envdata_t *env);
+    void write_prompt(envdata_t *env);
     bool is_valid_utf8(const char *s);
     void handle_ctrl_d(ShellContext *context);
     bool process_key_arrow_up(InputBuffer *input_data, history_t *history);
