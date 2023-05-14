@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-SOURCES = . built-in execute parse errors environment history
+SOURCES = . built-in execute parse errors environment history line_edition
 
 SRCS = 	main.c	\
 	shell.c	\
@@ -66,6 +66,16 @@ SRCS = 	main.c	\
 	history/previous_args_operations.c	\
 	history/previous_commands_operations.c	\
 	history/show_history.c	\
+	line_edition/configure_terminal.c	\
+	line_edition/line_edition_utils.c	\
+	line_edition/process_arrow_keys.c	\
+	line_edition/process_backspace_key.c	\
+	line_edition/process_ctrl_d.c	\
+	line_edition/process_delete_key.c	\
+	line_edition/process_enter_key.c	\
+	line_edition/process_home_end_keys.c	\
+	line_edition/process_key_arrow_up_down.c	\
+	line_edition/process_regular_key.c	\
 
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
@@ -126,6 +136,16 @@ OBJS = 	obj/main.o	\
 	obj/history-previous_args_operations.o	\
 	obj/history-previous_commands_operations.o	\
 	obj/history-show_history.o	\
+	obj/line_edition-configure_terminal.o	\
+	obj/line_edition-line_edition_utils.o	\
+	obj/line_edition-process_arrow_keys.o	\
+	obj/line_edition-process_backspace_key.o	\
+	obj/line_edition-process_ctrl_d.o	\
+	obj/line_edition-process_delete_key.o	\
+	obj/line_edition-process_enter_key.o	\
+	obj/line_edition-process_home_end_keys.o	\
+	obj/line_edition-process_key_arrow_up_down.o	\
+	obj/line_edition-process_regular_key.o	\
 
 OBJ_DIR = obj
 
@@ -136,7 +156,8 @@ OPTI = -O3 -Ofast \
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \
 -march=native -mtune=native -fopenmp -mavx2 \
 -lm -ffast-math -mfpmath=sse \
--flto
+-fno-omit-frame-pointer -fno-optimize-sibling-calls \
+-flto=auto
 
 # 	Optimization flags:
 
@@ -187,11 +208,12 @@ HEADER = 	-I./include/	\
 	-I./built-in/include	\
 	-I./errors/include	\
 	-I./environment/include	\
+	-I./line_edition/include	\
 
-CFLAGS += -Wall \
+CFLAGS += -Wall -Wextra -Wshadow $(OPTI)\
 	$(LIB) $(HEADER)
 
-DEBUGFLAGS += -Wall \
+DEBUGFLAGS += -Wall -Wextra -Wshadow -Wduplicated-cond -Wcast-align \
 	$(LIB) $(HEADER) -ggdb
 
 all: $(NAME)

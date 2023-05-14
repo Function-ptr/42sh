@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** history.h
+** process_enter_key.c
 ** File description:
-** history header file for 42sh
+** process enter key for command execution
 */
 /*
  _____               __      __
@@ -15,42 +15,30 @@
                                       |___/
 */
 
-#ifndef INC_42SH_HISTORY_H
-    #define INC_42SH_HISTORY_H
+#include "line_edition.h"
+#include "shell.h"
 
-    #include "types.h"
-    #include <string.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <fcntl.h>
-    #include <time.h>
-    #include <unistd.h>
-
-    #define isnum(chr) (chr - 48 >= 0 && chr - 48 <= 9)
-
-    ///////////////
-    /// History ///
-    ///////////////
-
-    int get_file_nb_lines(char *filename);
-    void init_history(envdata_t *environment);
-    void free_history(history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    char *history_get_line_from_offset(history_t *history, uint32_t offset);
-    void show_history(history_t *history);
-    void operate_on_previous_command(char *input, history_t *history);
-    void operate_on_single_arg(char **input, history_t *history);
-    void operate_on_arg_range(char **input, history_t *history);
-
-    /////////////
-    /// Utils ///
-    /////////////
-
-    char *get_environment_variable(envvar_t **env, char *var);
-    size_t get_long_len(long val);
-
-
-#endif //INC_42SH_HISTORY_H
+void process_enter_key(ShellContext *context, InputBuffer *input_data)
+{
+    int8_t len = utf8_char_len(input_data->read[0]);
+    if (len == 1 && input_data->read_len > 1)
+        len = input_data->read_len;
+    memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
+    input_data->input_len += len;
+    input_data->cursor_pos += len;
+    run_precmd(context->env);
+    operate_on_previous_command(input_data->input, context->env->history);
+    if (input_data->input[0] == '!') return;
+    add_line_to_history(context->env->history, input_data->input);
+    if (input_data->is_tty) printf("\n");
+    context->status = run_user_input(input_data->input, context->env,
+                        &context->exiting);
+    if (!input_data->is_tty) context->exiting = true;
+    if (context->exiting) return;
+    memset(input_data->input, 0, strlen(input_data->input));
+    input_data->input_len = input_data->cursor_pos = 0;
+    write_prompt(context->env);
+}
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄

@@ -23,7 +23,7 @@ size_t get_long_len(long val)
     return len;
 }
 
-size_t get_file_nb_lines(char *filename)
+int get_file_nb_lines(char *filename)
 {
     size_t len = strlen(filename);
     if (access(filename, F_OK))

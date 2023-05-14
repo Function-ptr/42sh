@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** history.h
+** process_arrow_keys.c
 ** File description:
-** history header file for 42sh
+** process arrow keys
 */
 /*
  _____               __      __
@@ -15,42 +15,31 @@
                                       |___/
 */
 
-#ifndef INC_42SH_HISTORY_H
-    #define INC_42SH_HISTORY_H
+#include "line_edition.h"
+#include "history.h"
 
-    #include "types.h"
-    #include <string.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <fcntl.h>
-    #include <time.h>
-    #include <unistd.h>
-
-    #define isnum(chr) (chr - 48 >= 0 && chr - 48 <= 9)
-
-    ///////////////
-    /// History ///
-    ///////////////
-
-    int get_file_nb_lines(char *filename);
-    void init_history(envdata_t *environment);
-    void free_history(history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    char *history_get_line_from_offset(history_t *history, uint32_t offset);
-    void show_history(history_t *history);
-    void operate_on_previous_command(char *input, history_t *history);
-    void operate_on_single_arg(char **input, history_t *history);
-    void operate_on_arg_range(char **input, history_t *history);
-
-    /////////////
-    /// Utils ///
-    /////////////
-
-    char *get_environment_variable(envvar_t **env, char *var);
-    size_t get_long_len(long val);
-
-
-#endif //INC_42SH_HISTORY_H
+bool process_arrow_keys(InputBuffer *input_data, ShellContext *context)
+{
+    if (input_data->read[2] == 'C') {
+        if (input_data->cursor_pos >= input_data->input_len) return true;
+        input_data->cursor_pos += utf8_char_len
+            (input_data->input[input_data->cursor_pos + 1]);
+        printf("\x1b[C"); return true;
+    }
+    if (input_data->read[2] == 'D') {
+        if (input_data->cursor_pos <= 0) return true;
+        uint8_t prev_len = previous_utf8_char_length(input_data->input,
+            input_data->cursor_pos);
+        if (prev_len > input_data->cursor_pos) return true;
+        input_data->cursor_pos -= prev_len == 1 ? 1 : prev_len;
+        printf("\x1b[D"); return true;
+    }
+    if (input_data->read[2] == 'A')
+        return process_key_arrow_up(input_data, context->env->history);
+    if (input_data->read[2] == 'B')
+        return process_key_arrow_down(input_data);
+    return false;
+}
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄

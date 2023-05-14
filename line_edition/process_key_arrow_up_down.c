@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** history.h
+** process_key_arrow_up.c
 ** File description:
-** history header file for 42sh
+** process arrow keys up for history in line edition
 */
 /*
  _____               __      __
@@ -15,43 +15,84 @@
                                       |___/
 */
 
-#ifndef INC_42SH_HISTORY_H
-    #define INC_42SH_HISTORY_H
+#include "line_edition.h"
+#include "history.h"
 
-    #include "types.h"
-    #include <string.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <fcntl.h>
-    #include <time.h>
-    #include <unistd.h>
+static char* load_check_history(InputBuffer *input_data, history_t *history)
+{
+    if (input_data->history_offset <= 1)
+        input_data->input_dup = input_data->input_len == 0 ? calloc(1, 1) :
+            strdup(input_data->input);
 
-    #define isnum(chr) (chr - 48 >= 0 && chr - 48 <= 9)
+    char *history_line = history_get_line_from_offset(history,
+        input_data->history_offset);
 
-    ///////////////
-    /// History ///
-    ///////////////
+    history_line[strlen(history_line) - 1] = 0;
 
-    int get_file_nb_lines(char *filename);
-    void init_history(envdata_t *environment);
-    void free_history(history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    char *history_get_line_from_offset(history_t *history, uint32_t offset);
-    void show_history(history_t *history);
-    void operate_on_previous_command(char *input, history_t *history);
-    void operate_on_single_arg(char **input, history_t *history);
-    void operate_on_arg_range(char **input, history_t *history);
+    if ((int)fastlog2((float)strlen(history_line)) >=
+    (int)(fastlog2(input_data->input_len) + 0.5))
+        realloc_input(input_data);
 
-    /////////////
-    /// Utils ///
-    /////////////
+    return history_line;
+}
 
-    char *get_environment_variable(envvar_t **env, char *var);
-    size_t get_long_len(long val);
+static void put_cursor_to_end_of_line(InputBuffer *input_data)
+{
+    while (input_data->cursor_pos < input_data->input_len) {
+        int8_t c_len = utf8_char_len(input_data->input[input_data->cursor_pos]);
 
+        if (c_len <= 0)
+            c_len = previous_utf8_char_length(input_data->input,
+                input_data->cursor_pos);
 
-#endif //INC_42SH_HISTORY_H
+        input_data->cursor_pos += c_len;
 
+        printf("\x1b[C");
+    }
+}
+
+bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
+{
+    int history_len = history->len_file +
+        history->len_session_history;
+    if (history_len <= 0)
+        return true;
+    if (input_data->history_offset > history_len)
+        return true;
+
+    char* history_line = load_check_history(input_data, history);
+    put_cursor_to_end_of_line(input_data);
+    if (input_data->cursor_pos > 0)
+        printf("\x1b[%dD", input_data->cursor_pos);
+
+    input_data->input = strcpy(input_data->input, history_line);
+    input_data->input_len = input_data->cursor_pos = strlen(history_line);
+    printf("\x1b[K%s", input_data->input);
+
+    input_data->history_offset++;
+    free(history_line);
+    return true;
+}
+
+bool process_key_arrow_down(InputBuffer *input_data)
+{
+    if (input_data->history_offset <= 1)
+        return true;
+    put_cursor_to_end_of_line(input_data);
+
+    if (input_data->cursor_pos > 0)
+        printf("\x1b[%dD", input_data->cursor_pos);
+
+    input_data->input = strcpy(input_data->input, input_data->input_dup);
+    input_data->input_len = input_data->cursor_pos =
+        strlen(input_data->input_dup);
+    free(input_data->input_dup);
+    printf("\x1b[K%s", input_data->input);
+
+    input_data->history_offset = 1;
+
+    return true;
+}
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄
 ─█────█─█──█────█────█────█─█──█

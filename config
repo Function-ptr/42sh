@@ -1,9 +1,9 @@
 CC;gcc
 PROJECT_DIR;.
-SOURCES_DIR;. built-in execute parse errors environment history
-HEADERS_DIR;include/ parse/include history/include execute/include built-in/include errors/include environment/include
-CFLAGS;-Wall
-DEBUGFLAGS;-Wall
+SOURCES_DIR;. built-in execute parse errors environment history line_edition
+HEADERS_DIR;include/ parse/include history/include execute/include built-in/include errors/include environment/include line_edition/include
+CFLAGS;-Wall -Wextra -Wshadow $(OPTI)
+DEBUGFLAGS;-Wall -Wextra -Wshadow -Wduplicated-cond -Wcast-align
 LIBS_DIR;lib/all
 LIB_POS;.
 EXEC;42sh

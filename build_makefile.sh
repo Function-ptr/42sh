@@ -26,7 +26,8 @@ opti="-O3 -Ofast \\
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \\
 -march=native -mtune=native -fopenmp -mavx2 \\
 -lm -ffast-math -mfpmath=sse \\
--flto"
+-fno-omit-frame-pointer -fno-optimize-sibling-calls \\
+-flto=auto"
 
 function header()
 {
@@ -134,7 +135,7 @@ done
 {
 printf '\nCFLAGS += %s' "$(awk -F ';' '$1 == "CFLAGS" {print $2}' $fconfig)";
 # shellcheck disable=SC2016
-echo -e ' \\\n\t$(LIB) $(HEADER)\n';
+echo -e '\\\n\t$(LIB) $(HEADER)\n';
 echo -e "DEBUGFLAGS += $(awk -F ';' '$1 == "DEBUGFLAGS" {print $2}' $fconfig)" | tr "\n" " ";
 # shellcheck disable=SC2016
 echo -e '\\\n\t$(LIB) $(HEADER) -ggdb\n';

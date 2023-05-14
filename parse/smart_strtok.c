@@ -29,15 +29,15 @@ bool is_command_delimiter(const char *string, int i)
     return false;
 }
 
-char *smart_strtok(char *string, bool (*is_delimiter)(const char *, int))
+char *smart_strtok(char *string, bool (*is_delim)(const char *, int))
 {
     if (!string)
         return NULL;
     int start = 0;
-    while (is_delimiter(string, start))
+    while (is_delim(string, start))
         start += 1;
     for (int i = start; string[i]; i++) {
-        if (is_delimiter(string, i)) {
+        if (is_delim(string, i)) {
             string[i] = '\0';
             return (string + start);
         }
