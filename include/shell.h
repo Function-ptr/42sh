@@ -33,7 +33,7 @@
     envdata_t *initialize_fallback_environment(void);
     void init_history(envdata_t *environment);
     void clear_environment(envdata_t *envdata);
-    void sighandler(int sig);
+    void sighandler(__attribute__((unused)) int sig);
     void run_precmd(envdata_t *env);
 
 extern pid_t cpid1;

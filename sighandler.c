@@ -16,10 +16,8 @@
 */
 #include "shell.h"
 
-void sighandler(int sig)
+void sighandler(__attribute__((unused)) int sig)
 {
-    if (0)
-        printf("%i", sig);
     if (cpid1 != -1)
         kill(cpid1, SIGINT);
     if (cpid2 != -1)
