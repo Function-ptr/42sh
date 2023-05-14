@@ -87,6 +87,7 @@ bool process_key_arrow_down(InputBuffer *input_data)
         printf("\x1b[%dD", input_data->cursor_pos);
     if (!(input_data->input_dup))
         input_data->input_dup = calloc(1, 1);
+    memset(input_data->input, 0, input_data->input_len);
     input_data->input = strcpy(input_data->input, input_data->input_dup);
     input_data->input_len = input_data->cursor_pos =
         strlen(input_data->input_dup);
