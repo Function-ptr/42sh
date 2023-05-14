@@ -156,7 +156,8 @@ OPTI = -O3 -Ofast \
 -ftree-loop-distribution -funroll-all-loops -funswitch-loops \
 -march=native -mtune=native -fopenmp -mavx2 \
 -lm -ffast-math -mfpmath=sse \
--flto
+-fno-omit-frame-pointer -fno-optimize-sibling-calls \
+-flto=auto
 
 # 	Optimization flags:
 
@@ -209,10 +210,10 @@ HEADER = 	-I./include/	\
 	-I./environment/include	\
 	-I./line_edition/include	\
 
-CFLAGS += -Wall -Wextra  -fsanitize=undefined,address \
+CFLAGS += -Wall -Wextra -Wshadow -fsanitize=undefined,address,leak $(OPTI)\
 	$(LIB) $(HEADER)
 
-DEBUGFLAGS += -Wall -Wextra \
+DEBUGFLAGS += -Wall -Wextra -Wshadow -Wduplicated-cond -Wcast-align \
 	$(LIB) $(HEADER) -ggdb
 
 all: $(NAME)
