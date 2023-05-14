@@ -86,14 +86,12 @@ void operate_on_previous_command(char *input, history_t *history)
     if (history == NULL) {
         fprintf(stderr, "history: Unable to load previous history\n");
         return;
-    }
-    if ((input)[1] != ':') {
+    } if ((input)[1] != ':') {
         if ((input)[1] != '!') operate_on_line_offset(input, history);
         else {
             char *r = history_get_line_from_offset(history, 1);
             memset(input, 0, strlen(input));
-            strcpy(input, r);
-            free(r);
+            strcpy(input, r); free(r);
         } if ((input)[0] != '!') printf("%s", input);
         else
             fprintf(stderr, "%s: Event not found.\n", input);
