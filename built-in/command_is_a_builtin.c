@@ -22,7 +22,7 @@ bool is_a_builtin(char *binary)
     const char *builtins[] = {
         "cd", "setenv", "unsetenv", "env", "exit", "echo", "history", "set",
         "unset", "alias", "unalias", "moai", "which", "where", "prompt_on",
-        "prompt_off"
+        "prompt_off", "repeat"
     };
 
     size_t num_builtins = sizeof(builtins) / sizeof(builtins[0]);

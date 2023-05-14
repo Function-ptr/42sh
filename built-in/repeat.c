@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** chose_builtin.c
+** repeat.c
 ** File description:
-** chose builitin to run
+** repeat command
 */
 /*
  __  __        _                            ___            ___
@@ -14,77 +14,33 @@
                               __/ |               ______
                              |___/               |______|
 */
-
 #include "built_in.h"
-#include "parsing.h"
+#include "execute.h"
 
-void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
-{
-    if (strcmp(binname, "exit") == 0) {
-        *status = exit_with_status(cmd); *found = true;
-    } if (strcmp(binname, "echo") == 0) {
-        *status = echo(cmd); *found = true;
-    } if (!*found)
-        fprintf(stderr, "%s: Command not found.\n", binname);
-    if (cmd->out_fd != STDOUT_FILENO)
-        close(cmd->out_fd);
-    if (cmd->in_fd != STDIN_FILENO)
-        close(cmd->in_fd);
-}
+int my_str_isnum(char *str);
 
-void builtins_env(command_t *command, envdata_t *env, bool *found,
-    char *binname)
+int repeat(command_t *command, envdata_t *env)
 {
-    if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unset")) {
-        unset_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unalias")) {
-        unalias(command, env->aliases); *found = true;
-    } if (!strcmp(binname, "alias")) {
-        alias(command, env->aliases); *found = true;
-    } if (!strcmp(binname, "moai")) {
-        moai(command); *found = true;
-    } if (strcmp(binname, "history") == 0) {
-        show_history(env->history); *found = true;
-    } if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, command, env); *found = true;
-    } if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, command); *found = true;
+    if (!is_argv_long_enough(command->command, 3)) {
+        fprintf(stderr, "repeat: Too few arguments.\n");
+        return 1;
     }
-}
-
-void builtins_env_bis(envdata_t *env, bool *found,
-    char *binname)
-{
-    if (!strcmp(binname, "prompt_on")) env->starship_prompt = *found = true;
-    if (!strcmp(binname, "prompt_off")) {
-        env->starship_prompt = false; *found = true;
+    int len = (int)strlen(command->command);
+    command->command = reallocarray(command->command, len + 2, sizeof(char));
+    memmove(command->command + len, "\n\0", 2);
+    char *startnum = strchr(command->command, ' ');
+    char *endnum = strchr(startnum + 1, ' ');
+    char *nbdup = strndup(startnum + 1, endnum - startnum - 1);
+    int nb_iters = (int)strtol(nbdup, NULL, 10), status = 0, e = 0;
+    if ((!nb_iters && errno) || !my_str_isnum(nbdup)) {
+        free(nbdup);
+        fprintf(stderr, "repeat: Badly formed number.\n");
+        return 1;
     }
-}
-
-int builtin_funcs(command_t *cmd, envdata_t *env)
-{
-    char *clean_cmd = strdup_without_backslash(cmd->command);
-    free(cmd->command);
-    char *input = cmd->command = clean_cmd, *b = strdup(input);
-    char *binname = get_binary_name(b);
-    int status = 0;
-    bool found = false;
-    if (strcmp(binname, "cd") == 0) {
-        status = change_dir(env, input); found = true;
-    } if (strcmp(binname, "unsetenv") == 0) {
-        unset_env(env->env, input, env); found = true;
-    } if (!strcmp(binname, "which")) {
-        status = which(cmd, env); found = true;
-    } if (!strcmp(binname, "repeat")) {
-        status = repeat(cmd, env); found = true;
-    } if (!strcmp(binname, "where")) {
-        status = where(cmd, env); found = true;
-    } builtins_env(cmd, env, &found, binname);
-    builtins_env_bis(env, &found, binname);
-    builtin_funcs_bis(binname, cmd, &found, &status);
-    free(b); return (status);
+    free(nbdup);
+    for (int i = 0; i < nb_iters; i++)
+        status = run_user_input(endnum + 1, env, &e);
+    return status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
