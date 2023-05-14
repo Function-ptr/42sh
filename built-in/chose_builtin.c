@@ -37,9 +37,7 @@ void builtins_env(command_t *command, envdata_t *env, bool *found,
 char *binname)
 {
     if (!binname) return;
-    if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unset")) {
+    if (!strcmp(binname, "unset")) {
         unset_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unalias")) {
         unalias(command, env->aliases); *found = true;
