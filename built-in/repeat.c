@@ -24,13 +24,13 @@ int repeat(command_t *command, envdata_t *env)
     if (!is_argv_long_enough(command->command, 3)) {
         fprintf(stderr, "repeat: Too few arguments.\n");
         return 1;
-    }
-    int len = (int)strlen(command->command);
+    } int len = (int)strlen(command->command);
     command->command = reallocarray(command->command, len + 2, sizeof(char));
     memmove(command->command + len, "\n\0", 2);
     char *startnum = strchr(command->command, ' ');
     char *endnum = strchr(startnum + 1, ' ');
     char *nbdup = strndup(startnum + 1, endnum - startnum - 1);
+    if (nbdup == NULL) return 1;
     int nb_iters = (int)strtol(nbdup, NULL, 10), status = 0, e = 0;
     if ((!nb_iters && errno) || !my_str_isnum(nbdup)) {
         free(nbdup);
