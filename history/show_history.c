@@ -66,6 +66,7 @@ void show_history(history_t *history)
         O_RDONLY, S_IRUSR | S_IWUSR);
     for (uint32_t i = 0; i < history->len_session_history; i++) {
         char *strdate = ctime(&(history->session_history[i]).time);
+        if (strdate == NULL) strdate = "\n";
         char *ret = strchr(strdate, '\n');
         if (ret == NULL) continue;
         *ret = 0;

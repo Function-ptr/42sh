@@ -36,6 +36,7 @@ char *get_variable_name_in_command(char *dollar)
 char *replace_variable_with_value(char *dollar, char *value, char *varname,
     char *command)
 {
+    if (!command || !value || !varname || !dollar) return NULL;
     size_t valuelen = strlen(value), namelen = strlen(varname);
     size_t lenend = strlen(dollar), offset = valuelen - namelen;
     size_t len = strlen(command), pos = dollar - command;
@@ -57,8 +58,10 @@ char *replace_variable_with_value(char *dollar, char *value, char *varname,
 
 char *get_special_variables(envdata_t *env, char *varname)
 {
+    if (!varname) return NULL;
     if (!strcmp(varname, "?")) {
         char *str = calloc(10, sizeof(char));
+        if (!str) return NULL;
         sprintf(str, "%d", env->status);
         return str;
     } if (!strcmp(varname, "cwd"))
@@ -72,6 +75,7 @@ void replace_variables(char **cmd, envdata_t *env)
     while (dollar) {
         size_t pos = dollar - command;
         char *varname = get_variable_name_in_command(dollar);
+        if (!varname) break;
         char *var = get_environment_variable(env->env, varname);
         if (var == NULL) var = get_var_value(env->variables, varname);
         else
@@ -81,9 +85,7 @@ void replace_variables(char **cmd, envdata_t *env)
             var = strdup(var);
         if (var != NULL) {
             *cmd = replace_variable_with_value(dollar, var, varname, command);
-            command = *cmd;
-            dollar = command + pos;
-            free(var);
+            command = *cmd; dollar = command + pos; free(var);
         }
         free(varname);
         dollar = strchr(dollar + 1, '$');
