@@ -34,6 +34,7 @@
     void init_history(envdata_t *environment);
     void clear_environment(envdata_t *envdata);
     void sighandler(int sig);
+    void run_precmd(envdata_t *env);
 
 extern pid_t cpid1;
 extern pid_t cpid2;

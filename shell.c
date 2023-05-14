@@ -7,15 +7,8 @@
 
 #include "shell.h"
 #include "history.h"
+#include "prompt.h"
 #include "line_edition.h"
-
-uint8_t write_prompt(envdata_t *env)
-{
-    printf(env->is_fallback ? "> " : "<%s@%s %s >$ ", env->user,
-        env->hostname, env->cwd);
-    fflush(stdout);
-    return 1;
-}
 
 void process_key(ShellContext *context, InputBuffer *input_data)
 {
@@ -36,6 +29,27 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         process_enter_key(context, input_data);
     else
         process_regular_key(input_data);
+}
+
+int write_prompt(envdata_t *env)
+{
+    char *user = get_environment_variable(env->env, "USER");
+    char *host = get_environment_variable(env->env, "HOSTNAME");
+    if (env->is_fallback) {
+        printf("\033[0m\033[93;1;5m> \033[0m"); return 1;
+    }
+    char *stat_icon = WIFSIGNALED(env->status) && env->status != 1 ? "⚡" :
+        (env->status ? "×" : "λ");
+    if (user && host)
+        printf(env->starship_prompt ? STDPROMPT : NNSTDPROMPT, user + 5,
+            host + 9, env->cwd, stat_icon);
+    if (user && !host)
+        printf(env->starship_prompt ? ONEVALPROMPT : NNOVPROMPT,
+            user + 5, env->cwd, stat_icon);
+    if (!user && host)
+        printf(env->starship_prompt ? ONEVALPROMPT : NNOVPROMPT, host + 9,
+            env->cwd, stat_icon);
+    return (1);
 }
 
 char *read_stdin(void)

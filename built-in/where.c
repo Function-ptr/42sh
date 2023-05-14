@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** run_user_input.c
+** where.c
 ** File description:
-** parse and execute the user input
+** where command
 */
 /*
  __  __        _                            ___            ___
@@ -14,73 +14,61 @@
                               __/ |               ______
                              |___/               |______|
 */
+#include "built_in.h"
+#include "my.h"
 #include "execute.h"
-#include "parsing.h"
-#include "environment.h"
 
-int run_command(command_t *command, int *exiting, envdata_t *env)
+int get_where_path(char *cmd, int outfd, pathdir_t **pathdirs)
 {
-    int status = 0;
-    if (!command->command || command->command[0] == 0) {
-        free_command(command);
-        return (status);
+    pathdir_t *tmp = *pathdirs;
+    uint32_t cmdlen = (uint32_t)strlen(cmd), found = 1;
+    for (; tmp; tmp = tmp->next) {
+        uint32_t dirlen = (uint32_t)strlen(tmp->dir);
+        char *path = calloc(dirlen + cmdlen + 2, sizeof(char));
+        strcpy(path, tmp->dir);
+        *(path + dirlen) = '/';
+        strcpy(path + dirlen + 1, cmd);
+        if (!access(path, F_OK))
+            dprintf(outfd, "%s\n", path);
+        free(path);
+        found = 0;
     }
-    if (load_redirections_for_command(command) == -1)
-        return (-1);
-    status = detect_command_type_and_run(command, exiting, env);
-    free_command(command);
-    return (status);
+    return found;
 }
 
-int execution_loop(command_t **commands, int nb_commands, int *exiting,
-    envdata_t *env)
+int get_where_pos(char *cmd, envdata_t *env, int outfd)
 {
-    int status = 0, i = 0, *data[3] = {&i, &nb_commands, exiting};
-    conditional_separation prev_cond = None;
-    if (replace_all_aliases(commands, env->aliases)) return 1;
-    for (; i < nb_commands && status != -1; i++) {
-        replace_variables(&(commands[i]->command), env);
-        if (i > 0 && ((prev_cond == AND && status) ||
-            (prev_cond == OR && !status))) {
-            env->status = status = 1;
-            prev_cond = commands[i]->condition;
-            free_command(commands[i]); continue;
-        } if (status == 136) break;
+    int status = 1;
+    for (uint32_t i = 0; i < env->aliases->nb_aliases; i++)
+        if (!strcmp(env->aliases->alias[i], cmd)) {
+            dprintf(outfd, "%s is aliased to %s\n", cmd,
+                env->aliases->content[i]);
+            status = 0;
+        }
+    if (is_a_builtin(cmd)) {
+        dprintf(outfd, "%s is a shell built-in\n", cmd);
         status = 0;
-        prev_cond = commands[i]->condition;
-        if (!commands[i]->pipe_out)
-            status = run_command(commands[i], exiting, env);
-        else
-            status = loop_over_pipes(commands, env, data);
-        env->status = status;
-    } return status;
+    }
+    status = get_where_path(cmd, outfd, env->path_dirs) ? status : 0;
+    return status;
 }
 
-void run_precmd(envdata_t *env)
+int where(command_t *command, envdata_t *env)
 {
-    char *cmd = get_var_value(env->variables, "precmd");
-    if (!cmd) return;
-    size_t size = strlen(cmd);
-    char *allocd_cmd = calloc(size + 2, sizeof(char));
-    strcpy(allocd_cmd, cmd);
-    allocd_cmd[size] = '\n';
-    int exiting = 0;
-    run_user_input(allocd_cmd, env, &exiting);
-    free(allocd_cmd);
-}
-
-int run_user_input(char *input, envdata_t *env, int *exiting)
-{
-    char *res = strdup(input);
-    if (process_quotes(&res)) return -1;
-    command_t **commands = cut_input_to_commands(res);
-    int nb_commands = 0;
-    if (commands == NULL) return 0;
-    for (; commands[nb_commands] != NULL; nb_commands++);
-    int status = execution_loop(commands, nb_commands, exiting, env);
-    free(commands);
-    free(res);
-    return (status);
+    char **argv = my_str_to_word_array(command->command, " \t");
+    int32_t status = 0, len = my_char_arraylen(argv);
+    free(argv[0]);
+    for (int32_t i = 1; i < len; i++) {
+        int32_t cmdstatus = get_where_pos(argv[i], env, command->out_fd);
+        status = (cmdstatus) ? 1 : status;
+        free(argv[i]);
+    }
+    free(argv);
+    if (len == 1) {
+        fprintf(stderr, "which: Too few arguments.\n");
+        return 1;
+    }
+    return status ? 1 : 0;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

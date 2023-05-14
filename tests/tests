@@ -210,3 +210,36 @@ TESTS=
   echo 'set TEST21=LOL; set | grep TEST; set TEST21=PTDR; set | grep TEST'
   echo 'set TEST31=LOL; set TEST32=MDR; set TEST31=PTDR; set | grep TEST; unset TEST32'
 [21-END]
+
+[22]
+NAME="Aliases"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'alias ll ls -l'
+  echo 'alias la ls -a; ll / | grep usr; unalias ll'
+  echo 'la /usr; unalias la; alias; alias dir ls -l; alias cls clear'
+  echo 'unalias cls; alias nope; alias'
+[22-END]
+
+[23]
+NAME="Which"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'alias ls ls -H; which ls'
+  echo 'which python'
+  echo 'which cd'
+  echo 'alias a b; alias b c; alias c a; which a'
+[23-END]
+
+[24]
+NAME="Where"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'alias ls ls -H; where ls'
+  echo 'where python'
+  echo 'where cd'
+  echo 'alias a b; alias b c; alias c a; where a'
+[24-END]

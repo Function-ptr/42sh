@@ -42,7 +42,7 @@ void show_file_history(history_t *history)
         char *line = strdup(buf + (strlen(buf) - get_line_len(buf)));
         char *strdate = ctime(&time), *ret = strchr(strdate, '\n');
         *ret = 0;
-        printf("%i\t%s\t%s", i + 1, strdate, line);
+        printf("%i\t%s\t%s", i + 1, strdate, line + 1);
         free(buf);
         free(line);
     }

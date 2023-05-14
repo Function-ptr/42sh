@@ -21,7 +21,7 @@ char *history_file_get_line_from_offset(history_t *history, int offset)
     FILE *f = fdopen(history->history_fd, "r");
     if (!f)
         return NULL;
-    for (int i = 0; i < history->len_file - offset - 1; i++) {
+    for (uint32_t i = 0; i < history->len_file - offset - 1; i++) {
         char *l = NULL;
         size_t s = 0;
         getline(&l, &s, f);

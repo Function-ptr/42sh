@@ -58,17 +58,18 @@ int get_offset_from_str(char *input, history_t *history)
 
 void operate_on_line_offset(char **input, history_t *history)
 {
-    int offset = -1, s = history->len_session_history + history->len_file;
+    int32_t offset = -1;
+    int32_t s = (int32_t)(history->len_session_history + history->len_file);
     if (isnum((*input)[1])) {
-        int val = (int)strtol(*input + 1, NULL, 10);
-        if (val > history->len_session_history + history->len_file) {
+        int32_t val = (int32_t)strtol(*input + 1, NULL, 10);
+        if (val > s) {
             fprintf(stderr, "%i: Event not found\n", val);
             return;
         }
         offset = s - val;
     } if ((*input)[1] == '-' && isnum((*input)[2])) {
-        offset = (int)strtol(*input + 2, NULL, 10);
-        if (offset > history->len_session_history + history->len_file) {
+        offset = (int32_t)strtol(*input + 2, NULL, 10);
+        if (offset > s) {
             fprintf(stderr, "%i: Event not found\n", offset);
             return;
         }

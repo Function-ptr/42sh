@@ -73,6 +73,18 @@
     variables_t *init_variables(void);
     void clean_variables(variables_t *variables);
 
+    ///////////////
+    /// Aliases ///
+    ///////////////
+
+    void add_alias(aliases_t *aliases, char *name, char *value,
+        command_t *command);
+    void remove_alias(aliases_t *aliases, char *alias);
+    char *get_aliases_content(aliases_t *aliases, char *alias);
+    void show_aliases(aliases_t *aliases, command_t *command);
+    aliases_t *init_aliases(void);
+    void clean_aliases(aliases_t *aliases);
+
 #endif //INC_42SH_ENVIRONMENT_H
 
 /*

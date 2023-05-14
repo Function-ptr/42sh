@@ -10,6 +10,7 @@ SOURCES = . built-in execute parse errors environment history line_edition
 SRCS = 	main.c	\
 	shell.c	\
 	sighandler.c	\
+	built-in/alias_unalias.c	\
 	built-in/cd.c	\
 	built-in/chose_builtin.c	\
 	built-in/command_is_a_builtin.c	\
@@ -19,6 +20,8 @@ SRCS = 	main.c	\
 	built-in/setenv.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
+	built-in/where.c	\
+	built-in/which.c	\
 	execute/check_program_exit_status.c	\
 	execute/detect_command_type.c	\
 	execute/execute_binary_file.c	\
@@ -38,6 +41,7 @@ SRCS = 	main.c	\
 	parse/parse_single_command.c	\
 	parse/quotes.c	\
 	parse/remove_spaces_in_command.c	\
+	parse/replace_aliases.c	\
 	parse/replace_variables.c	\
 	parse/separate_args.c	\
 	parse/smart_strtok.c	\
@@ -45,6 +49,8 @@ SRCS = 	main.c	\
 	errors/parsing_error.c	\
 	errors/redirection_errors.c	\
 	errors/setenv_errors.c	\
+	environment/aliases.c	\
+	environment/aliases_management.c	\
 	environment/environment.c	\
 	environment/environment_variables.c	\
 	environment/getter.c	\
@@ -74,6 +80,7 @@ SRCS = 	main.c	\
 OBJS = 	obj/main.o	\
 	obj/shell.o	\
 	obj/sighandler.o	\
+	obj/built-in-alias_unalias.o	\
 	obj/built-in-cd.o	\
 	obj/built-in-chose_builtin.o	\
 	obj/built-in-command_is_a_builtin.o	\
@@ -83,6 +90,8 @@ OBJS = 	obj/main.o	\
 	obj/built-in-setenv.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
+	obj/built-in-where.o	\
+	obj/built-in-which.o	\
 	obj/execute-check_program_exit_status.o	\
 	obj/execute-detect_command_type.o	\
 	obj/execute-execute_binary_file.o	\
@@ -102,6 +111,7 @@ OBJS = 	obj/main.o	\
 	obj/parse-parse_single_command.o	\
 	obj/parse-quotes.o	\
 	obj/parse-remove_spaces_in_command.o	\
+	obj/parse-replace_aliases.o	\
 	obj/parse-replace_variables.o	\
 	obj/parse-separate_args.o	\
 	obj/parse-smart_strtok.o	\
@@ -109,6 +119,8 @@ OBJS = 	obj/main.o	\
 	obj/errors-parsing_error.o	\
 	obj/errors-redirection_errors.o	\
 	obj/errors-setenv_errors.o	\
+	obj/environment-aliases.o	\
+	obj/environment-aliases_management.o	\
 	obj/environment-environment.o	\
 	obj/environment-environment_variables.o	\
 	obj/environment-getter.o	\

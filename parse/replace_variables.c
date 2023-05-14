@@ -22,6 +22,10 @@
 char *get_variable_name_in_command(char *dollar)
 {
     char *next = strchr(dollar, ' ');
+    if (dollar[1] == '{') {
+        next = strchr(dollar, '}');
+        dollar++;
+    }
     if (!next)
         return strdup(dollar + 1);
     char *name = strndup(dollar + 1, next - dollar);
@@ -35,14 +39,18 @@ char *replace_variable_with_value(char *dollar, char *value, char *varname,
     size_t valuelen = strlen(value), namelen = strlen(varname);
     size_t lenend = strlen(dollar), offset = valuelen - namelen;
     size_t len = strlen(command), pos = dollar - command;
+    bool has_brackets = dollar[1] == '{';
     char *backup = strdup(command);
     char *new = reallocarray(command, len + offset + 1, sizeof(char));
-    if (!new)
+    if (!new) {
+        free(backup);
         return NULL;
+    }
     new[len + offset] = 0;
     strncpy(new + pos, value, valuelen);
-    memmove(new + pos + valuelen, backup + pos + namelen + 1, lenend -
-    namelen);
+    memmove(new + pos + valuelen,
+        backup + pos + namelen + 1 + 2 * has_brackets,
+        lenend - namelen - 2 * has_brackets);
     free(backup);
     return new;
 }

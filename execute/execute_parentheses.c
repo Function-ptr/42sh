@@ -16,6 +16,8 @@
 */
 #include "execute.h"
 
+void clear_environment(envdata_t *envdata);
+
 void run_forked_parentheses(command_t *command, envdata_t *env)
 {
     if (command->out_fd != STDOUT_FILENO)
@@ -30,6 +32,7 @@ void run_forked_parentheses(command_t *command, envdata_t *env)
     int exiting = 0;
     int status = run_user_input(new, env, &exiting);
     free(new);
+    clear_environment(env);
     exit(status);
 }
 
