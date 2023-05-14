@@ -43,11 +43,11 @@ int get_offset_from_str(char *input, history_t *history)
             str = strndup(input + 1, strrchr(input, '?') - strchr(input, '?'));
         else
             str = strdup(input + 1);
+        if (str == NULL) return -1;
         if (strrchr(str, '\n')) *(strrchr(str, '\n')) = 0;
         int o = get_offset_strstr(str, history, lenh);
         free(str); return o;
-    }
-    int len = (int)strlen(input);
+    } int len = (int)strlen(input);
     for (int i = 1; i < lenh; i++) {
         char *s = history_get_line_from_offset(history, i);
         if (s == NULL) return -1;
