@@ -67,7 +67,7 @@ bool parse_and_load_redirections(command_t *command)
 int load_redirections_for_command(command_t *command)
 {
     if (parse_and_load_redirections(command)) {
-        free_commands(&command);
+        free_command(command);
         return (-1);
     }
 
