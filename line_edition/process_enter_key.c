@@ -21,7 +21,9 @@
 void process_enter_key(ShellContext *context, InputBuffer *input_data)
 {
     int8_t len = utf8_char_len(input_data->read[0]);
-    if (len == 1 && input_data->read_len > 1)
+    if (input_data->input_dup) { free(input_data->input_dup);
+        input_data->input_dup = NULL;
+    } if (len == 1 && input_data->read_len > 1)
         len = input_data->read_len;
     memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
     input_data->input_len += len;

@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** set_unset_var.c
+** repeat.c
 ** File description:
-** set and unset variables
+** repeat command
 */
 /*
  __  __        _                            ___            ___
@@ -14,76 +14,33 @@
                               __/ |               ______
                              |___/               |______|
 */
-#include "environment.h"
 #include "built_in.h"
-#include "errors.h"
-#include "parsing.h"
+#include "execute.h"
 
-int get_value_len(char *eqpos, int len)
+int my_str_isnum(char *str);
+
+int repeat(command_t *command, envdata_t *env)
 {
-    bool in_sim_quote = false, in_db_quotes = false;
-    char *pos = eqpos;
-    if (*pos == ' ') pos++;
-    int count = 0;
-    for (int i = 0; i < len; i++) {
-        if (pos[i] == ' ' && i > 0 && pos[i - 1] != '\\' && !in_db_quotes &&
-        !in_sim_quote)
-            break;
-        if (pos[i] == 39) in_sim_quote = !in_sim_quote;
-        if (pos[i] == '"') in_db_quotes = !in_db_quotes;
-        if (pos[i] != '\\') count++;
+    if (!is_argv_long_enough(command->command, 3)) {
+        fprintf(stderr, "repeat: Too few arguments.\n");
+        return 1;
     }
-    return count;
-}
-
-char *get_variable_value(char *eqpos)
-{
-    int len = strlen(eqpos);
-    int vallen = get_value_len(eqpos, len);
-    char *value = calloc(vallen + 1, sizeof(char));
-    if (!value) return NULL;
-    char *valstart = eqpos;
-    if (*valstart == ' ') valstart++;
-    if (*valstart == 39 || *valstart == '"') {
-        valstart++;
-        vallen -= 2;
+    int len = (int)strlen(command->command);
+    command->command = reallocarray(command->command, len + 2, sizeof(char));
+    memmove(command->command + len, "\n\0", 2);
+    char *startnum = strchr(command->command, ' ');
+    char *endnum = strchr(startnum + 1, ' ');
+    char *nbdup = strndup(startnum + 1, endnum - startnum - 1);
+    int nb_iters = (int)strtol(nbdup, NULL, 10), status = 0, e = 0;
+    if ((!nb_iters && errno) || !my_str_isnum(nbdup)) {
+        free(nbdup);
+        fprintf(stderr, "repeat: Badly formed number.\n");
+        return 1;
     }
-    char *nobackslash = strdup_without_backslash(valstart);
-    bool skipchar = valstart[vallen - 1] == '\'' || valstart[vallen - 1] == '"';
-    strncpy(value, nobackslash, vallen - skipchar);
-    free(nobackslash);
-    return (value);
-}
-
-void set_variable(command_t *command, variables_t *variables)
-{
-    if (!is_argv_long_enough(command->command, 2)) {
-        add_var(variables, "", "", command);
-        return;
-    } if (name_does_not_start_with_letter(command->command[4], "set")) return;
-    char *datapos = strdup(command->command + 4);
-    if (!datapos) return;
-    char *eqpos = strchr(datapos, '=');
-    if (!eqpos) {
-        add_var(variables, datapos, "", command);
-        return;
-    } char *name = strndup(datapos, eqpos - datapos + (*(eqpos - 1) != ' '));
-    if (!name) {
-        free(datapos); return;
-    } name[eqpos - datapos] = 0;
-    for (int i = eqpos - datapos - 1; i >= 0 && name[i] == ' '; i++)
-        name[i] = 0;
-    char *value = get_variable_value(eqpos + 1);
-    add_var(variables, name, value, command);
-    free(name); free(value); free(datapos);
-}
-
-void unset_variable(command_t *command, variables_t *variables)
-{
-    if (!is_argv_long_enough(command->command, 2))
-        return;
-    char *datapos = command->command + 6;
-    remove_var(variables, datapos);
+    free(nbdup);
+    for (int i = 0; i < nb_iters; i++)
+        status = run_user_input(endnum + 1, env, &e);
+    return status;
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

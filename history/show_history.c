@@ -46,7 +46,7 @@ void show_file_history(history_t *history)
         if (ret == NULL) {
             free(buf); free(line); continue;
         } *ret = 0;
-        printf("%i\t%s\t%s", i + 1, strdate, line + 1);
+        printf("%u\t%s\t%s", i + 1, strdate, line + 1);
         free(buf);
         free(line);
     } fclose(f);
