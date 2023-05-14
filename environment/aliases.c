@@ -41,12 +41,13 @@ void add_alias(aliases_t *aliases, char *name, char *value, command_t *command)
             aliases->content[i] = strdup(value);
             return;
         }
+    char *new_name = strdup(name), *new_value = strdup(value);
     aliases->alias = reallocarray(aliases->alias, aliases->nb_aliases + 1,
         sizeof(char*));
     aliases->content = reallocarray(aliases->content, aliases->nb_aliases + 1,
         sizeof(char*));
-    aliases->alias[aliases->nb_aliases] = strdup(name);
-    aliases->content[aliases->nb_aliases] = strdup(value);
+    aliases->alias[aliases->nb_aliases] = new_name;
+    aliases->content[aliases->nb_aliases] = new_value;
     aliases->nb_aliases += 1;
 }
 

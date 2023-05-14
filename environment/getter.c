@@ -42,8 +42,12 @@ char *get_variable_name(char *args)
     int vlen = 0;
     for (; args[vlen] != 0 && args[vlen] != 32 && args[vlen] != 10; vlen++);
     char *varname = malloc(sizeof(char) * (vlen + 1) + 1);
-    if (varname == NULL || vlen == 0 || args == NULL)
+    if (varname == NULL)
         return (NULL);
+    if (vlen == 0 || args == NULL) {
+        free(varname);
+        return (NULL);
+    }
     strncpy(varname, args, vlen);
     varname[vlen] = 0;
     return (varname);

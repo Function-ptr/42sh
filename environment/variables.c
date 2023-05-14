@@ -29,23 +29,24 @@ void show_vars(variables_t *variables, command_t *command)
 void add_var(variables_t *vars, char *name, char *value, command_t *command)
 {
     if (!(*name) && !(*value)) {
-        show_vars(vars, command);
-        return;
+        show_vars(vars, command); return;
     } if (!my_str_isalphanum(name) && name[strlen(name) - 1] != ' ') {
-        name_not_alphanumeric("set");
-        return;
-    } for (size_t i = 0; i < vars->nb_variables; i++)
+        name_not_alphanumeric("set"); return;
+    }
+    for (size_t i = 0; i < vars->nb_variables; i++) {
         if (!strcmp(vars->names[i], name)) {
             free(vars->values[i]);
             vars->values[i] = strdup(value);
             return;
         }
+    }
+    char *new_name = strdup(name), *new_value2 = strdup(value);
     vars->names = reallocarray(vars->names, vars->nb_variables + 1,
         sizeof(char*));
     vars->values = reallocarray(vars->values, vars->nb_variables + 1,
         sizeof(char*));
-    vars->names[vars->nb_variables] = strdup(name);
-    vars->values[vars->nb_variables] = strdup(value);
+    vars->names[vars->nb_variables] = new_name;
+    vars->values[vars->nb_variables] = new_value2;
     vars->nb_variables += 1;
 }
 
