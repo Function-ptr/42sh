@@ -3,7 +3,7 @@ PROJECT_DIR;.
 SOURCES_DIR;. built-in execute parse errors environment history line_edition
 HEADERS_DIR;include/ parse/include history/include execute/include built-in/include errors/include environment/include line_edition/include
 CFLAGS;-Wall -Werror -Wextra -fsanitize=undefined,address $(OPTI)
-DEBUGFLAGS;-Wall -Werror -Wextra -fsanitize=undefined,address
+DEBUGFLAGS;-Wall -Wextra
 LIBS_DIR;lib/all
 LIB_POS;.
 EXEC;42sh
