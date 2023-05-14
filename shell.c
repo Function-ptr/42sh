@@ -64,7 +64,8 @@ char *read_stdin(void)
         total += read;
         if (total == size) {
             size *= 2;
-            buffer = realloc(buffer, size);
+            char *tmpbuf = realloc(buffer, size);
+            buffer = (tmpbuf) ? tmpbuf : buffer;
         }
     }
     buffer[total] = '\0';

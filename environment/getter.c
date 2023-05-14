@@ -39,10 +39,12 @@ char *get_environment_variable(envvar_t **env, char *var)
 
 char *get_variable_name(char *args)
 {
+    if (args == NULL)
+        return NULL;
     int vlen = 0;
     for (; args[vlen] != 0 && args[vlen] != 32 && args[vlen] != 10; vlen++);
     char *varname = malloc(sizeof(char) * (vlen + 1) + 1);
-    if (varname == NULL || vlen == 0 || args == NULL)
+    if (varname == NULL || vlen == 0)
         return (NULL);
     strncpy(varname, args, vlen);
     varname[vlen] = 0;
