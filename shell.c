@@ -23,8 +23,14 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         process_backspace_key(input_data);
         return;
     }
-    if (input_data->read[0] == 4)
+    if (input_data->read[0] == 4) {
         handle_ctrl_d(context);
+        return;
+    }
+    if (input_data->read[0] == '\t') {
+        process_tab_key(input_data, context);
+        return;
+    }
     if (strchr(input_data->read, '\n'))
         process_enter_key(context, input_data);
     else
