@@ -27,6 +27,9 @@ static char* load_check_history(InputBuffer *input_data, history_t *history)
     char *history_line = history_get_line_from_offset(history,
         input_data->history_offset);
 
+    if (history_line == NULL)
+        return NULL;
+
     history_line[strlen(history_line) - 1] = 0;
 
     if ((int)fastlog2((float)strlen(history_line)) >=
@@ -61,6 +64,8 @@ bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
         return true;
 
     char* history_line = load_check_history(input_data, history);
+    if (history_line == NULL)
+        return true;
     put_cursor_to_end_of_line(input_data);
     if (input_data->cursor_pos > 0)
         printf("\x1b[%dD", input_data->cursor_pos);
@@ -68,7 +73,6 @@ bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
     input_data->input = strcpy(input_data->input, history_line);
     input_data->input_len = input_data->cursor_pos = strlen(history_line);
     printf("\x1b[K%s", input_data->input);
-
     input_data->history_offset++;
     free(history_line);
     return true;

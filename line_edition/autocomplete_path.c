@@ -20,6 +20,8 @@
 
 char *search_alias(char *input, aliases_t *aliases)
 {
+    if (input == NULL || aliases == NULL)
+        return NULL;
     for (uint32_t i = 0; i < aliases->nb_aliases; i++) {
         if (strncmp(input, aliases->alias[i], strlen(input)) == 0)
             return strdup(aliases->alias[i] + strlen(input));

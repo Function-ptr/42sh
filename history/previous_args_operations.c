@@ -32,11 +32,11 @@ long get_arg(char *input, int32_t argslen)
 
 void operate_on_single_arg(char *input, history_t *history)
 {
+    if (input == NULL) return;
     char *line = history_get_line_from_offset(history, 1), *r;
     char **args = separate_args(line);
     int32_t argslen = my_char_arraylen(args);
-    long arg = get_arg(input, argslen);
-    free(line);
+    long arg = get_arg(input, argslen); free(line);
     if (arg >= argslen) {
         fprintf(stderr, "Bad ! arg selector.\n");
         return;
@@ -44,10 +44,10 @@ void operate_on_single_arg(char *input, history_t *history)
     if (arg == -1) r = word_array_to_command(args, NULL);
     else
         r = strdup(args[arg]);
+    if (r == NULL) return;
     int len = (int)strlen(r);
     memset(input, 0, strlen(input));
-    strcpy(input, r);
-    strcpy(input + len, "\n\0");
+    strcpy(input, r); strcpy(input + len, "\n\0");
     free(r);
     printf("%s", input);
     for (int i = 0; i < argslen; i++) free(args[i]);
@@ -56,6 +56,7 @@ void operate_on_single_arg(char *input, history_t *history)
 
 void get_arg_range(char *input, int *limits, int32_t argslen)
 {
+    if (input == NULL) return;
     char *sep = strchr(input, '-'), *sepdup = sep;
     if (sep == NULL && (input)[2] == '*') {
         if (argslen == 1) {
@@ -64,14 +65,12 @@ void get_arg_range(char *input, int *limits, int32_t argslen)
         } else {
             limits[0] = 1;
             limits[1] = argslen - 1;
-        }
-        return;
+        } return;
     }
     char *starsep = strchr(input, '*');
     if (starsep != NULL) {
         limits[0] = strtol(input + 2, NULL, 10);
-        limits[1] = argslen - 1;
-        return;
+        limits[1] = argslen - 1; return;
     } limits[0] = input + 2 != sep ? (int)strtol(input + 2, &sepdup, 10) : 0;
     limits[1] = *(sep + 1) != '\n' ? (int)strtol(sep + 1, NULL, 10)
             : argslen - 2;

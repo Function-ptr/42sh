@@ -50,6 +50,8 @@ char *history_session_get_line_from_offset(history_t *history, uint32_t offset)
 
 char *process_file_line(char *line)
 {
+    if (line == NULL)
+        return NULL;
     char *first_sp = strchr(line, ' ');
     if (first_sp == NULL) {
         free(line);
@@ -58,6 +60,10 @@ char *process_file_line(char *line)
     first_sp++;
     size_t len = strlen(first_sp);
     char *l = calloc(len + 3, sizeof(char));
+    if (l == NULL) {
+        free(line);
+        return NULL;
+    }
     strcpy(l, first_sp);
     l[len] = '\n';
     free(line);

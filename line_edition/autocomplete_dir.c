@@ -30,17 +30,20 @@ static char* update_completion(char* completion, const char* entryName,
 
 char* auto_complete_dir(const char* path)
 {
+    if (path == NULL) return NULL;
     char* dir_path, *prefix, *last_slash = strrchr(path, '/');
     if (last_slash == NULL) {
         dir_path = "."; prefix = strdup(path);
     } else {
         dir_path = strndup(path, last_slash - path);
         prefix = strdup(last_slash + 1);
-    } DIR* dir = opendir(dir_path);
+    } if (dir_path == NULL) return NULL;
+    DIR* dir = opendir(dir_path);
     if (dir == NULL) {
         free(prefix); if (last_slash != NULL) free(dir_path);
         return NULL;
     } struct dirent* entry; char* completion = NULL;
+    if (prefix == NULL) return NULL;
     while ((entry = readdir(dir)) != NULL) {
         if (strncmp(entry->d_name, prefix, strlen(prefix)) == 0)
             completion = update_completion(completion, entry->d_name, prefix);
