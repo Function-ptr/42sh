@@ -34,6 +34,7 @@ int get_which_pos(char *cmd, envdata_t *env, int outfd)
     if (!path)
         return 1;
     dprintf(outfd, "%s\n", path);
+    free(path);
     return 0;
 }
 
