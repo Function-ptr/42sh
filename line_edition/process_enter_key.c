@@ -26,10 +26,10 @@ void process_enter_key(ShellContext *context, InputBuffer *input_data)
     memcpy(input_data->input + input_data->cursor_pos, input_data->read, len);
     input_data->input_len += len;
     input_data->cursor_pos += len;
+    if (input_data->is_tty) printf("\n");
     operate_on_previous_command(input_data->input, context->env->history);
     if (input_data->input[0] == '!') return;
     add_line_to_history(context->env->history, input_data->input);
-    if (input_data->is_tty) printf("\n");
     run_precmd(context->env);
     context->status = run_user_input(input_data->input, context->env,
                         &context->exiting);

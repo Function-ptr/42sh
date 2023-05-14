@@ -56,28 +56,28 @@ int get_offset_from_str(char *input, history_t *history)
     return -1;
 }
 
-void operate_on_line_offset(char **input, history_t *history)
+void operate_on_line_offset(char *input, history_t *history)
 {
     int32_t offset = -1;
     int32_t s = (int32_t)(history->len_session_history + history->len_file);
-    if (isnum((*input)[1])) {
-        int32_t val = (int32_t)strtol(*input + 1, NULL, 10);
+    if (isnum(input[1])) {
+        int32_t val = (int32_t)strtol(input + 1, NULL, 10);
         if (val > s) {
-            fprintf(stderr, "%i: Event not found\n", val);
-            return;
+            fprintf(stderr, "%i: Event not found\n", val); return;
         }
         offset = s - val;
-    } if ((*input)[1] == '-' && isnum((*input)[2])) {
-        offset = (int32_t)strtol(*input + 2, NULL, 10);
+    } if (input[1] == '-' && isnum(input[2])) {
+        offset = (int32_t)strtol(input + 2, NULL, 10);
         if (offset > s) {
-            fprintf(stderr, "%i: Event not found\n", offset);
-            return;
+            fprintf(stderr, "%i: Event not found\n", offset); return;
         }
     }
-    if (offset == -1) offset = get_offset_from_str(*input + 1, history);
+    if (offset == -1) offset = get_offset_from_str(input + 1, history);
     if (offset == -1) return;
-    free(*input);
-    *input = history_get_line_from_offset(history, offset);
+    memset(input, 0, strlen(input));
+    char *r = history_get_line_from_offset(history, offset);
+    strcpy(input, r);
+    free(r);
 }
 
 void operate_on_previous_command(char *input, history_t *history)
@@ -88,10 +88,12 @@ void operate_on_previous_command(char *input, history_t *history)
         return;
     }
     if ((input)[1] != ':') {
-        if ((input)[1] != '!') operate_on_line_offset(&input, history);
+        if ((input)[1] != '!') operate_on_line_offset(input, history);
         else {
-            free(input);
-            input = history_get_line_from_offset(history, 1);
+            char *r = history_get_line_from_offset(history, 1);
+            memset(input, 0, strlen(input));
+            strcpy(input, r);
+            free(r);
         } if ((input)[0] != '!') printf("%s", input);
         else
             fprintf(stderr, "%s: Event not found.\n", input);
@@ -99,9 +101,9 @@ void operate_on_previous_command(char *input, history_t *history)
     }
     if ((strchr(input, '*') || strchr(input, '-')) &&
         (input)[2] != '^' && (input)[2] != '$')
-        operate_on_arg_range(&input, history);
+        operate_on_arg_range(input, history);
     else
-        operate_on_single_arg(&input, history);
+        operate_on_single_arg(input, history);
 }
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀
