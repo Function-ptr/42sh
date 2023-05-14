@@ -32,13 +32,14 @@ char* auto_complete_dir(const char* path)
 {
     if (path == NULL) return NULL;
     char* dir_path, *prefix, *last_slash = strrchr(path, '/');
-    if (last_slash == NULL) {
-        dir_path = "."; prefix = strdup(path);
+    if (last_slash == NULL) { dir_path = "."; prefix = strdup(path);
     } else {
         dir_path = strndup(path, last_slash - path);
         prefix = strdup(last_slash + 1);
-    } if (dir_path == NULL) return NULL;
-    DIR* dir = opendir(dir_path);
+    } if (dir_path == NULL) {
+        if (prefix) free(prefix);
+        return NULL;
+    } DIR* dir = opendir(dir_path);
     if (dir == NULL) {
         free(prefix); if (last_slash != NULL) free(dir_path);
         return NULL;
