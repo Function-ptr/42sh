@@ -18,7 +18,7 @@
 #include "line_edition.h"
 #include <dirent.h>
 
-char* updateCompletion(char* completion, const char* entryName,
+static char* update_completion(char* completion, const char* entryName,
     const char* prefix)
 {
     if (completion == NULL || strcmp(entryName, completion) < 0) {
@@ -43,7 +43,7 @@ char* auto_complete_dir(const char* path)
     } struct dirent* entry; char* completion = NULL;
     while ((entry = readdir(dir)) != NULL) {
         if (strncmp(entry->d_name, prefix, strlen(prefix)) == 0)
-            completion = updateCompletion(completion, entry->d_name, prefix);
+            completion = update_completion(completion, entry->d_name, prefix);
     } closedir(dir); free(prefix); if (last_slash != NULL) free(dir_path);
     return completion;
 }

@@ -67,6 +67,7 @@ SRCS = 	main.c	\
 	history/previous_commands_operations.c	\
 	history/show_history.c	\
 	line_edition/autocomplete_dir.c	\
+	line_edition/autocomplete_history.c	\
 	line_edition/autocomplete_path.c	\
 	line_edition/autocompletion_utils.c	\
 	line_edition/configure_terminal.c	\
@@ -141,6 +142,7 @@ OBJS = 	obj/main.o	\
 	obj/history-previous_commands_operations.o	\
 	obj/history-show_history.o	\
 	obj/line_edition-autocomplete_dir.o	\
+	obj/line_edition-autocomplete_history.o	\
 	obj/line_edition-autocomplete_path.o	\
 	obj/line_edition-autocompletion_utils.o	\
 	obj/line_edition-configure_terminal.o	\

@@ -18,20 +18,16 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         if (process_delete_key(input_data)) return;
         if (process_home_end_keys(input_data)) return;
         return;
-    }
-    if (input_data->read[0] == 0x7f) {
+    } if (input_data->read[0] == 0x7f) {
         process_backspace_key(input_data);
         return;
-    }
-    if (input_data->read[0] == 4) {
+    } if (input_data->read[0] == 4) {
         handle_ctrl_d(context);
         return;
-    }
-    if (input_data->read[0] == '\t') {
+    } if (input_data->read[0] == '\t') {
         process_tab_key(input_data, context);
         return;
-    }
-    if (strchr(input_data->read, '\n'))
+    } if (strchr(input_data->read, '\n'))
         process_enter_key(context, input_data);
     else
         process_regular_key(input_data);
