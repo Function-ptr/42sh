@@ -35,9 +35,7 @@ void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 void builtins_env(command_t *command, envdata_t *env, bool *found,
     char *binname)
 {
-    if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables); *found = true;
-    } if (!strcmp(binname, "unset")) {
+    if (!strcmp(binname, "unset")) {
         unset_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unalias")) {
         unalias(command, env->aliases); *found = true;
@@ -63,14 +61,25 @@ void builtins_env_bis(envdata_t *env, bool *found,
     }
 }
 
+void handle_set_case(command_t *command, envdata_t *env, bool *found)
+{
+    char *dup = strdup(command->command);
+    char *binname = get_binary_name(dup);
+    if (!strcmp(binname, "set")) {
+        set_variable(command, env->variables);
+        *found = true;
+    }
+    free(dup);
+}
+
 int builtin_funcs(command_t *cmd, envdata_t *env)
 {
+    bool found = false; handle_set_case(cmd, env, &found);
     char *clean_cmd = strdup_without_backslash(cmd->command);
     free(cmd->command);
     char *input = cmd->command = clean_cmd, *b = strdup(input);
     char *binname = get_binary_name(b);
     int status = 0;
-    bool found = false;
     if (strcmp(binname, "cd") == 0) {
         status = change_dir(env, input); found = true;
     } if (strcmp(binname, "unsetenv") == 0) {
