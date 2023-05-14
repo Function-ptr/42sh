@@ -86,7 +86,7 @@ bool process_key_arrow_down(InputBuffer *input_data)
     input_data->input = strcpy(input_data->input, input_data->input_dup);
     input_data->input_len = input_data->cursor_pos =
         strlen(input_data->input_dup);
-
+    free(input_data->input_dup);
     printf("\x1b[K%s", input_data->input);
 
     input_data->history_offset = 1;
