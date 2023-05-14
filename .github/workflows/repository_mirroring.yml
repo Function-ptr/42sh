@@ -32,7 +32,7 @@ jobs:
   check_program_compilation:
     runs-on: ubuntu-latest
     container:
-      image: epitechcontent/epitest-docker:latest
+      image: quentinfil/epitouk_light_weight:latest
     steps:
       - uses: actions/checkout@v3
       - name: Compile program
