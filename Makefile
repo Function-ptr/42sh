@@ -16,8 +16,8 @@ SRCS = 	main.c	\
 	built-in/command_is_a_builtin.c	\
 	built-in/echo.c	\
 	built-in/exit.c	\
-	built-in/set_unset_var.c	\
 	built-in/setenv.c	\
+	built-in/set_unset_var.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
 	built-in/where.c	\
@@ -90,8 +90,8 @@ OBJS = 	obj/main.o	\
 	obj/built-in-command_is_a_builtin.o	\
 	obj/built-in-echo.o	\
 	obj/built-in-exit.o	\
-	obj/built-in-set_unset_var.o	\
 	obj/built-in-setenv.o	\
+	obj/built-in-set_unset_var.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
 	obj/built-in-where.o	\

@@ -9,6 +9,7 @@
     #define MINISHELL1_MINISHELL_H
 
     #include "types.h"
+    #include "line_edition.h"
     #include <stdio.h>
     #include <unistd.h>
     #include <signal.h>
@@ -35,6 +36,7 @@
     void clear_environment(envdata_t *envdata);
     void sighandler(__attribute__((unused)) int sig);
     void run_precmd(envdata_t *env);
+    void buffer_clearing(ShellContext *c, InputBuffer *i);
 
 extern pid_t cpid1;
 extern pid_t cpid2;

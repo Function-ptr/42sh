@@ -102,6 +102,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
     ShellContext context = {env, 0, false};
     InputBuffer input_data = {malloc(1024), NULL,0, 0, {0}, 0, 1,false};
     memset(input_data.input, 0, 1024);
+    buffer_clearing(&context, &input_data);
     if (isatty(0)) {
         configure_terminal(new_term, old_term);
         write_prompt(env);
@@ -117,6 +118,5 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         fflush(stdout);
         memset(input_data.read, 0, 5);
     }
-    free(input_data.input);
-    return context.status;
+    free(input_data.input); return context.status;
 }
