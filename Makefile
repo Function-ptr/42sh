@@ -16,8 +16,8 @@ SRCS = 	main.c	\
 	built-in/command_is_a_builtin.c	\
 	built-in/echo.c	\
 	built-in/exit.c	\
-	built-in/setenv.c	\
 	built-in/set_unset_var.c	\
+	built-in/setenv.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
 	built-in/where.c	\
@@ -66,6 +66,7 @@ SRCS = 	main.c	\
 	history/previous_args_operations.c	\
 	history/previous_commands_operations.c	\
 	history/show_history.c	\
+	line_edition/autocompletion_utils.c	\
 	line_edition/configure_terminal.c	\
 	line_edition/line_edition_utils.c	\
 	line_edition/process_arrow_keys.c	\
@@ -86,8 +87,8 @@ OBJS = 	obj/main.o	\
 	obj/built-in-command_is_a_builtin.o	\
 	obj/built-in-echo.o	\
 	obj/built-in-exit.o	\
-	obj/built-in-setenv.o	\
 	obj/built-in-set_unset_var.o	\
+	obj/built-in-setenv.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
 	obj/built-in-where.o	\
@@ -136,6 +137,7 @@ OBJS = 	obj/main.o	\
 	obj/history-previous_args_operations.o	\
 	obj/history-previous_commands_operations.o	\
 	obj/history-show_history.o	\
+	obj/line_edition-autocompletion_utils.o	\
 	obj/line_edition-configure_terminal.o	\
 	obj/line_edition-line_edition_utils.o	\
 	obj/line_edition-process_arrow_keys.o	\
