@@ -54,9 +54,6 @@ void process_tab_key(InputBuffer *input_data, ShellContext *context)
     char *autocomplete = auto_complete_dir(last_word);
     if (autocomplete == NULL)
         autocomplete = autocomplete_from_path(last_word, context->env);
-    if (autocomplete == NULL)
-        autocomplete = autocomplete_from_history(last_word,
-                                                    context->env->history);
     if (autocomplete != NULL)
         add_result_to_input(autocomplete, input_data);
     free(autocomplete);

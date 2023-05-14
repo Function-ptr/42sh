@@ -18,6 +18,15 @@
 #include "line_edition.h"
 #include <dirent.h>
 
+char *search_alias(char *input, aliases_t *aliases)
+{
+    for (uint32_t i = 0; i < aliases->nb_aliases; i++) {
+        if (strncmp(input, aliases->alias[i], strlen(input)) == 0)
+            return strdup(aliases->alias[i] + strlen(input));
+    }
+    return NULL;
+}
+
 char *search_in_dir(char *input, char *dir_path)
 {
     DIR* dir = opendir(dir_path);
@@ -25,20 +34,24 @@ char *search_in_dir(char *input, char *dir_path)
         return NULL;
     }
     struct dirent *entry;
+    char *matched_name = NULL;
     while ((entry = readdir(dir)) != NULL) {
         if (strncmp(input, entry->d_name, strlen(input)) == 0) {
-            closedir(dir);
-            return strdup(entry->d_name + strlen(input));
+            matched_name = strdup(entry->d_name);
+            break;
         }
     }
     closedir(dir);
-    return NULL;
+    return matched_name ? strdup(matched_name + strlen(input)) : NULL;
 }
 
 char *autocomplete_from_path(char *input, envdata_t *env)
 {
     if (input[0] == '.' || input[0] == '/')
         return NULL;
+    char *resa = search_alias(input, env->aliases);
+    if (resa)
+        return resa;
     pathdir_t *dir_path = *(env->path_dirs);
     for (; dir_path;) {
         char *res = search_in_dir(input, dir_path->dir);
