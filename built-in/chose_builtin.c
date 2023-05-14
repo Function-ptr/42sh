@@ -34,40 +34,25 @@ void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 }
 
 void builtins_env(command_t *command, envdata_t *env, bool *found,
-    char *binname) {
-    if (!binname)
-        return;
+char *binname)
+{
+    if (!binname) return;
     if (!strcmp(binname, "set")) {
-        set_variable(command, env->variables);
-        *found = true;
-    }
-    if (!strcmp(binname, "unset")) {
-        unset_variable(command, env->variables);
-        *found = true;
-    }
-    if (!strcmp(binname, "unalias")) {
-        unalias(command, env->aliases);
-        *found = true;
-    }
-    if (!strcmp(binname, "alias")) {
-        alias(command, env->aliases);
-        *found = true;
-    }
-    if (!strcmp(binname, "moai")) {
-        moai(command);
-        *found = true;
-    }
-    if (strcmp(binname, "history") == 0) {
-        show_history(env->history);
-        *found = true;
-    }
-    if (strcmp(binname, "setenv") == 0) {
-        set_env(env->env, command, env);
-        *found = true;
-    }
-    if (strcmp(binname, "env") == 0) {
-        show_environment(env->env, command);
-        *found = true;
+        set_variable(command, env->variables); *found = true;
+    } if (!strcmp(binname, "unset")) {
+        unset_variable(command, env->variables); *found = true;
+    } if (!strcmp(binname, "unalias")) {
+        unalias(command, env->aliases); *found = true;
+    } if (!strcmp(binname, "alias")) {
+        alias(command, env->aliases); *found = true;
+    } if (!strcmp(binname, "moai")) {
+        moai(command); *found = true;
+    } if (strcmp(binname, "history") == 0) {
+        show_history(env->history); *found = true;
+    } if (strcmp(binname, "setenv") == 0) {
+        set_env(env->env, command, env); *found = true;
+    } if (strcmp(binname, "env") == 0) {
+        show_environment(env->env, command); *found = true;
     }
 }
 
