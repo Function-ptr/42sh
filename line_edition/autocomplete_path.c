@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** process_tab_key.c
+** autocomplete_path.c
 ** File description:
-** process tab key to autocomplete
+** autocomplete for paths
 */
 /*
  _____               __      __
@@ -16,48 +16,37 @@
 */
 
 #include "line_edition.h"
-#include <ctype.h>
+#include <dirent.h>
 
-bool is_only_spaces(const char* str)
+char *search_in_dir(char *input, char *dir_path)
 {
-    while (*str != '\0') {
-        if (!isspace((unsigned char)*str)) {
-            return false;
+    DIR* dir = opendir(dir_path);
+    if (dir == NULL) {
+        return NULL;
+    }
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strncmp(input, entry->d_name, strlen(input)) == 0) {
+            closedir(dir);
+            return strdup(entry->d_name + strlen(input));
         }
-        str++;
     }
-    return true;
+    closedir(dir);
+    return NULL;
 }
 
-static void add_result_to_input(char* autocomplete,
-    InputBuffer *input_data)
+char *autocomplete_from_path(char *input, envdata_t *env)
 {
-    int i = 0;
-    while (autocomplete[i] != '\0') {
-        input_data->input[input_data->cursor_pos] = autocomplete[i];
-        input_data->cursor_pos++;
-        i++;
+    if (input[0] == '.' || input[0] == '/')
+        return NULL;
+    pathdir_t *dir_path = *(env->path_dirs);
+    for (; dir_path;) {
+        char *res = search_in_dir(input, dir_path->dir);
+        if (res)
+            return res;
+        dir_path = dir_path->next;
     }
-    input_data->input[input_data->cursor_pos] = '\0';
-    input_data->input_len = strlen(input_data->input);
-    input_data->cursor_pos = input_data->input_len;
-    printf("%s", autocomplete);
-}
-
-void process_tab_key(InputBuffer *input_data, ShellContext *context)
-{
-    if (input_data->input_len == 0 || input_data->input_len !=
-    input_data->cursor_pos || is_only_spaces(input_data->input))
-        return;
-    char *last_word = get_last_word(input_data->input);
-    if (last_word == NULL) return;
-    char *autocomplete = auto_complete_dir(last_word);
-    if (autocomplete == NULL)
-        autocomplete = autocomplete_from_path(last_word, context->env);
-    if (autocomplete != NULL)
-        add_result_to_input(autocomplete, input_data);
-    free(autocomplete);
-    free(last_word);
+    return NULL;
 }
 
 /*
