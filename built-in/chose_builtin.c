@@ -20,6 +20,7 @@
 
 void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 {
+    if (!binname) return;
     if (strcmp(binname, "exit") == 0) {
         *status = exit_with_status(cmd); *found = true;
     } if (strcmp(binname, "echo") == 0) {
@@ -35,6 +36,7 @@ void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 void builtins_env(command_t *command, envdata_t *env, bool *found,
     char *binname)
 {
+    if (!binname) return;
     if (!strcmp(binname, "set")) {
         set_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unset")) {
@@ -55,6 +57,7 @@ void builtins_env(command_t *command, envdata_t *env, bool *found,
 void builtins_env_bis(envdata_t *env, bool *found,
     char *binname)
 {
+    if (!binname) return;
     if (!strcmp(binname, "prompt_on")) env->starship_prompt = *found = true;
     if (!strcmp(binname, "prompt_off")) {
         env->starship_prompt = false; *found = true;
@@ -67,8 +70,7 @@ int builtin_funcs(command_t *cmd, envdata_t *env)
     free(cmd->command);
     char *input = cmd->command = clean_cmd, *b = strdup(input);
     char *binname = get_binary_name(b);
-    int status = 0;
-    bool found = false;
+    int status = 0; bool found = false;
     if (strcmp(binname, "cd") == 0) {
         status = change_dir(env, input); found = true;
     } if (strcmp(binname, "env") == 0) {

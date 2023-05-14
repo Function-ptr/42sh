@@ -78,9 +78,14 @@ static void run_non_tty(ShellContext *context)
     char* input = read_stdin();
     char* end_line;
     char* start_line = input;
+    if (!start_line) return;
     while ((end_line = strchr(start_line, '\n')) != NULL) {
         size_t len = end_line - start_line + 1;
         char* commands = malloc(len + 1);
+        if (!commands) {
+            free(input);
+            return;
+        }
         strncpy(commands, start_line, len);
         commands[len] = '\0';
         context->status = run_user_input(commands, context->env,
