@@ -24,15 +24,16 @@ int get_value_len(char *eqpos, int len)
     bool in_sim_quote = false, in_db_quotes = false;
     char *pos = eqpos;
     if (*pos == ' ') pos++;
-    int i = 0;
-    for (; i < len; i++) {
+    int count = 0;
+    for (int i = 0; i < len; i++) {
         if (pos[i] == ' ' && i > 0 && pos[i - 1] != '\\' && !in_db_quotes &&
         !in_sim_quote)
             break;
         if (pos[i] == 39) in_sim_quote = !in_sim_quote;
         if (pos[i] == '"') in_db_quotes = !in_db_quotes;
+        if (pos[i] != '\\') count++;
     }
-    return i;
+    return count;
 }
 
 char *get_variable_value(char *eqpos)
