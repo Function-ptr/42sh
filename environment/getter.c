@@ -46,7 +46,7 @@ char *get_variable_name(char *args)
     char *varname = malloc(sizeof(char) * (vlen + 1) + 1);
     if (varname == NULL)
         return (NULL);
-    if (vlen == 0 || args == NULL) {
+    if (vlen == 0) {
         free(varname);
         return (NULL);
     }
