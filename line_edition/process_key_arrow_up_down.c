@@ -69,7 +69,7 @@ bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
     put_cursor_to_end_of_line(input_data);
     if (input_data->cursor_pos > 0)
         printf("\x1b[%dD", input_data->cursor_pos);
-
+    memset(input_data->input, 0, input_data->input_len);
     input_data->input = strcpy(input_data->input, history_line);
     input_data->input_len = input_data->cursor_pos = strlen(history_line);
     printf("\x1b[K%s", input_data->input);
@@ -83,18 +83,17 @@ bool process_key_arrow_down(InputBuffer *input_data)
     if (input_data->history_offset <= 1)
         return true;
     put_cursor_to_end_of_line(input_data);
-
     if (input_data->cursor_pos > 0)
         printf("\x1b[%dD", input_data->cursor_pos);
-
+    if (!(input_data->input_dup))
+        input_data->input_dup = calloc(1, 1);
     input_data->input = strcpy(input_data->input, input_data->input_dup);
     input_data->input_len = input_data->cursor_pos =
         strlen(input_data->input_dup);
     free(input_data->input_dup);
+    input_data->input_dup = NULL;
     printf("\x1b[K%s", input_data->input);
-
     input_data->history_offset = 1;
-
     return true;
 }
 /*

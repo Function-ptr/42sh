@@ -243,3 +243,13 @@ TESTS=
   echo 'where cd'
   echo 'alias a b; alias b c; alias c a; where a'
 [24-END]
+
+[25]
+NAME="Repeat"
+SETUP=""
+CLEAN=""
+TESTS=
+  echo 'repeat 5 ls /'
+  echo 'repeat 3 setenv TEST var'
+  echo 'repeat asdfdfg pwd'
+[25-END]

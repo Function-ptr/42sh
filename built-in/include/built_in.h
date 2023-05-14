@@ -45,6 +45,7 @@
     int moai(command_t *command);
     int which(command_t *command, envdata_t *env);
     int where(command_t *command, envdata_t *env);
+    int repeat(command_t *command, envdata_t *env);
 
     /////////////
     /// Utils ///
