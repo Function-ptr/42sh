@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** line_edition.h
+** process_tab_key.c
 ** File description:
-** line_edition header file for 42sh
+** process tab key to autocomplete
 */
 /*
  _____               __      __
@@ -15,73 +15,50 @@
                                       |___/
 */
 
-#ifndef INC_42SH_LINE_EDITION_H
-    #define INC_42SH_LINE_EDITION_H
+#include "line_edition.h"
+#include <ctype.h>
 
-    #include <termios.h>
-    #include <unistd.h>
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdint.h>
-    #include <stdbool.h>
-    #include "types.h"
-
-    typedef struct {
-        envdata_t *env;
-        uint8_t status;
-        int exiting;
-    } ShellContext;
-
-    typedef struct {
-        char *input;
-        char *input_dup;
-        uint16_t input_len;
-        uint16_t cursor_pos;
-        char read[5];
-        uint8_t read_len;
-        uint16_t history_offset;
-        bool is_tty;
-    } InputBuffer;
-
-    void configure_terminal(struct termios *new_term, struct termios *old_term);
-    void restore_terminal(struct termios *old_term);
-    int8_t utf8_char_len(uint8_t byte);
-    uint8_t previous_utf8_char_length(const char* input,
-        uint16_t cursor_position);
-    bool process_arrow_keys(InputBuffer *input_data, ShellContext *context);
-    void process_backspace_key(InputBuffer *input_data);
-    bool process_delete_key(InputBuffer *input_data);
-    void process_enter_key(ShellContext *context, InputBuffer *input_data);
-    bool process_home_end_keys(InputBuffer *input_data);
-    void process_regular_key(InputBuffer *input_data);
-    void operate_on_previous_command(char *input, history_t *history);
-    void add_line_to_history(history_t *history, char *line);
-    int run_user_input(char *input, envdata_t *env, int *exiting);
-    void write_prompt(envdata_t *env);
-    bool is_valid_utf8(const char *s);
-    void handle_ctrl_d(ShellContext *context);
-    bool process_key_arrow_up(InputBuffer *input_data, history_t *history);
-    void realloc_input(InputBuffer *input_data);
-    bool process_key_arrow_down(InputBuffer *input_data);
-    char* get_last_word(const char* str);
-    char* auto_complete_dir(const char* path);
-    char *autocomplete_from_path(char *input, envdata_t *env);
-    void process_tab_key(InputBuffer *input_data, ShellContext *context);
-
-static inline float fastlog2 (float x)
+bool is_only_spaces(const char* str)
 {
-    union {float f; uint32_t i;} xv = {x}, lv, mx;
-    mx.i = 0x3f000000u | (xv.i & 0x007FFFFFu);
-    lv.i = 0x43800000u | (xv.i >> 8u);
-
-    return lv.f - 380.22544f
-        - 1.498030302f * mx.f
-        - 1.72587999f / (0.3520887068f + mx.f);
+    while (*str != '\0') {
+        if (!isspace((unsigned char)*str)) {
+            return false;
+        }
+        str++;
+    }
+    return true;
 }
 
+static void add_result_to_input(char* autocomplete,
+    InputBuffer *input_data)
+{
+    int i = 0;
+    while (autocomplete[i] != '\0') {
+        input_data->input[input_data->cursor_pos] = autocomplete[i];
+        input_data->cursor_pos++;
+        i++;
+    }
+    input_data->input[input_data->cursor_pos] = '\0';
+    input_data->input_len = strlen(input_data->input);
+    input_data->cursor_pos = input_data->input_len;
+    printf("%s", autocomplete);
+}
 
-#endif //INC_42SH_LINE_EDITION_H
+void process_tab_key(InputBuffer *input_data, ShellContext *context)
+{
+    if (input_data->input_len == 0 || input_data->input_len !=
+    input_data->cursor_pos || is_only_spaces(input_data->input))
+        return;
+    char *last_word = get_last_word(input_data->input);
+    if (last_word == NULL) return;
+    char *autocomplete = auto_complete_dir(last_word);
+    if (autocomplete == NULL)
+        autocomplete = autocomplete_from_path(last_word, context->env);
+    if (autocomplete != NULL)
+        add_result_to_input(autocomplete, input_data);
+    free(autocomplete);
+    free(last_word);
+}
 
 /*
 ─▄▀▀▀▀▄─█──█────▄▀▀█─▄▀▀▀▀▄─█▀▀▄

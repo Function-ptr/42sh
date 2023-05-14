@@ -27,14 +27,14 @@ void read_input(command_t *command, int *file_descriptors)
         }
         int len = strlen(input);
         char *tmp = strndup(input, len - 1);
+        if (!tmp) {
+            free(input); return;
+        }
         if (!strcmp(command->awaited_word, tmp)) {
-            free(input);
-            free(tmp);
-            break;
+            free(input); free(tmp); break;
         }
         dprintf(file_descriptors[1], "%s", input);
-        free(input);
-        free(tmp);
+        free(input); free(tmp);
     }
 }
 

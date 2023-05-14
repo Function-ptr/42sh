@@ -14,6 +14,7 @@ void run_cwdcmd(envdata_t *env)
     if (!cmd) return;
     size_t size = strlen(cmd);
     char *allocd_cmd = calloc(size + 2, sizeof(char));
+    if (!allocd_cmd) return;
     strcpy(allocd_cmd, cmd);
     allocd_cmd[size] = '\n';
     int exiting = 0;

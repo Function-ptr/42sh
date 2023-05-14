@@ -36,11 +36,12 @@
     void init_history(envdata_t *environment);
     void free_history(history_t *history);
     void add_line_to_history(history_t *history, char *line);
+    int get_offset_from_str(char *input, history_t *history);
     char *history_get_line_from_offset(history_t *history, uint32_t offset);
     void show_history(history_t *history);
     void operate_on_previous_command(char *input, history_t *history);
-    void operate_on_single_arg(char **input, history_t *history);
-    void operate_on_arg_range(char **input, history_t *history);
+    void operate_on_single_arg(char *input, history_t *history);
+    void operate_on_arg_range(char *input, history_t *history);
 
     /////////////
     /// Utils ///

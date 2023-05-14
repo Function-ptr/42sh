@@ -20,7 +20,7 @@ envdata_t *initialize_fallback_environment(void)
 {
     envdata_t *envdata = malloc(sizeof(envdata_t));
     envdata->is_fallback = 1;
-    envdata->env = malloc(sizeof(envvar_t*) + 1);
+    envdata->env = malloc(sizeof(envvar_t*));
     *(envdata->env) = NULL;
     envdata->path = NULL;
     envdata->path_dirs = get_path_directories("/bin:/usr/bin");

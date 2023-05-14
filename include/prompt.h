@@ -28,6 +28,8 @@
 
     #define NNOVPROMPT "<%s %s >$ "
 
+    void write_prompt(envdata_t *env);
+
 #endif //INC_42SH_PROMPT_H
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠊⠉⠉⢉⠏⠻⣍⠑⢲⠢⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀

@@ -63,7 +63,7 @@ void reverse_path_directories(pathdir_t **begin)
 
 pathdir_t **get_path_directories(char *path)
 {
-    pathdir_t **pathdirs = malloc(sizeof(pathdir_t*) + 1);
+    pathdir_t **pathdirs = malloc(sizeof(pathdir_t*));
     *pathdirs = NULL;
     int nb_dirs = 0;
     for (int i = 0; path[i] != 0; i++)

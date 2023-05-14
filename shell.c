@@ -18,14 +18,16 @@ void process_key(ShellContext *context, InputBuffer *input_data)
         if (process_delete_key(input_data)) return;
         if (process_home_end_keys(input_data)) return;
         return;
-    }
-    if (input_data->read[0] == 0x7f) {
+    } if (input_data->read[0] == 0x7f) {
         process_backspace_key(input_data);
         return;
-    }
-    if (input_data->read[0] == 4)
+    } if (input_data->read[0] == 4) {
         handle_ctrl_d(context);
-    if (strchr(input_data->read, '\n'))
+        return;
+    } if (input_data->read[0] == '\t') {
+        process_tab_key(input_data, context);
+        return;
+    } if (strchr(input_data->read, '\n'))
         process_enter_key(context, input_data);
     else
         process_regular_key(input_data);
@@ -77,9 +79,14 @@ static void run_non_tty(ShellContext *context)
     char* input = read_stdin();
     char* end_line;
     char* start_line = input;
+    if (!start_line) return;
     while ((end_line = strchr(start_line, '\n')) != NULL) {
         size_t len = end_line - start_line + 1;
         char* commands = malloc(len + 1);
+        if (!commands) {
+            free(input);
+            return;
+        }
         strncpy(commands, start_line, len);
         commands[len] = '\0';
         context->status = run_user_input(commands, context->env,
@@ -96,6 +103,7 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
     ShellContext context = {env, 0, false};
     InputBuffer input_data = {malloc(1024), NULL,0, 0, {0}, 0, 1,false};
     memset(input_data.input, 0, 1024);
+    buffer_clearing(&context, &input_data);
     if (isatty(0)) {
         configure_terminal(new_term, old_term);
         write_prompt(env);
@@ -111,6 +119,5 @@ int shell(envdata_t *env, struct termios *old_term, struct termios *new_term)
         fflush(stdout);
         memset(input_data.read, 0, 5);
     }
-    free(input_data.input);
-    return context.status;
+    free(input_data.input); return context.status;
 }

@@ -31,6 +31,7 @@ int compare_variable_name(char *var, char *name)
 
 void set_value(envvar_t *var, char *varname, char *value)
 {
+    if (var == NULL || varname == NULL || value == NULL) return;
     int varnlen = (int)strlen(varname);
     int vallen = (int)strlen(value);
     var->var = malloc(sizeof(char) * (varnlen + vallen + 2));
@@ -42,9 +43,11 @@ void set_value(envvar_t *var, char *varname, char *value)
 
 void set_environment_variable(envvar_t **env, char *var, char *newvar)
 {
+    if (newvar == NULL || var == NULL) return;
     envvar_t *tmp = *env;
     int lensum = (int)(strlen(newvar) + strlen(var));
     char *new = calloc(lensum + 2, sizeof(char));
+    if (!new) return;
     strcpy(new, var);
     new[strlen(var)] = '=';
     strcat(new, newvar);

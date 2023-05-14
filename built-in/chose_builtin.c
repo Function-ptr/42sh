@@ -20,6 +20,7 @@
 
 void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 {
+    if (!binname) return;
     if (strcmp(binname, "exit") == 0) {
         *status = exit_with_status(cmd); *found = true;
     } if (strcmp(binname, "echo") == 0) {
@@ -33,8 +34,9 @@ void builtin_funcs_bis(char *binname, command_t *cmd, bool *found, int *status)
 }
 
 void builtins_env(command_t *command, envdata_t *env, bool *found,
-    char *binname)
+char *binname)
 {
+    if (!binname) return;
     if (!strcmp(binname, "unset")) {
         unset_variable(command, env->variables); *found = true;
     } if (!strcmp(binname, "unalias")) {
@@ -55,6 +57,7 @@ void builtins_env(command_t *command, envdata_t *env, bool *found,
 void builtins_env_bis(envdata_t *env, bool *found,
     char *binname)
 {
+    if (!binname) return;
     if (!strcmp(binname, "prompt_on")) env->starship_prompt = *found = true;
     if (!strcmp(binname, "prompt_off")) {
         env->starship_prompt = false; *found = true;

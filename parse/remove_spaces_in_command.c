@@ -78,7 +78,8 @@ char *remove_spaces_in_command(char *comm, char sep[2], bool pipe_in,
 
     char *newcommand = word_array_to_command(word_array, &pos);
     free(word_array);
-    newcommand[pos - 1] = 0;
+    if (pos)
+        newcommand[pos - 1] = 0;
     return newcommand;
 }
 

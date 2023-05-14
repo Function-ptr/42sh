@@ -26,7 +26,7 @@ void create_path(envdata_t *envdata)
 envdata_t *initialize_envdata(char **env)
 {
     envdata_t *envdata = malloc(sizeof(envdata_t));
-    envdata->env = malloc(sizeof(envvar_t*) + 1);
+    envdata->env = malloc(sizeof(envvar_t*));
     *(envdata->env) = NULL;
     duplicate_environment(env, envdata->env);
     create_path(envdata);

@@ -15,15 +15,31 @@
                              |___/               |______|
 */
 #include "shell.h"
+#include "execute.h"
+#include "types.h"
+#include "line_edition.h"
 
-void sighandler(int sig)
+void buffer_clearing(ShellContext *c, InputBuffer *i)
 {
-    if (0)
-        printf("%i", sig);
+    static ShellContext *context = NULL;
+    static InputBuffer *input_buffer = NULL;
+    if (c) context = c;
+    if (i) input_buffer = i;
+    if (i || c) return;
+    memset(input_buffer->input, 0, input_buffer->input_len);
+    input_buffer->input_len = 1;
+    input_buffer->input[0] = '\n';
+    process_enter_key(context, input_buffer);
+}
+
+void sighandler(__attribute__((unused)) int sig)
+{
     if (cpid1 != -1)
         kill(cpid1, SIGINT);
     if (cpid2 != -1)
         kill(cpid2, SIGINT);
+    if (cpid1 == -1 && cpid2 == -1)
+        buffer_clearing(NULL, NULL);
 }
 
 /*

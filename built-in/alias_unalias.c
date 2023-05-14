@@ -22,13 +22,15 @@ void alias(command_t *command, aliases_t *aliases)
     if (!is_argv_long_enough(command->command, 2)) {
         add_alias(aliases, "", "", command);
         return;
-    }
-    if (!is_argv_long_enough(command->command, 3))
-        return;
-    char *datapos = strdup(command->command + 6), *eqpos = strchr(datapos, ' ');
-    char *name = strndup(datapos, eqpos - datapos + 1), *s = strchr(name, ' ');
-    if (s)
-        *s = 0;
+    } if (!is_argv_long_enough(command->command, 3)) return;
+    char *datapos = strdup(command->command + 6);
+    if (!datapos) return;
+    char *eqpos = strchr(datapos, ' ');
+    if (!eqpos) { free(datapos); return;
+    } char *name = strndup(datapos, eqpos - datapos + 1);
+    if (!name) { free(datapos); return;
+    } char *s = strchr(name, ' ');
+    if (s) *s = 0;
     char *content = strdup(eqpos + 1);
     add_alias(aliases, name, content, command);
     free(name);
