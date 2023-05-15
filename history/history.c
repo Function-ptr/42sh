@@ -52,7 +52,7 @@ void free_history(history_t *history)
 
 void add_line_to_history(history_t *history, char *line)
 {
-    if (line == NULL || strlen(line) == 1 || history == NULL)
+    if (line == NULL || strlen(line) < 2 || history == NULL)
         return;
     time_t curr_time = time(NULL);
     history->session_history = reallocarray(history->session_history,
