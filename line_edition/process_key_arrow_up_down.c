@@ -63,7 +63,6 @@ bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
         return true;
     if (input_data->history_offset > history_len)
         return true;
-
     char* history_line = load_check_history(input_data, history);
     if (history_line == NULL)
         return true;
