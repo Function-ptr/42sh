@@ -56,6 +56,7 @@ static void put_cursor_to_end_of_line(InputBuffer *input_data)
 
 bool process_key_arrow_up(InputBuffer *input_data, history_t *history)
 {
+    if (!history) return true;
     int history_len = history->len_file +
         history->len_session_history;
     if (history_len <= 0)
