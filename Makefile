@@ -17,8 +17,8 @@ SRCS = 	main.c	\
 	built-in/echo.c	\
 	built-in/exit.c	\
 	built-in/repeat.c	\
-	built-in/set_unset_var.c	\
 	built-in/setenv.c	\
+	built-in/set_unset_var.c	\
 	built-in/show_environment.c	\
 	built-in/unsetenv.c	\
 	built-in/where.c	\
@@ -67,6 +67,7 @@ SRCS = 	main.c	\
 	history/previous_args_operations.c	\
 	history/previous_commands_operations.c	\
 	history/show_history.c	\
+	line_edition/autocomplete_builtin.c	\
 	line_edition/autocomplete_dir.c	\
 	line_edition/autocomplete_path.c	\
 	line_edition/autocompletion_utils.c	\
@@ -92,8 +93,8 @@ OBJS = 	obj/main.o	\
 	obj/built-in-echo.o	\
 	obj/built-in-exit.o	\
 	obj/built-in-repeat.o	\
-	obj/built-in-set_unset_var.o	\
 	obj/built-in-setenv.o	\
+	obj/built-in-set_unset_var.o	\
 	obj/built-in-show_environment.o	\
 	obj/built-in-unsetenv.o	\
 	obj/built-in-where.o	\
@@ -142,6 +143,7 @@ OBJS = 	obj/main.o	\
 	obj/history-previous_args_operations.o	\
 	obj/history-previous_commands_operations.o	\
 	obj/history-show_history.o	\
+	obj/line_edition-autocomplete_builtin.o	\
 	obj/line_edition-autocomplete_dir.o	\
 	obj/line_edition-autocomplete_path.o	\
 	obj/line_edition-autocompletion_utils.o	\
