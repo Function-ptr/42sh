@@ -67,6 +67,7 @@
     char* get_last_word(const char* str);
     char* auto_complete_dir(const char* path);
     char *autocomplete_from_path(char *input, envdata_t *env);
+    char *autocomplete_builtin(char *input);
     void process_tab_key(InputBuffer *input_data, ShellContext *context);
 
 static inline float fastlog2 (float x)
